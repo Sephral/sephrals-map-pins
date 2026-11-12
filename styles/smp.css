@@ -1,0 +1,463 @@
+/* Sephral’s Map Pins */
+
+/* Colors: the warm signature look by default, the dark Foundry look per user */
+.smp-app {
+  --smp-paper: #fbf6ea;
+  --smp-paper-2: #f3ecde;
+  --smp-card: rgb(255 250 240 / 0.92);
+  --smp-ink: #1f1a17;
+  --smp-muted: #6f655d;
+  --smp-line: rgb(73 49 32 / 0.14);
+  --smp-soft: rgb(73 49 32 / 0.07);
+  --smp-field: #fffdf7;
+  --smp-accent: #9c3b22;
+  --smp-accent-soft: rgb(156 59 34 / 0.12);
+  --smp-on-accent: #fffaf0;
+  --smp-radius: 12px;
+  --smp-thumb: #3b332d;
+}
+
+.smp-app[data-smp-theme="foundry"] {
+  --smp-paper: #24211e;
+  --smp-paper-2: #1c1a18;
+  --smp-card: rgb(255 255 255 / 0.05);
+  --smp-ink: #ece5d8;
+  --smp-muted: #aba191;
+  --smp-line: rgb(255 255 255 / 0.12);
+  --smp-soft: rgb(255 255 255 / 0.06);
+  --smp-field: rgb(0 0 0 / 0.25);
+  --smp-accent: #d8784e;
+  --smp-accent-soft: rgb(216 120 78 / 0.18);
+  --smp-on-accent: #1c1a18;
+  --smp-radius: 6px;
+  --smp-thumb: #111;
+}
+
+.smp-app .window-content {
+  padding: 0;
+  background: linear-gradient(180deg, var(--smp-paper) 0%, var(--smp-paper-2) 100%);
+  color: var(--smp-ink);
+}
+
+
+/* .smp-app is set on every window of the module, with data-smp-theme="signature|foundry" */
+
+.smp-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+/* Buttons */
+.smp-app button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: auto;
+  height: 28px;
+  margin: 0;
+  padding: 0 10px;
+  border: 1px solid var(--smp-line);
+  border-radius: 999px;
+  background: var(--smp-field);
+  color: var(--smp-ink);
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.smp-app button:hover {
+  border-color: var(--smp-accent);
+  background: var(--smp-accent-soft);
+}
+
+.smp-app button.smp-primary {
+  border-color: var(--smp-accent);
+  background: var(--smp-accent);
+  color: var(--smp-on-accent);
+  font-weight: 700;
+}
+
+.smp-app button.smp-primary:hover {
+  filter: brightness(1.08);
+}
+
+.smp-app button.smp-icon {
+  width: 28px;
+  padding: 0;
+  border-color: transparent;
+  background: none;
+  color: var(--smp-muted);
+}
+
+.smp-app button.smp-icon:hover {
+  color: var(--smp-accent);
+  background: var(--smp-accent-soft);
+}
+
+/* -------------------------------------------- */
+/*  Pin list                                    */
+/* -------------------------------------------- */
+
+.smp-head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px 6px;
+}
+
+.smp-head input[type="search"] {
+  flex: 1;
+  min-width: 0;
+  height: 30px;
+  border: 1px solid var(--smp-line);
+  border-radius: 999px;
+  background: var(--smp-field);
+  color: var(--smp-ink);
+  padding: 0 12px;
+}
+
+.smp-chips {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 2px 12px 8px;
+  border-bottom: 1px solid var(--smp-line);
+}
+
+.smp-app .smp-chip {
+  --smp-chip: var(--smp-accent);
+  height: 24px;
+  padding: 0 9px 0 7px;
+  border-color: color-mix(in srgb, var(--smp-chip) 55%, transparent);
+}
+
+.smp-chip .smp-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--smp-chip);
+}
+
+.smp-chip .smp-count {
+  color: var(--smp-muted);
+}
+
+.smp-app .smp-chip.is-off {
+  opacity: 0.55;
+  text-decoration: line-through;
+}
+
+.smp-pins {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 6px 10px 10px;
+  list-style: none;
+  overflow-y: auto;
+}
+
+.smp-pin {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 4px;
+  padding: 6px 8px;
+  border: 1px solid var(--smp-line);
+  border-radius: var(--smp-radius);
+  background: var(--smp-card);
+  cursor: pointer;
+}
+
+.smp-pin:hover,
+.smp-pin:focus-visible {
+  border-color: var(--smp-accent);
+  outline: none;
+}
+
+.smp-pin[hidden] {
+  display: none;
+}
+
+.smp-pin.is-off {
+  opacity: 0.45;
+}
+
+.smp-pin.is-other {
+  border-style: dashed;
+}
+
+.smp-pin-icon {
+  --smp-chip: transparent;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--smp-thumb);
+  box-shadow: 0 0 0 2px var(--smp-chip);
+}
+
+.smp-pin-icon img {
+  width: 24px;
+  height: 24px;
+  border: 0;
+  object-fit: contain;
+}
+
+.smp-pin-number {
+  flex: none;
+  min-width: 24px;
+  color: var(--smp-accent);
+  font-weight: 700;
+  font-size: 13px;
+  text-align: right;
+}
+
+.smp-pin-number:empty {
+  display: none;
+}
+
+.smp-pin-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.smp-pin-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.smp-pin-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 8px;
+  color: var(--smp-muted);
+  font-size: 11px;
+}
+
+.smp-pin-meta:empty {
+  display: none;
+}
+
+.smp-tag {
+  --smp-chip: var(--smp-accent);
+  padding: 0 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--smp-chip) 20%, transparent);
+  border: 1px solid color-mix(in srgb, var(--smp-chip) 50%, transparent);
+  color: var(--smp-ink);
+}
+
+.smp-pin-actions {
+  flex: none;
+  display: flex;
+}
+
+.smp-empty,
+.smp-nomatch,
+.smp-hint {
+  margin: 0;
+  padding: 14px;
+  color: var(--smp-muted);
+  font-size: 12px;
+}
+
+.smp-empty {
+  text-align: center;
+  padding-top: 28px;
+}
+
+.smp-nomatch[hidden] {
+  display: none;
+}
+
+/* -------------------------------------------- */
+/*  Categories                                  */
+/* -------------------------------------------- */
+
+.smp-cat-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 12px 8px;
+  overflow-y: auto;
+}
+
+.smp-cat-row {
+  display: grid;
+  grid-template-columns: 34px minmax(90px, 1fr) minmax(120px, 1.4fr) 132px 28px;
+  align-items: center;
+  gap: 6px;
+}
+
+.smp-cat-row input[type="color"] {
+  width: 34px;
+  height: 28px;
+  padding: 1px;
+  border: 1px solid var(--smp-line);
+  border-radius: 8px;
+  background: var(--smp-field);
+}
+
+.smp-cat-row input[type="text"],
+.smp-cat-row select {
+  height: 28px;
+  min-width: 0;
+  border: 1px solid var(--smp-line);
+  border-radius: 8px;
+  background: var(--smp-field);
+  color: var(--smp-ink);
+}
+
+.smp-cat-row file-picker {
+  min-width: 0;
+}
+
+.smp-foot {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--smp-line);
+}
+
+.smp-spacer {
+  flex: 1;
+}
+
+/* -------------------------------------------- */
+/*  Note dialog section                         */
+/* -------------------------------------------- */
+
+.smp-config {
+  --smp-ink: inherit;
+}
+
+.smp-config .smp-config-image {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 8px;
+  color: var(--smp-muted, inherit);
+  font-size: 12px;
+}
+
+.smp-config .smp-config-image img {
+  width: 40px;
+  height: 40px;
+  padding: 4px;
+  border: 1px solid var(--smp-line, rgb(128 128 128 / 0.4));
+  border-radius: 8px;
+  background: var(--smp-thumb, #3b332d);
+  object-fit: contain;
+}
+
+.smp-config .form-group.stacked .form-fields {
+  width: 100%;
+}
+
+.smp-config textarea {
+  width: 100%;
+  resize: vertical;
+}
+
+/* -------------------------------------------- */
+/*  Dialogs                                     */
+/* -------------------------------------------- */
+
+.smp-dialog {
+  color: inherit;
+}
+
+.smp-dialog h3 {
+  margin: 4px 0;
+}
+
+.smp-dialog .form-group.stacked .form-fields,
+.smp-dialog textarea {
+  width: 100%;
+}
+
+/* -------------------------------------------- */
+/*  Preview card                                */
+/* -------------------------------------------- */
+
+.smp-card {
+  position: fixed;
+  z-index: 10000;
+  width: 280px;
+  max-width: calc(100vw - 16px);
+  overflow: hidden;
+  border: 1px solid var(--smp-line);
+  border-radius: var(--smp-radius);
+  background: var(--smp-paper);
+  color: var(--smp-ink);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 0.45);
+  font-size: 12px;
+  line-height: 1.4;
+  pointer-events: none;
+}
+
+.smp-card-image {
+  display: block;
+  width: 100%;
+  max-height: 160px;
+  border: 0;
+  object-fit: cover;
+}
+
+.smp-card-title {
+  padding: 8px 12px 2px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.smp-card-body {
+  padding: 2px 12px 10px;
+}
+
+.smp-card-body p {
+  margin: 0 0 4px;
+}
+
+.smp-card-h {
+  font-weight: 700;
+}
+
+.smp-card-li::before {
+  content: "\2022\00a0";
+  color: var(--smp-accent);
+}
+
+.smp-card-quote {
+  padding-left: 8px;
+  border-left: 3px solid var(--smp-accent);
+  color: var(--smp-muted);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .smp-card {
+    animation: smp-fade 120ms ease-out;
+  }
+}
+
+@keyframes smp-fade {
+  from { opacity: 0; transform: translateY(2px); }
+  to { opacity: 1; transform: none; }
+}

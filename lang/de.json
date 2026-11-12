@@ -1,0 +1,276 @@
+{
+  "SMP": {
+    "LANGUAGE": {
+      "default": "Wie Foundry",
+      "de": "Deutsch",
+      "en": "English"
+    },
+    "SETTINGS": {
+      "uiLanguage": {
+        "name": "Sprache des Moduls",
+        "hint": "Sprache von Map Pins auf diesem Gerät. \"Wie Foundry\" folgt der Sprache von Foundry."
+      },
+      "theme": {
+        "name": "Aussehen",
+        "hint": "Signature zeigt die Fenster auf warmem Papier, Foundry hält sie dunkel wie den Rest von Foundry.",
+        "signature": "Signature (Papier)",
+        "foundry": "Foundry (dunkel)"
+      },
+      "labelMode": {
+        "name": "Beschriftung der Pins",
+        "hint": "Wann der Name eines Pins zu sehen ist. Ein Pin kann in seinen Notiz-Einstellungen selbst wählen.",
+        "hover": "Nur wenn der Mauszeiger auf dem Pin ist",
+        "always": "Immer"
+      },
+      "noBackground": {
+        "name": "Pins ohne dunklen Kasten",
+        "hint": "Zeigt nur das Symbol eines Pins, ohne den dunklen Kasten und Rahmen dahinter."
+      },
+      "constantSize": {
+        "name": "Pins behalten beim Zoomen ihre Größe",
+        "hint": "Pins bleiben auf dem Bildschirm so groß wie unten eingestellt, egal wie weit du hinein oder heraus zoomst."
+      },
+      "constantScale": {
+        "name": "Größe auf dem Bildschirm (Prozent)",
+        "hint": "Nur für Pins, die ihre Größe behalten. 100 ist die in der Notiz eingestellte Größe."
+      },
+      "minZoom": {
+        "name": "Pins ausblenden unter Zoom (Prozent)",
+        "hint": "Pins verschwinden, wenn die Karte weiter herausgezoomt ist. 0 blendet nie aus."
+      },
+      "numberFromName": {
+        "name": "Pin-Nummern aus Journalnamen übernehmen",
+        "hint": "Ein Journal \"12. Halle\" gibt seinem Pin die Nummer 12 und die Beschriftung \"Halle\"."
+      },
+      "autoNumber": {
+        "name": "Neue Pins automatisch nummerieren",
+        "hint": "Ein neuer Pin bekommt die nächste freie Nummer."
+      },
+      "preview": {
+        "name": "Vorschau, wenn der Mauszeiger auf einem Pin ruht",
+        "hint": "Eine Karte mit Titel, erstem Bild und den ersten Zeilen des Journals. Sie zeigt nur, was der Benutzer lesen darf."
+      },
+      "previewChars": {
+        "name": "Länge des Vorschautextes (Zeichen)",
+        "hint": "Wie viel Text die Vorschau höchstens zeigt."
+      },
+      "newGlobal": {
+        "name": "Neue Pins sind ohne Sichtlinie sichtbar",
+        "hint": "Ein neuer Pin wird als global markiert, damit Spieler ihn sehen, auch ohne Figur, die ihn sehen kann."
+      },
+      "notesOn": {
+        "name": "Pins für Spieler anzeigen",
+        "hint": "Schaltet die Pin-Anzeige von Foundry für jeden Spieler ein. Ein Spieler kann sie später für sich wieder ausschalten. Schaltest du diese Option erneut ein, gilt sie wieder für alle."
+      },
+      "playerPins": {
+        "name": "Pins von Spielern",
+        "hint": "Spieler setzen einen Pin mit Name und Text. Die SL schreibt ihn, weil Foundry Spielern keine Notizen erlaubt.",
+        "off": "Aus",
+        "confirm": "Die SL bestätigt jeden Pin",
+        "instant": "Sofort"
+      },
+      "playerPinsPrivate": {
+        "name": "Spieler dürfen Pins setzen, die nur sie sehen",
+        "hint": "Name und Text bleiben auf dem Gerät des Spielers. Was die Browser anderer Spieler trotzdem erhalten, steht im Handbuch."
+      },
+      "playerPinLimit": {
+        "name": "Höchstens so viele Pins je Spieler und Szene",
+        "hint": "Verhindert, dass ein Spieler eine Karte füllt."
+      }
+    },
+    "gear": "Einstellungen",
+    "Keys": {
+      "openList": "Pin-Liste öffnen"
+    },
+    "Tool": {
+      "list": "Pin-Liste",
+      "pin": "Pin setzen"
+    },
+    "List": {
+      "title": "Pin-Liste",
+      "open": "Pin-Liste öffnen",
+      "menuHint": "Alle Pins der angezeigten Szene mit Suche und Kategoriefilter.",
+      "search": "Pins suchen",
+      "empty": "Keine Pins auf dieser Szene.",
+      "noMatch": "Kein Pin passt.",
+      "numbers": "Pins dieser Szene nummerieren",
+      "categories": "Kategorien",
+      "newPin": "Neuer Pin",
+      "edit": "Bearbeiten",
+      "remove": "Löschen",
+      "otherLevel": "andere Ebene",
+      "link": "Öffnet eine Szene",
+      "private": "Nur für den, der ihn gesetzt hat",
+      "removeTitle": "Pin löschen",
+      "removeText": "Den Pin \"{name}\" löschen?"
+    },
+    "Preview": {
+      "title": "Vorschau"
+    },
+    "Choice": {
+      "label": {
+        "always": "Immer",
+        "hover": "Nur beim Überfahren",
+        "never": "Nie"
+      },
+      "background": {
+        "box": "Mit dunklem Kasten",
+        "none": "Ohne Kasten"
+      },
+      "size": {
+        "constant": "Behält seine Größe auf dem Bildschirm",
+        "scene": "Skaliert mit der Karte"
+      },
+      "preview": {
+        "on": "An",
+        "off": "Aus"
+      }
+    },
+    "Config": {
+      "title": "Map Pins",
+      "imageHint": "Das Bild des Pins, oben im Abschnitt Symbol eingestellt.",
+      "like": "Wie die Welt",
+      "label": "Beschriftung",
+      "background": "Hintergrund",
+      "size": "Größe beim Zoomen",
+      "minZoom": "Ausblenden unter Zoom",
+      "minZoomHint": "In Prozent. Leer folgt der Welteinstellung, 0 blendet diesen Pin nie aus.",
+      "number": "Nummer",
+      "numberHint": "Eine Nummer oder ein Kürzel wie 12 oder B3. Leer zeigt keine Nummer.",
+      "category": "Kategorie",
+      "noCategory": "Keine",
+      "preview": "Vorschau",
+      "previewText": "Vorschautext",
+      "previewTextHint": "Ersetzt in der Vorschau die ersten Zeilen des Journals.",
+      "previewImage": "Vorschaubild",
+      "scene": "Öffnet eine Szene",
+      "noScene": "Nein, das Journal öffnen",
+      "sceneHint": "Ein Doppelklick wechselt die Ansicht zu dieser Szene, statt das Journal zu öffnen."
+    },
+    "Categories": {
+      "title": "Pin-Kategorien",
+      "open": "Kategorien bearbeiten",
+      "menuHint": "Die Kategorien der Welt mit Symbol und Farbe, zum Beispiel Quest, Laden oder Gefahr.",
+      "hint": "Ein Pin in einer Kategorie bekommt einen Ring in ihrer Farbe und ihr Symbol, wenn er kein eigenes Bild hat. Spieler können Kategorien in der Pin-Liste für sich ausblenden.",
+      "name": "Name",
+      "symbol": "Symbol",
+      "color": "Farbe",
+      "core": "Foundry-Symbole",
+      "add": "Kategorie hinzufügen",
+      "remove": "Kategorie entfernen",
+      "examples": "Beispiele hinzufügen",
+      "save": "Speichern",
+      "saved": "Kategorien gespeichert.",
+      "empty": "Noch keine Kategorien.",
+      "exampleQuest": "Quest",
+      "exampleShop": "Laden",
+      "exampleDanger": "Gefahr"
+    },
+    "Numbers": {
+      "title": "Pins nummerieren",
+      "intro": "Die {count} Pins von \"{scene}\" nummerieren.",
+      "order": "Reihenfolge",
+      "orders": {
+        "reading": "Zeilen von oben nach unten",
+        "columns": "Spalten von links nach rechts",
+        "name": "Nach Name",
+        "listed": "Wie Foundry sie hält"
+      },
+      "prefix": "Buchstaben davor",
+      "start": "Erste Nummer",
+      "keep": "Nummern behalten",
+      "keepHint": "Pins mit Nummer behalten sie, die anderen bekommen die freien Nummern.",
+      "fromNames": "Nummern aus Namen",
+      "fromNamesHint": "Ein Pin, dessen Name mit einer Nummer wie \"12.\" beginnt, bekommt diese Nummer.",
+      "go": "Nummerieren",
+      "done": "{changed} von {total} Pins nummeriert."
+    },
+    "Migrate": {
+      "title": "Ältere Pins übernehmen",
+      "open": "Pins übernehmen",
+      "menuHint": "Übernimmt Beschriftung, Hintergrund und Vorschautext, die ein älteres Pin-Modul an deinen Pins hinterlassen hat. Seine Daten werden nur gelesen.",
+      "intro": "Übernimmt von einem älteren Pin-Modul: Beschriftung immer sichtbar, Hintergrund, Vorschautext und Bild.",
+      "scope": "Welche Pins",
+      "scene": "{count} Pins dieser Szene ({scene})",
+      "all": "{count} Pins aller {scenes} Szenen",
+      "hint": "Nichts wird gelöscht. Einstellungen, die ein Pin hier schon hat, werden nicht ersetzt.",
+      "go": "Übernehmen",
+      "done": "{count} Pins geändert."
+    },
+    "Open": {
+      "sceneGone": "Die verknüpfte Szene gibt es nicht mehr.",
+      "sceneDenied": "Du darfst die Szene \"{scene}\" nicht ansehen."
+    },
+    "Player": {
+      "unknownPrivate": "Privater Pin",
+      "privateOf": "Privater Pin von {user}",
+      "newTitle": "Neuer Pin",
+      "editTitle": "Pin ändern",
+      "send": "Pin setzen",
+      "save": "Speichern",
+      "pick": "Klicke auf die Karte, wo der Pin hin soll. Esc bricht ab.",
+      "name": "Name",
+      "text": "Text",
+      "color": "Farbe",
+      "visibility": "Sichtbar für",
+      "visibleAll": "Alle",
+      "visibleMe": "Nur mich",
+      "visibilityHint": "Ein Pin nur für dich behält Name und Text auf diesem Gerät.",
+      "needName": "Ein Pin braucht einen Namen.",
+      "created": "Der Pin wurde gesetzt.",
+      "saved": "Der Pin wurde geändert.",
+      "deleted": "Der Pin wurde gelöscht.",
+      "edit": "Ändern",
+      "close": "Schließen",
+      "deleteTitle": "Pin löschen",
+      "deleteText": "Deinen Pin \"{name}\" löschen?",
+      "otherDevice": "Der Text dieses Pins liegt auf dem Gerät, auf dem du ihn gesetzt hast.",
+      "confirmTitle": "Ein Spieler setzt einen Pin",
+      "confirmText": "{user} möchte diesen Pin auf \"{scene}\" setzen:",
+      "accept": "Annehmen",
+      "decline": "Ablehnen",
+      "folder": "Pins von Spielern",
+      "fail": {
+        "noGM": "Es ist keine SL online, der Pin kann jetzt nicht gesetzt werden.",
+        "timeout": "Die SL hat nicht geantwortet.",
+        "off": "Pins von Spielern sind ausgeschaltet.",
+        "scene": "Diese Szene gibt es nicht.",
+        "gone": "Diesen Pin gibt es nicht mehr.",
+        "rights": "Du darfst diesen Pin nicht ändern.",
+        "invalid": "Der Pin konnte dort nicht gesetzt werden.",
+        "limit": "Du hast auf dieser Szene die erlaubte Zahl an Pins gesetzt.",
+        "declined": "Die SL hat den Pin abgelehnt.",
+        "error": "Der Pin konnte nicht gespeichert werden.",
+        "unknown": "Der Pin konnte nicht gesetzt werden."
+      }
+    },
+    "SELFTEST": {
+      "Title": "Selbsttest",
+      "Run": "Selbsttest starten",
+      "Hint": "Prüft nach einem Update, ob alles da ist, worauf sich das Modul stützt.",
+      "Passed": "Selbsttest bestanden: {checks} Prüfungen.",
+      "Problems": "Selbsttest: {problems} Probleme in {checks} Prüfungen.",
+      "Version": "Foundry {current}, geprüft mit {tested}.",
+      "NewVersions": "Foundry ist neuer als die geprüfte Version ({versions}). Starte den Selbsttest, wenn etwas nicht stimmt.",
+      "Dialog": "Die Dialoge von Foundry fehlen.",
+      "Application": "Die Fensterklassen von Foundry fehlen.",
+      "Templates": "Der Template-Renderer von Foundry fehlt.",
+      "Template": "Das Template {file} lässt sich nicht laden.",
+      "Note": "Der Notizklasse von Foundry fehlen Teile, auf die sich Map Pins stützt.",
+      "Pixi": "Die Text- oder Zeichenklassen der Karte fehlen.",
+      "Socket": "Der Socket des Moduls fehlt.",
+      "Journal": "Die Journal-Konstanten von Foundry fehlen.",
+      "Toggle": "Die Einstellung von Foundry zum Anzeigen von Pins fehlt.",
+      "Preview": "Der sichere Vorschautext behält Geheimnisse oder Skripte. Die Vorschaukarte nicht benutzen.",
+      "Icon": "Die Pin-Symbole von Foundry sind anders gebaut als erwartet.",
+      "Texts": "Fehlende Texte: {keys}"
+    },
+    "DEBUG": {
+      "Title": "Debug-Datei",
+      "Save": "Debug-Datei speichern",
+      "Hint": "Eine Datei über alle Module von Sephral in dieser Welt, für Fehlerberichte. Sie enthält Chattexte und Flüstern.",
+      "Entry": "Map Pins",
+      "Saved": "Debug-Datei gespeichert: {file}. Sie enthält Chattexte und Flüstern, prüfe sie, bevor du sie weitergibst."
+    }
+  }
+}

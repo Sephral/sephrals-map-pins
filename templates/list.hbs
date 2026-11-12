@@ -1,0 +1,57 @@
+<div class="smp-shell">
+  <header class="smp-head">
+    <input type="search" name="search" value="{{search}}" placeholder="{{text.search}}" aria-label="{{text.search}}"
+      autocomplete="off">
+    {{#if canPlace}}
+    <button type="button" class="smp-primary" data-action="newPin"><i class="fa-solid fa-location-crosshairs" inert></i>
+      {{text.newPin}}</button>
+    {{/if}}
+    {{#if isGM}}
+    <button type="button" data-action="numbers" data-tooltip="{{text.numbers}}" aria-label="{{text.numbers}}"><i
+      class="fa-solid fa-arrow-down-1-9" inert></i></button>
+    <button type="button" data-action="categories" data-tooltip="{{text.categories}}" aria-label="{{text.categories}}"><i
+      class="fa-solid fa-tags" inert></i></button>
+    {{/if}}
+  </header>
+  {{#if categories.length}}
+  <div class="smp-chips">
+    {{#each categories}}
+    <button type="button" class="smp-chip {{#if hidden}}is-off{{/if}}" data-action="toggleCategory" data-id="{{id}}"
+      aria-pressed="{{#if hidden}}false{{else}}true{{/if}}" style="--smp-chip: {{color}}">
+      <span class="smp-dot"></span>{{name}} <span class="smp-count">{{count}}</span>
+    </button>
+    {{/each}}
+  </div>
+  {{/if}}
+  {{#if empty}}
+  <p class="smp-empty"><i class="fa-solid fa-map-pin" inert></i> {{text.empty}}</p>
+  {{else}}
+  <ol class="smp-pins">
+    {{#each pins}}
+    <li class="smp-pin {{#if off}}is-off{{/if}} {{#if other}}is-other{{/if}}" data-id="{{id}}" data-search="{{needle}}"
+      tabindex="0">
+      <span class="smp-pin-icon" {{#if color}}style="--smp-chip: {{color}}"{{/if}}><img src="{{icon}}" alt="" draggable="false"
+        loading="lazy"></span>
+      <span class="smp-pin-number">{{number}}</span>
+      <span class="smp-pin-main">
+        <span class="smp-pin-name">{{name}}</span>
+        <span class="smp-pin-meta">
+          {{#if category}}<span class="smp-tag" style="--smp-chip: {{color}}">{{category}}</span>{{/if}}
+          {{#if link}}<span class="smp-note" data-tooltip="{{../text.link}}"><i class="fa-solid fa-link" inert></i></span>{{/if}}
+          {{#if isPrivate}}<span class="smp-note" data-tooltip="{{../text.private}}"><i class="fa-solid fa-lock" inert></i></span>{{/if}}
+          {{#if other}}<span class="smp-note"><i class="fa-solid fa-layer-group" inert></i> {{../text.otherLevel}}</span>{{/if}}
+          {{#if owner}}<span class="smp-note"><i class="fa-solid fa-user" inert></i> {{owner}}</span>{{/if}}
+        </span>
+      </span>
+      <span class="smp-pin-actions">
+        {{#if canEdit}}<button type="button" class="smp-icon" data-action="edit" data-tooltip="{{../text.edit}}"
+          aria-label="{{../text.edit}}"><i class="fa-solid fa-pen" inert></i></button>{{/if}}
+        {{#if canDelete}}<button type="button" class="smp-icon" data-action="remove" data-tooltip="{{../text.remove}}"
+          aria-label="{{../text.remove}}"><i class="fa-solid fa-trash" inert></i></button>{{/if}}
+      </span>
+    </li>
+    {{/each}}
+  </ol>
+  <p class="smp-nomatch" hidden>{{text.noMatch}}</p>
+  {{/if}}
+</div>

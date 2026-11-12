@@ -1,0 +1,27 @@
+<div class="smp-shell">
+  <p class="smp-hint">{{text.hint}}</p>
+  {{#if empty}}
+  <p class="smp-empty"><i class="fa-solid fa-tags" inert></i> {{text.empty}}</p>
+  {{/if}}
+  <div class="smp-cat-rows">
+    {{#each rows}}
+    <div class="smp-cat-row" data-id="{{id}}" data-index="{{index}}">
+      <input type="color" name="color" value="{{color}}" aria-label="{{../text.color}}">
+      <input type="text" name="name" value="{{name}}" maxlength="40" placeholder="{{../text.name}}" aria-label="{{../text.name}}">
+      <file-picker type="image" name="icon-{{index}}" value="{{icon}}" aria-label="{{../text.symbol}}"></file-picker>
+      <select data-core aria-label="{{../text.core}}">
+        <option value="">{{../text.core}}</option>
+        {{#each ../icons}}<option value="{{src}}">{{label}}</option>{{/each}}
+      </select>
+      <button type="button" class="smp-icon" data-action="remove" data-tooltip="{{../text.remove}}"
+        aria-label="{{../text.remove}}"><i class="fa-solid fa-trash" inert></i></button>
+    </div>
+    {{/each}}
+  </div>
+  <footer class="smp-foot">
+    <button type="button" data-action="add"><i class="fa-solid fa-plus" inert></i> {{text.add}}</button>
+    <button type="button" data-action="examples"><i class="fa-solid fa-wand-magic-sparkles" inert></i> {{text.examples}}</button>
+    <span class="smp-spacer"></span>
+    <button type="button" class="smp-primary" data-action="save"><i class="fa-solid fa-floppy-disk" inert></i> {{text.save}}</button>
+  </footer>
+</div>

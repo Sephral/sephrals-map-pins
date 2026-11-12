@@ -1,0 +1,51 @@
+<fieldset class="smp-config smp-app" data-smp-theme="{{theme}}">
+  <legend><i class="fa-solid fa-map-pin" inert></i> {{text.title}}</legend>
+  <p class="smp-config-image">
+    <img src="{{texture}}" alt="" draggable="false" data-smp-texture>
+    <span>{{text.imageHint}}</span>
+  </p>
+  <div class="form-group">
+    <label>{{text.label}}</label>
+    <div class="form-fields"><select name="{{prefix}}.label">{{#each choices.label}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select></div>
+  </div>
+  <div class="form-group">
+    <label>{{text.background}}</label>
+    <div class="form-fields"><select name="{{prefix}}.background">{{#each choices.background}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select></div>
+  </div>
+  <div class="form-group">
+    <label>{{text.size}}</label>
+    <div class="form-fields"><select name="{{prefix}}.size">{{#each choices.size}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select></div>
+  </div>
+  <div class="form-group">
+    <label>{{text.minZoom}}</label>
+    <div class="form-fields"><input type="number" name="{{prefix}}.minZoom" value="{{values.minZoom}}" min="0" max="500" step="5" placeholder="{{text.like}}"></div>
+    <p class="hint">{{text.minZoomHint}}</p>
+  </div>
+  <div class="form-group">
+    <label>{{text.number}}</label>
+    <div class="form-fields"><input type="text" name="{{prefix}}.number" value="{{values.number}}" maxlength="8" placeholder="{{numberHint}}"></div>
+    <p class="hint">{{text.numberHint}}</p>
+  </div>
+  <div class="form-group">
+    <label>{{text.category}}</label>
+    <div class="form-fields"><select name="{{prefix}}.category">{{#each choices.category}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select></div>
+  </div>
+  <div class="form-group">
+    <label>{{text.preview}}</label>
+    <div class="form-fields"><select name="{{prefix}}.preview">{{#each choices.preview}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select></div>
+  </div>
+  <div class="form-group stacked">
+    <label>{{text.previewText}}</label>
+    <div class="form-fields"><textarea name="{{prefix}}.previewText" rows="3" maxlength="600">{{values.previewText}}</textarea></div>
+    <p class="hint">{{text.previewTextHint}}</p>
+  </div>
+  <div class="form-group">
+    <label>{{text.previewImage}}</label>
+    <div class="form-fields"><file-picker type="image" name="{{prefix}}.previewImage" value="{{values.previewImage}}"></file-picker></div>
+  </div>
+  <div class="form-group">
+    <label>{{text.scene}}</label>
+    <div class="form-fields"><select name="{{prefix}}.scene">{{#each choices.scene}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select></div>
+    <p class="hint">{{text.sceneHint}}</p>
+  </div>
+</fieldset>

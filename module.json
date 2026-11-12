@@ -1,0 +1,36 @@
+{
+  "id": "sephrals-map-pins",
+  "title": "Sephral’s Map Pins",
+  "description": "Map pins you can read: labels that stay visible, pins without the dark box, numbers, categories, a preview on hover, a list to search all pins, and pins your players add.",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": 13,
+    "verified": "14.370"
+  },
+  "authors": [
+    {
+      "name": "Sephral",
+      "url": "https://github.com/Sephral"
+    }
+  ],
+  "url": "https://github.com/Sephral/sephrals-map-pins.git",
+  "esmodules": [
+    "scripts/smp.mjs"
+  ],
+  "styles": [
+    "styles/smp.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    },
+    {
+      "lang": "de",
+      "name": "Deutsch",
+      "path": "lang/de.json"
+    }
+  ],
+  "socket": true
+}

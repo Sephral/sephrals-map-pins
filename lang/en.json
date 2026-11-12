@@ -1,0 +1,276 @@
+{
+  "SMP": {
+    "LANGUAGE": {
+      "default": "Like Foundry",
+      "de": "Deutsch",
+      "en": "English"
+    },
+    "SETTINGS": {
+      "uiLanguage": {
+        "name": "Module language",
+        "hint": "Language of Map Pins on this device. \"Like Foundry\" follows Foundry's language."
+      },
+      "theme": {
+        "name": "Look",
+        "hint": "Signature shows the windows on warm paper, Foundry keeps them dark like the rest of Foundry.",
+        "signature": "Signature (paper)",
+        "foundry": "Foundry (dark)"
+      },
+      "labelMode": {
+        "name": "Pin labels",
+        "hint": "When the name of a pin is shown. A pin can choose for itself in its note settings.",
+        "hover": "Only when the pointer is on the pin",
+        "always": "Always"
+      },
+      "noBackground": {
+        "name": "Pins without the dark box",
+        "hint": "Show only the symbol of a pin, without the dark box and frame behind it."
+      },
+      "constantSize": {
+        "name": "Pins keep their size when zooming",
+        "hint": "Pins stay as big on the screen as you set below, however far you zoom in or out."
+      },
+      "constantScale": {
+        "name": "Size on the screen (percent)",
+        "hint": "Only for pins that keep their size. 100 is the size set in the note."
+      },
+      "minZoom": {
+        "name": "Hide pins when zoomed out below (percent)",
+        "hint": "Pins disappear when the map is zoomed out further than this. 0 never hides them."
+      },
+      "numberFromName": {
+        "name": "Take pin numbers from journal names",
+        "hint": "A journal called \"12. Hall\" gives its pin the number 12 and the label \"Hall\"."
+      },
+      "autoNumber": {
+        "name": "Number new pins automatically",
+        "hint": "A new pin gets the next free number."
+      },
+      "preview": {
+        "name": "Preview when the pointer rests on a pin",
+        "hint": "A card with the title, the first picture and the first lines of the journal. It shows only what the user may read."
+      },
+      "previewChars": {
+        "name": "Length of the preview text (characters)",
+        "hint": "How much text the preview card shows at most."
+      },
+      "newGlobal": {
+        "name": "New pins are visible without line of sight",
+        "hint": "A new pin is marked as global, so players see it without a token that can see it."
+      },
+      "notesOn": {
+        "name": "Show pins to players",
+        "hint": "Switches Foundry's pin display on for every player. A player can still switch it off for themselves later. Turning this option on again applies it to everybody."
+      },
+      "playerPins": {
+        "name": "Pins set by players",
+        "hint": "Players set a pin with a name and a text. The GM writes it, because Foundry does not let players create notes.",
+        "off": "Off",
+        "confirm": "The GM confirms each pin",
+        "instant": "At once"
+      },
+      "playerPinsPrivate": {
+        "name": "Players may set pins only they see",
+        "hint": "Their name and text stay on the player's device. See the manual for what other players' browsers still receive."
+      },
+      "playerPinLimit": {
+        "name": "Most pins per player and scene",
+        "hint": "Stops a player from filling a map."
+      }
+    },
+    "gear": "Settings",
+    "Keys": {
+      "openList": "Open the pin list"
+    },
+    "Tool": {
+      "list": "Pin list",
+      "pin": "Set a pin"
+    },
+    "List": {
+      "title": "Pin List",
+      "open": "Open the pin list",
+      "menuHint": "All pins of the viewed scene with search and category filter.",
+      "search": "Search pins",
+      "empty": "No pins on this scene.",
+      "noMatch": "No pin matches.",
+      "numbers": "Number the pins of this scene",
+      "categories": "Categories",
+      "newPin": "New pin",
+      "edit": "Edit",
+      "remove": "Delete",
+      "otherLevel": "other level",
+      "link": "Opens a scene",
+      "private": "Only for the one who set it",
+      "removeTitle": "Delete pin",
+      "removeText": "Delete the pin \"{name}\"?"
+    },
+    "Preview": {
+      "title": "Preview"
+    },
+    "Choice": {
+      "label": {
+        "always": "Always",
+        "hover": "Only on hover",
+        "never": "Never"
+      },
+      "background": {
+        "box": "With dark box",
+        "none": "Without box"
+      },
+      "size": {
+        "constant": "Keeps its size on the screen",
+        "scene": "Scales with the map"
+      },
+      "preview": {
+        "on": "On",
+        "off": "Off"
+      }
+    },
+    "Config": {
+      "title": "Map Pins",
+      "imageHint": "The image of the pin, set in the icon section above.",
+      "like": "Like the world",
+      "label": "Label",
+      "background": "Background",
+      "size": "Size on zoom",
+      "minZoom": "Hide below zoom",
+      "minZoomHint": "In percent. Empty follows the world setting, 0 never hides this pin.",
+      "number": "Number",
+      "numberHint": "A number or short code like 12 or B3. Empty shows no number.",
+      "category": "Category",
+      "noCategory": "None",
+      "preview": "Preview",
+      "previewText": "Preview text",
+      "previewTextHint": "Replaces the first lines of the journal in the preview.",
+      "previewImage": "Preview picture",
+      "scene": "Opens a scene",
+      "noScene": "No, open the journal",
+      "sceneHint": "A double click switches the view to this scene instead of opening the journal."
+    },
+    "Categories": {
+      "title": "Pin Categories",
+      "open": "Edit categories",
+      "menuHint": "The world's categories with symbol and color, for example quest, shop or danger.",
+      "hint": "A pin in a category gets a ring in its color, and its symbol when the pin has no image of its own. Players can hide categories for themselves in the pin list.",
+      "name": "Name",
+      "symbol": "Symbol",
+      "color": "Color",
+      "core": "Foundry icons",
+      "add": "Add category",
+      "remove": "Remove category",
+      "examples": "Add examples",
+      "save": "Save",
+      "saved": "Categories saved.",
+      "empty": "No categories yet.",
+      "exampleQuest": "Quest",
+      "exampleShop": "Shop",
+      "exampleDanger": "Danger"
+    },
+    "Numbers": {
+      "title": "Number the pins",
+      "intro": "Number the {count} pins of \"{scene}\".",
+      "order": "Order",
+      "orders": {
+        "reading": "Rows from top to bottom",
+        "columns": "Columns from left to right",
+        "name": "By name",
+        "listed": "As Foundry keeps them"
+      },
+      "prefix": "Letters in front",
+      "start": "First number",
+      "keep": "Keep numbers",
+      "keepHint": "Pins with a number keep it, the others take the free numbers.",
+      "fromNames": "Numbers from names",
+      "fromNamesHint": "A pin whose name starts with a number like \"12.\" gets that number.",
+      "go": "Number",
+      "done": "{changed} of {total} pins numbered."
+    },
+    "Migrate": {
+      "title": "Take over older pins",
+      "open": "Take over pins",
+      "menuHint": "Takes the label, background and preview text an older pin module left on your pins. Its data is only read.",
+      "intro": "Takes over from an older pin module: label always visible, background, preview text and picture.",
+      "scope": "Which pins",
+      "scene": "{count} pins of this scene ({scene})",
+      "all": "{count} pins of all {scenes} scenes",
+      "hint": "Nothing is deleted. Settings a pin already has here are not replaced.",
+      "go": "Take over",
+      "done": "{count} pins changed."
+    },
+    "Open": {
+      "sceneGone": "The linked scene does not exist any more.",
+      "sceneDenied": "You cannot view the scene \"{scene}\"."
+    },
+    "Player": {
+      "unknownPrivate": "Private pin",
+      "privateOf": "Private pin of {user}",
+      "newTitle": "New pin",
+      "editTitle": "Change pin",
+      "send": "Set pin",
+      "save": "Save",
+      "pick": "Click the map where the pin goes. Escape cancels.",
+      "name": "Name",
+      "text": "Text",
+      "color": "Color",
+      "visibility": "Visible for",
+      "visibleAll": "Everybody",
+      "visibleMe": "Only me",
+      "visibilityHint": "A pin only for you keeps its name and text on this device.",
+      "needName": "A pin needs a name.",
+      "created": "The pin was set.",
+      "saved": "The pin was changed.",
+      "deleted": "The pin was deleted.",
+      "edit": "Change",
+      "close": "Close",
+      "deleteTitle": "Delete pin",
+      "deleteText": "Delete your pin \"{name}\"?",
+      "otherDevice": "The text of this pin is on the device where you set it.",
+      "confirmTitle": "A player sets a pin",
+      "confirmText": "{user} wants to set this pin on \"{scene}\":",
+      "accept": "Accept",
+      "decline": "Decline",
+      "folder": "Pins of players",
+      "fail": {
+        "noGM": "No GM is online, so the pin cannot be set now.",
+        "timeout": "The GM did not answer.",
+        "off": "Pins by players are switched off.",
+        "scene": "That scene does not exist.",
+        "gone": "That pin does not exist any more.",
+        "rights": "You cannot change this pin.",
+        "invalid": "The pin could not be set there.",
+        "limit": "You have set the most pins allowed on this scene.",
+        "declined": "The GM declined the pin.",
+        "error": "The pin could not be saved.",
+        "unknown": "The pin could not be set."
+      }
+    },
+    "SELFTEST": {
+      "Title": "Self test",
+      "Run": "Run self test",
+      "Hint": "Checks after an update that everything the module relies on is there.",
+      "Passed": "Self test passed: {checks} checks.",
+      "Problems": "Self test: {problems} problems in {checks} checks.",
+      "Version": "Foundry {current}, verified with {tested}.",
+      "NewVersions": "Foundry is newer than the verified version ({versions}). Run the self test if something looks wrong.",
+      "Dialog": "Foundry's dialogs are missing.",
+      "Application": "Foundry's window classes are missing.",
+      "Templates": "Foundry's template renderer is missing.",
+      "Template": "The template {file} cannot be loaded.",
+      "Note": "Foundry's note class lacks parts Map Pins relies on.",
+      "Pixi": "The text or drawing classes of the map are missing.",
+      "Socket": "The module socket is missing.",
+      "Journal": "Foundry's journal constants are missing.",
+      "Toggle": "Foundry's setting for showing pins is missing.",
+      "Preview": "The safe preview text keeps secrets or scripts. Do not use the preview card.",
+      "Icon": "The pin icons of Foundry are built differently than expected.",
+      "Texts": "Missing texts: {keys}"
+    },
+    "DEBUG": {
+      "Title": "Debug file",
+      "Save": "Save debug file",
+      "Hint": "One file about all of Sephral's modules in this world, for bug reports. It contains chat text and whispers.",
+      "Entry": "Map Pins",
+      "Saved": "Debug file saved: {file}. It contains chat text and whispers, check it before you share it."
+    }
+  }
+}
