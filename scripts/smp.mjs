@@ -9,6 +9,13 @@ import {migrateDialog, migratePinCushion} from "./migrate.mjs";
 import {applyStyle, bindStage, describePin, onOpenWithoutJournal, restyleAll, scheduleZoomUpdate, updateZoom}
   from "./note-style.mjs";
 import {cleanNewNote, cleanNoteChanges, onRenderNoteConfig} from "./note-config.mjs";
+import {askReveal, checkDiscovery, handleDiscover, onCreateNote, onDeleteNote, onUpdateNote, revealPin, scheduleCheck,
+  setHidden, setQuest, startDiscovery, stopDiscovery} from "./discover.mjs";
+import {isDiscovered} from "./discover-logic.mjs";
+import {keyDialog, makeKey} from "./map-key.mjs";
+import {bindMenu} from "./pin-menu.mjs";
+import {addStop, bindRoutePick, canBuildRoute, clearRoute, currentRoutes, drawRoute, openRoute, refreshRoute,
+  routeAvailable} from "./route.mjs";
 import {numberDialog, numberPins, onPreCreateNote} from "./numbering.mjs";
 import {onActivateNote, openPin} from "./open-pin.mjs";
 import {playerPinsAvailable, registerSocket, startPlayerPin} from "./player-pins.mjs";
@@ -19,7 +26,7 @@ import {categoryList, invalidate} from "./state.mjs";
 import {registerUsage} from "./usage.mjs";
 
 /** The tools in the notes controls. */
-const TOOLS = {list: "smpList", pin: "smpPin"};
+const TOOLS = {list: "smpList", pin: "smpPin", route: "smpRoute", key: "smpKey"};
 
 /** Redraw what the module shows after a language or look change. */
 function redraw() {
@@ -49,6 +56,8 @@ Hooks.once("init", () => {
     privatePins: restyle,
     notesOn: onNotesOnChanged,
     playerPins: () => ui.controls?.render({reset: true}),
+    discover: () => checkDiscovery(),
+    route: refreshRoute,
     openList,
     openCategories,
     migrate: migrateDialog
@@ -56,8 +65,10 @@ Hooks.once("init", () => {
   // Counted only on the active GM's client, like every Sephral module
   registerUsage(MODULE_ID, {
     features: ["listOpened", "previewShown", "pinsNumbered", "categoryCreated", "playerPinRequested",
-      "playerPinCreated", "sceneLinkOpened", "pinCushionMigrated"],
-    settings: ["theme", "labelMode", "noBackground", "constantSize", "preview", "autoNumber", "playerPins"]
+      "playerPinCreated", "sceneLinkOpened", "pinCushionMigrated", "pinDiscovered", "pinRevealed", "mapKeyMade",
+      "routeBuilt", "questSet"],
+    settings: ["theme", "labelMode", "noBackground", "constantSize", "preview", "autoNumber", "playerPins",
+      "discoverDefault", "discoverAuto", "pace", "routePlayers", "keyText"]
   });
   registerDebug();
   registerKeys();
@@ -72,11 +83,23 @@ Hooks.once("init", () => {
   });
   Hooks.on("canvasReady", () => {
     bindStage();
+    bindMenu();
+    bindRoutePick();
     hidePreview();
     updateZoom();
+    startDiscovery();
+    drawRoute();
     refreshList();
   });
-  Hooks.on("canvasTearDown", hidePreview);
+  Hooks.on("canvasTearDown", () => {
+    hidePreview();
+    stopDiscovery();
+    clearRoute();
+  });
+  Hooks.on("sightRefresh", () => scheduleCheck());
+  Hooks.on("updateScene", (scene, changes) => {
+    if ( (scene === canvas.scene) && changes?.flags && (MODULE_ID in changes.flags) ) refreshRoute();
+  });
   Hooks.on("renderNoteConfig", onRenderNoteConfig);
   Hooks.on("preCreateNote", (doc, data, options, userId) => {
     cleanNewNote(doc);
@@ -86,6 +109,12 @@ Hooks.once("init", () => {
   Hooks.on("activateNote", onActivateNote);
   for ( const event of ["createNote", "updateNote", "deleteNote", "drawNote"] ) Hooks.on(event, refreshList);
   Hooks.on("deleteNote", hidePreview);
+  Hooks.on("createNote", onCreateNote);
+  Hooks.on("deleteNote", onDeleteNote);
+  Hooks.on("updateNote", onUpdateNote);
+  for ( const event of ["updateNote", "deleteNote", "createNote"] ) Hooks.on(event, doc => {
+    if ( doc.parent === canvas.scene ) refreshRoute();
+  });
   onOpenWithoutJournal(openPin);
 
   game.modules.get(MODULE_ID).api = {
@@ -97,20 +126,54 @@ Hooks.once("init", () => {
      */
     number: (scene, options) => (options ? numberPins(scene ?? canvas.scene, options) : numberDialog()),
     /**
-     * How a pin looks now: {label, number, noBackground, constantSize, minZoom, preview, category, hiddenFor}. Takes a
-     * note or a note document.
+     * How a pin looks now: {label, number, noBackground, constantSize, minZoom, preview, category, hidden,
+     * undiscovered (not shown to this user yet), hiddenPin (hidden until discovered), quest}. Takes a note or a note
+     * document.
      */
     styleOf: noteOrDoc => {
       const note = noteOrDoc?.document ? noteOrDoc : (noteOrDoc?.object ?? {document: noteOrDoc});
       const d = describePin(note);
       return {label: d.label, number: d.number, labelMode: d.style.label, noBackground: d.style.noBackground,
         constantSize: d.style.constantSize, minZoom: d.style.minZoom, preview: d.style.preview,
-        category: d.category ? {...d.category} : null, hidden: d.privateHidden || d.categoryHidden};
+        category: d.category ? {...d.category} : null, hidden: d.privateHidden || d.categoryHidden,
+        undiscovered: d.undiscovered, hiddenPin: !!d.flags.hidden,
+        quest: d.quest};
     },
     /** The world's categories: [{id, name, icon, color}]. */
     categories: () => categoryList().map(c => ({...c})),
     /** Pan the map to a pin and ping it. */
     focus: noteOrId => focusPin(typeof noteOrId === "string" ? canvas.notes.get(noteOrId) : noteOrId),
+    /**
+     * Has a user discovered a pin? A pin that is not hidden counts as discovered. Takes a note or its document.
+     */
+    isDiscovered: (noteOrDoc, user = game.user) => {
+      const doc = noteOrDoc?.document ?? noteOrDoc;
+      return isDiscovered(doc?.flags?.[MODULE_ID] ?? {}, user?.id ?? user);
+    },
+    /**
+     * Hide a pin until it is discovered, or show it like any pin again (GM). Takes a note or its document.
+     */
+    setHidden: (noteOrDoc, hidden = true) => setHidden(noteOrDoc?.document ?? noteOrDoc, !!hidden),
+    /**
+     * Reveal a pin (GM). Options: {all: true} for everybody, {users: [ids]} for these users, {hideFor: [ids]} to hide
+     * it again for them, {reset: true} to hide it again for everybody. Returns the list of users who found it.
+     */
+    discover: (noteOrDoc, options = {all: true}) => revealPin(noteOrDoc?.document ?? noteOrDoc, options),
+    /** Ask the GM whom to reveal a pin to (GM). */
+    askReveal: noteOrDoc => askReveal(noteOrDoc?.document ?? noteOrDoc),
+    /** Set the quest state of a pin (GM): "open", "done", "failed" or "" for none. */
+    setQuest: (noteOrDoc, state) => setQuest(noteOrDoc?.document ?? noteOrDoc, state),
+    /**
+     * Create or update the journal "Map key: <scene>" with one page per numbered pin (GM). Options: {text: "lines" |
+     * "full" | "title", open}. Returns {journal, created, updated, kept, removed}. Without options the GM is asked.
+     */
+    mapKey: (scene, options) => (options ? makeKey(scene ?? canvas.scene, options) : keyDialog()),
+    /** Open the route window. */
+    openRoute,
+    /** Add a pin to the route of this user (the GM's route for a GM). */
+    addToRoute: noteOrId => addStop(typeof noteOrId === "string" ? noteOrId : (noteOrId?.document ?? noteOrId)?.id),
+    /** The routes this user sees: [{id, stops, distance, units, hours, pace}]. */
+    routes: currentRoutes,
     /** Take over the look of Pin Cushion's pins (GM). Options: {scope: "scene"|"all", dryRun}. */
     takeOverPins: migratePinCushion,
     /** Check the module (GM). */
@@ -129,7 +192,7 @@ Hooks.once("i18nInit", () => {
 
 Hooks.once("ready", async () => {
   await languageReady;
-  registerSocket();
+  registerSocket({discover: handleDiscover});
   applyNotesToggle(false);
   noticeNewVersions();
 });
@@ -178,6 +241,14 @@ function onGetSceneControlButtons(controls) {
     {name: TOOLS.list, title: "SMP.Tool.list", icon: "fa-solid fa-list-ul", button: true, visible: true,
       onChange: () => openList()}
   ];
+  if ( routeAvailable() || canBuildRoute() ) {
+    tools.push({name: TOOLS.route, title: "SMP.Tool.route", icon: "fa-solid fa-route", button: true, visible: true,
+      onChange: () => openRoute()});
+  }
+  if ( game.user.isGM ) {
+    tools.push({name: TOOLS.key, title: "SMP.Tool.key", icon: "fa-solid fa-book-open", button: true, visible: true,
+      onChange: () => keyDialog()});
+  }
   if ( playerPinsAvailable() ) {
     tools.push({name: TOOLS.pin, title: "SMP.Tool.pin", icon: "fa-solid fa-location-crosshairs", button: true,
       visible: true, onChange: () => startPlayerPin()});

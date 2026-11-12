@@ -3,7 +3,10 @@
  */
 
 import {MODULE_ID, TEMPLATES, TESTED_VERSIONS, esc, t} from "./config.mjs";
+import {changeFound, isDiscovered, newlyExplored} from "./discover-logic.mjs";
+import {keyPageHtml, mergeGenerated} from "./key-logic.mjs";
 import {previewFromHtml} from "./pin-logic.mjs";
+import {dashSegments, routeStats, visiblePrefix} from "./route-logic.mjs";
 
 /**
  * Run all checks.
@@ -28,7 +31,7 @@ async function checkAll() {
   check(typeof game.socket?.emit === "function", "SMP.SELFTEST.Socket");
   check(!!CONST.JOURNAL_ENTRY_PAGE_FORMATS && !!CONFIG.JournalEntry?.noteIcons, "SMP.SELFTEST.Journal");
   check(game.settings.settings.has("core.notesDisplayToggle"), "SMP.SELFTEST.Toggle");
-  for ( const key of ["list.hbs", "categories.hbs", "note-section.hbs"] ) {
+  for ( const key of ["list.hbs", "categories.hbs", "note-section.hbs", "route.hbs"] ) {
     const ok = await fetch(`${TEMPLATES}/${key}`, {method: "HEAD"}).then(r => r.ok).catch(() => false);
     check(ok, "SMP.SELFTEST.Template", {file: key});
   }
@@ -40,8 +43,32 @@ async function checkAll() {
     const icon = note.controlIcon;
     check(!!icon.bg && !!icon.icon && !!icon.border && !!note.tooltip, "SMP.SELFTEST.Icon");
   }
+  // Discovered pins: the logic and the fog of war it reads
+  const flags = {hidden: true};
+  const found = changeFound([], {all: true});
+  check(!isDiscovered(flags, "u") && isDiscovered({...flags, found}, "u") && isDiscovered({}, "u")
+    && (newlyExplored([{id: "a", flags, x: 1, y: 1}], "u", () => true).length === 1), "SMP.SELFTEST.Discover");
+  if ( canvas?.ready ) {
+    const fog = canvas.fog;
+    check((typeof fog?.isPointExplored === "function") && (typeof fog?.addEventListener === "function")
+      && (typeof canvas.visibility?.testVisibility === "function") && ("tokenVision" in fog) && ("fogExploration" in fog),
+    "SMP.SELFTEST.Fog");
+  }
+  // Routes: measuring, the dashed line and the layer they are drawn on
+  const stats = routeStats([{x: 0, y: 0}, {x: 300, y: 400}], {size: 100, distance: 5, speed: 5});
+  check((Math.abs(stats.total - 25) < 1e-9) && (Math.abs(stats.hours - 5) < 1e-9)
+    && dashSegments([{x: 0, y: 0}, {x: 100, y: 0}], 20, 10).length === 4
+    && (visiblePrefix(["a", "b"], id => id === "a").length === 1)
+    && (!canvas?.ready || (!!canvas.interface && !!canvas.dimensions?.size && (typeof PIXI?.Container === "function"))),
+  "SMP.SELFTEST.Route");
+  // The map key: its pages and merging a regenerated page
+  const html = keyPageHtml({title: "A", blocks: [{kind: "p", text: "x"}]});
+  check((mergeGenerated(`<p>mine</p>${html}`, html, `${html}<p>new</p>`).state === "replaced")
+    && (CONST.JOURNAL_ENTRY_PAGE_FORMATS.HTML === 1) && (typeof CONFIG.JournalEntryPage?.documentClass === "function"),
+  "SMP.SELFTEST.Key");
   const keys = ["SMP.gear", "SMP.SELFTEST.Title", "SMP.List.title", "SMP.Categories.title", "SMP.Config.title",
-    "SMP.Player.newTitle", "SMP.Numbers.title", "SMP.Migrate.title", "SMP.Preview.title"];
+    "SMP.Player.newTitle", "SMP.Numbers.title", "SMP.Migrate.title", "SMP.Preview.title", "SMP.Route.title", "SMP.Reveal.title",
+    "SMP.Key.title", "SMP.Quest.state.open", "SMP.Menu.hide"];
   const missing = keys.filter(key => !game.i18n.has(key));
   check(!missing.length, "SMP.SELFTEST.Texts", {keys: missing.join(", ")});
   return {problems, checks};

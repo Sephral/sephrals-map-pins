@@ -1,0 +1,59 @@
+<div class="smp-shell">
+  {{#if empty}}
+  <p class="smp-empty"><i class="fa-solid fa-route" inert></i> {{text.empty}}</p>
+  {{/if}}
+  {{#each blocks}}
+  <section class="smp-route-block" data-block="{{id}}">
+    <header class="smp-route-head">
+      <h3><span class="smp-route-swatch" style="border-color: {{css}}"></span>{{title}}</h3>
+      {{#if ../isGM}}
+      <button type="button" class="smp-toggle {{#if shared}}is-on{{/if}}" data-action="share" aria-pressed="{{#if shared}}true{{else}}false{{/if}}"
+        data-tooltip="{{../text.shared}}"><i class="fa-solid {{#if shared}}fa-eye{{else}}fa-eye-slash{{/if}}" inert></i>
+        {{#if shared}}{{../text.unshare}}{{else}}{{../text.share}}{{/if}}</button>
+      {{/if}}
+    </header>
+    {{#if count}}
+    <ol class="smp-route-stops">
+      {{#each stops}}
+      <li class="smp-route-stop" data-index="{{index}}" data-id="{{id}}">
+        <span class="smp-route-index">{{n}}</span>
+        <button type="button" class="smp-route-name" data-action="focus"><span class="smp-pin-number">{{number}}</span> {{name}}</button>
+        {{#if leg}}<span class="smp-route-leg">{{leg}}</span>{{/if}}
+        {{#if ../editable}}
+        <span class="smp-pin-actions">
+          <button type="button" class="smp-icon" data-action="up" data-tooltip="{{../../text.up}}" aria-label="{{../../text.up}}"><i class="fa-solid fa-arrow-up" inert></i></button>
+          <button type="button" class="smp-icon" data-action="down" data-tooltip="{{../../text.down}}" aria-label="{{../../text.down}}"><i class="fa-solid fa-arrow-down" inert></i></button>
+          <button type="button" class="smp-icon" data-action="remove" data-tooltip="{{../../text.remove}}" aria-label="{{../../text.remove}}"><i class="fa-solid fa-xmark" inert></i></button>
+        </span>
+        {{/if}}
+      </li>
+      {{/each}}
+    </ol>
+    <div class="smp-route-totals">
+      <div><span class="smp-route-label">{{../text.total}}</span><strong class="smp-route-total">{{total}}</strong></div>
+      <div><span class="smp-route-label">{{../text.time}}</span><strong class="smp-route-time">{{#if time}}{{time}}{{else}}&nbsp;{{/if}}</strong></div>
+    </div>
+    {{else}}
+    <p class="smp-empty">{{../text.noStops}}</p>
+    {{/if}}
+    {{#if editable}}
+    <footer class="smp-route-tools">
+      <button type="button" class="smp-primary {{#if ../picking}}is-on{{/if}}" data-action="pick"><i class="fa-solid fa-crosshairs" inert></i> {{../text.pick}}</button>
+      <button type="button" data-action="numbers"><i class="fa-solid fa-arrow-down-1-9" inert></i> {{../text.numbers}}</button>
+      <button type="button" data-action="clear"><i class="fa-solid fa-trash" inert></i> {{../text.clear}}</button>
+    </footer>
+    {{/if}}
+  </section>
+  {{/each}}
+  {{#unless empty}}
+  <div class="smp-route-pace">
+    <label>{{text.pace}}</label>
+    {{#if isGM}}
+    <select name="pace">{{#each paces}}<option value="{{key}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select>
+    {{else}}
+    <strong>{{#each paces}}{{#if selected}}{{label}}{{/if}}{{/each}}</strong>
+    {{/if}}
+    <span class="smp-route-speed">{{speedText}}</span>
+  </div>
+  {{/unless}}
+</div>

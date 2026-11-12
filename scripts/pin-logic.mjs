@@ -8,7 +8,7 @@ export const LABEL_MODES = ["always", "hover", "never"];
 
 /** The flag keys the module writes on a note, in the order of the note dialog. */
 export const FLAG_KEYS = ["label", "background", "size", "minZoom", "number", "category", "preview", "previewText",
-  "previewImage", "scene"];
+  "previewImage", "scene", "hidden", "quest"];
 
 /** The most characters of a pin's own preview text and of a player's pin text. */
 export const LIMITS = {previewText: 600, name: 60, playerText: 1000, number: 8};

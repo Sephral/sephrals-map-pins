@@ -5,8 +5,9 @@
  */
 
 import {DEFAULT_NOTE_ICON, flagsOf, isV14, onOtherLevel, t} from "./config.mjs";
+import {cleanQuest, isHiddenPin, undiscoveredFor} from "./discover-logic.mjs";
 import {cleanNumber, constantScale, hiddenByZoom, hiddenPrivatePin, numberFromName, resolveStyle} from "./pin-logic.mjs";
-import {categoryById, hiddenCategories, privatePins, worldStyle} from "./state.mjs";
+import {categoryById, hiddenCategories, localFound, privatePins, worldStyle} from "./state.mjs";
 
 /** What the module added to each note and what it last decided. */
 const states = new WeakMap();
@@ -19,7 +20,7 @@ const states = new WeakMap();
 function stateOf(note) {
   let state = states.get(note);
   if ( !state ) {
-    state = {ring: null, ringKey: "", badge: null, badgeKey: "", src: null, constant: false, percent: 100, minZoom: 0,
+    state = {ring: null, ringKey: "", badge: null, badgeKey: "", marks: null, marksKey: "", src: null, constant: false, percent: 100, minZoom: 0,
       zoomHidden: false};
     states.set(note, state);
   }
@@ -57,7 +58,11 @@ export function describePin(note) {
       if ( label === journalName ) label = parsed.name;
     }
   }
-  return {flags, category, style, label, number, privateHidden, categoryHidden, local,
+  // A pin that is hidden until discovered: players do not see it before they found it, the GM sees it marked
+  const undiscovered = undiscoveredFor(flags, game.user.id, game.user.isGM) && !localFound.has(doc.id);
+  const quest = cleanQuest(flags.quest);
+  const hiddenMark = game.user.isGM && isHiddenPin(flags);
+  return {flags, category, style, label, number, privateHidden, categoryHidden, local, undiscovered, quest, hiddenMark,
     ownSource: category?.icon && ((doc.texture?.src ?? DEFAULT_NOTE_ICON) === DEFAULT_NOTE_ICON) ? category.icon : null};
 }
 
@@ -75,10 +80,10 @@ export function applyStyle(note) {
   const hovered = !!(note.hover || note.layer?.highlightObjects);
 
   // Pins this user must not see, and categories this user switched off
-  if ( (d.privateHidden || d.categoryHidden) && note.visible ) note.visible = false;
+  if ( (d.privateHidden || d.categoryHidden || d.undiscovered) && note.visible ) note.visible = false;
   // Foundry 14 hides a note without a journal that a GM wrote from everybody but the GM. A private pin shows to its
   // author all the same, and a pin that links to a scene shows to players as it does on Foundry 13
-  else if ( !note.visible && !d.categoryHidden && !d.privateHidden && !onOtherLevel(note.document)
+  else if ( !note.visible && !d.categoryHidden && !d.privateHidden && !d.undiscovered && !onOtherLevel(note.document)
     && isV14() && !game.user.isGM && !note.document.entryId && (d.flags.private || d.flags.scene)
     && (note.document.global || !canvas.visibility?.tokenVision) ) note.visible = true;
 
@@ -99,6 +104,7 @@ export function applyStyle(note) {
   const size = note.document.iconSize;
   drawRing(note, st, d.category?.color ?? null, size);
   drawBadge(note, st, d.number, d.category?.color ?? null, size);
+  drawMarks(note, st, d.quest, d.hiddenMark, size);
 
   // Size on screen and hiding when far away
   st.constant = d.style.constantSize;
@@ -225,6 +231,68 @@ function drawBadge(note, st, number, color, size) {
   st.badge = badge;
 }
 
+/**
+ * Draw the marks at the icon's bottom corners: the quest state (bottom right) and, for the GM, that the pin is hidden
+ * until it is discovered (bottom left).
+ * @param {Note} note
+ * @param {object} st
+ * @param {string} quest   "", "open", "done" or "failed"
+ * @param {boolean} hidden
+ * @param {number} size
+ */
+function drawMarks(note, st, quest, hidden, size) {
+  const key = (quest || hidden) ? `${quest}|${hidden}|${size}` : "";
+  if ( key === st.marksKey ) return;
+  st.marksKey = key;
+  st.marks?.destroy({children: true});
+  st.marks = null;
+  if ( !key ) return;
+  const radius = Math.round(Math.min(Math.max(size * 0.26, 10), 24));
+  const marks = new PIXI.Container();
+  marks.eventMode = "none";
+  const disc = (color, x, y) => {
+    const g = new PIXI.Graphics();
+    g.beginFill(color, 1);
+    g.lineStyle({width: 2, color: 0xFFFFFF, alpha: 0.95});
+    g.drawCircle(x, y, radius);
+    g.endFill();
+    return g;
+  };
+  const r = radius * 0.5;
+  if ( quest ) {
+    const x = (size / 2) - (radius * 0.2);
+    const y = (size / 2) - (radius * 0.2);
+    const color = {open: 0xd9962b, done: 0x2e9e57, failed: 0xc0392b}[quest];
+    const g = disc(color, x, y);
+    g.lineStyle({width: Math.max(2, radius * 0.22), color: 0xFFFFFF, alpha: 1, cap: PIXI.LINE_CAP.ROUND,
+      join: PIXI.LINE_JOIN.ROUND});
+    if ( quest === "done" ) {
+      g.moveTo(x - r * 0.8, y + r * 0.05).lineTo(x - r * 0.2, y + r * 0.6).lineTo(x + r * 0.85, y - r * 0.6);
+    } else if ( quest === "failed" ) {
+      g.moveTo(x - r * 0.6, y - r * 0.6).lineTo(x + r * 0.6, y + r * 0.6);
+      g.moveTo(x + r * 0.6, y - r * 0.6).lineTo(x - r * 0.6, y + r * 0.6);
+    } else {
+      g.moveTo(x, y - r * 0.8).lineTo(x, y + r * 0.1);
+      g.lineStyle({width: 0});
+      g.beginFill(0xFFFFFF, 1);
+      g.drawCircle(x, y + r * 0.62, Math.max(1.6, radius * 0.12));
+      g.endFill();
+    }
+    marks.addChild(g);
+  }
+  if ( hidden ) {
+    const x = (-size / 2) + (radius * 0.2);
+    const y = (size / 2) - (radius * 0.2);
+    const g = disc(0x6a4c93, x, y);
+    g.lineStyle({width: Math.max(2, radius * 0.18), color: 0xFFFFFF, alpha: 1, cap: PIXI.LINE_CAP.ROUND});
+    g.drawEllipse(x, y, r * 0.95, r * 0.6);
+    g.moveTo(x - r, y + r * 0.8).lineTo(x + r, y - r * 0.8);
+    marks.addChild(g);
+  }
+  note.addChild(marks);
+  st.marks = marks;
+}
+
 /* -------------------------------------------- */
 /*  Zoom                                        */
 /* -------------------------------------------- */
@@ -280,6 +348,18 @@ export function updateZoom() {
     if ( st ) applyZoomState(note, st, zoom);
   }
   return notes.length;
+}
+
+/**
+ * Style one pin again, for example after its discovery or quest changed.
+ * @param {NoteDocument|string} target   The note document or its id
+ */
+export function refreshPin(target) {
+  const id = target?.id ?? target;
+  const note = canvas.notes?.get(id);
+  if ( !note?.controlIcon ) return;
+  note.renderFlags?.set({refreshState: true, refreshVisibility: true, refreshTooltip: true});
+  applyStyle(note);
 }
 
 /**

@@ -1,6 +1,6 @@
 # Sephral’s Map Pins: Manual
 
-Map Pins changes how Foundry's map notes (the pins on a scene) look and gives you a list, a preview and pins that players can set. Everything works on normal Foundry notes. Switch the module off and every pin is still a valid note, only the extras are gone.
+Map Pins changes how Foundry's map notes (the pins on a scene) look and gives you a list, a preview, pins that players set, pins that players discover, quest marks, a map key and routes with travel time. Everything works on normal Foundry notes. Switch the module off and every pin is still a valid note, only the extras are gone.
 
 ## The note dialog
 
@@ -17,6 +17,8 @@ Open a pin with a double click in the notes controls, or *Edit* in the pin list.
 | Preview on hover | Switch the preview card on or off for this pin. |
 | Own preview text and picture | Replace the first lines and the picture of the journal in the preview. |
 | Opens a scene | A double click switches the view to this scene instead of opening the journal. |
+| Hidden until discovered | Players do not see this pin until they discover it. See *Pins you discover*. A button opens the window to reveal it for players. |
+| Quest | *Quest open*, *Quest done* or *Quest failed* shows as a small mark on the pin. See *Quest marks*. |
 
 Above the fields a small picture shows the image of the pin. It follows the icon fields of Foundry's dialog. The image itself is Foundry's own field *Custom Icon*.
 
@@ -30,7 +32,48 @@ The list shows every pin of the viewed scene with its number, symbol, name and c
 * A click on a pin pans the map to it and pings it. A double click opens it like Foundry does.
 * The category buttons above the list hide a category on the map and in the list, for you only. The choice is kept in your browser.
 * A player sees only the pins they may see. The GM sees all of them. On Foundry 14, pins on another level are marked.
-* The GM has buttons for numbering and for the categories. A player has *New pin* when players may set pins.
+* The GM has buttons for numbering, for the categories, for the map key and for the route. A player has *New pin* when players may set pins, and the route button when routes are open to players or the GM shared one.
+* Every row shows the quest state. On the GM's list a pin that is hidden until discovered shows *Hidden* with the number of players who found it, and has buttons to reveal it, to change the quest state and to add it to the route.
+* A pin that a player has not discovered yet is not in that player's list.
+
+## Pins you discover
+
+A pin can be *hidden until discovered*. Tick the field *Hidden until discovered* in the note dialog, use *Hide until discovered* in the pin menu, or let the world setting *New pins are hidden until discovered* do it for every new pin. Players then do not see the pin on the map, in the pin list or in the preview before they discover it. The GM sees every pin as before, a hidden one with a small purple mark.
+
+A player discovers a pin in two ways:
+
+* **By exploring.** The player's browser looks at Foundry's own fog exploration. As soon as the place of a hidden pin is in ground the player has explored, or in sight of one of their tokens, the browser tells the active GM, who writes the player into the pin. This is checked when the exploration changes and when the scene loads, for each player alone. Reveals made with Sephral's Map Knowledge count as well, because they write into the same exploration. It needs token vision and fog exploration on the scene. On a scene without them a hidden pin waits for the GM. The setting *Players discover pins by exploring* turns it off.
+* **By the GM.** Right click a pin and choose *Reveal for players*, use the eye button in the pin list or the button in the note dialog. The window offers *For everyone*, *For ticked* (the ticked players see it, the others do not) and *Hide again*. The API does the same.
+
+A pin stays discovered for the player. The list of players who found it is part of the pin (`found`). When a pin appears for a player, a short ping and a note show where it is (setting *Ping and note when a pin appears*).
+
+*Hide again* hides the pin from the players who knew it and keeps it hidden even where they already explored. Revealing it for them again lifts that. Players who never knew the pin can still find it by exploring.
+
+## Quest marks
+
+A pin can have a quest state: open, done or failed. It shows as a small round mark at the lower right of the pin, in orange, green or red, and in the preview card and the pin list. The GM sets it in the note dialog, in the pin menu, with the flag button in the pin list (it goes through open, done, failed and none), or with `api.setQuest`. Players see the state of the pins they see and cannot change it. The map key lists the state on each page. The state lives on the pin only, it is not synced with text in the journal.
+
+## The pin menu
+
+A right click on a pin (without moving the mouse, so panning the map still works) opens a small menu. For the GM it holds: reveal for players, stop hiding, reveal for everyone, hide until discovered, the quest states, add to route and the pin settings. A player sees *Add to route* when routes are open to players.
+
+## The map key
+
+*Make map key* in the pin list (or the notes control *Map key*, or `api.mapKey`) creates the journal *Map key: <scene>*, with one page for every numbered pin in number order. A page holds the number and title, a link to the pin's journal, the category, the quest state, a note when the pin is hidden until discovered, and the text. You choose *First lines of the journal* (or the pin's own preview text), *Full text of the journal* or *Only title and link*. Secret sections of journals never appear. The journal is for the GM only until you change its ownership.
+
+Click the button again after the map changed. Only the generated part of each page is rewritten:
+
+* Text you wrote before or after the generated part stays.
+* A page whose generated part you rewrote yourself is kept as it is, and the dialog counts it as kept.
+* A new numbered pin gets a new page in its place, and a page of a pin that lost its number goes, unless you changed it.
+
+## Routes and travel time
+
+*Route* in the notes controls (or in the pin list) opens the route window. The GM picks pins in order: with *Pick pins on the map* and a click on each pin, with *Add to route* from the pin menu or the list, or with *Through all numbered pins*. A stop can move up or down and be removed. The window shows the distance of each leg and of the whole route in the scene's units (the scene's grid distance and unit, measured along the drawn line), and the travel time at the chosen pace. The route is drawn on the map as a dashed line with a numbered dot at each stop.
+
+* The GM's route is stored on the scene and drawn for the GM only. *Show to players* shares it: players then see the line and a read only window, up to the first pin they have not discovered, so the route never gives away a hidden pin.
+* With *Players can build routes* every player builds a route of their own, kept in their browser and drawn for them only.
+* The pace (slow, normal, fast) is set by the GM in the route window or the settings. The speeds are settings in the scene's units per hour, and *Hours of travel per day* turns hours into days. Set them for the scale of your maps.
 
 ## Categories
 
@@ -74,6 +117,7 @@ Foundry sends every note of a scene to every player's browser, and every journal
 
 * The text of a private pin never leaves its author's browser. Other browsers receive only that a note exists at a position and which player it belongs to. The interface of the module hides that note from them.
 * A pin for everybody and its journal entry are readable by all players. That is what you chose when you made it public.
+* A pin that is hidden until discovered is hidden in the interface only. The note and its flags still reach every browser, so a player who looks into the browser's tools can find it.
 * The rights of the preview card are checked in the interface. They keep text and pictures of journals out of the page for users without permission, but they cannot keep Foundry from sending the journal's data to the browser.
 * A private pin is tied to the browser where it was set. In another browser or after the browser's data was cleared, the pin is still on the map for its author, but its text is not there.
 
@@ -105,6 +149,14 @@ The first button, *Sephral’s Modules*, and the module settings:
 | New pins are visible without line of sight | New pins are marked as global. |
 | Show pins to players | Switches Foundry's display of pins on for every player, once. Players can still switch it off for themselves. Turning the setting off and on again applies it to everybody once more. |
 | Pins set by players | Off, the GM confirms each pin, or at once. |
+| New pins are hidden until discovered | A new pin starts hidden. A pin made with the box unticked in the note dialog is not hidden. |
+| Players discover pins by exploring | A hidden pin appears when its place is in explored ground or in sight. |
+| Ping and note when a pin appears | A short ping and a note for the player. |
+| Text in the map key | First lines, full text or only title and link. |
+| Travel pace | Slow, normal or fast, for the travel time of routes. |
+| Slow, normal and fast pace | Scene units per hour for each pace. |
+| Hours of travel per day | How many hours a day of travel has. |
+| Players can build routes | Every player builds a route of their own. |
 | Players may set pins only they see | Allows private pins. |
 | Most pins per player and scene | A limit for the pins one player sets. |
 | Pin list, Categories, Take over pins | Buttons that open the windows. |
@@ -116,7 +168,7 @@ The key that opens the pin list has no default. Choose one in Foundry's key sett
 
 ## Self test
 
-The settings button *Run self test* (GM) checks after a Foundry update that everything the module relies on is there: the note and its pieces, the window classes, the socket, the templates and the texts. It also tests the safe preview text with a secret section and a script. The module was verified with Foundry 14.370. When Foundry is newer, the GM gets a hint once.
+The settings button *Run self test* (GM) checks after a Foundry update that everything the module relies on is there: the note and its pieces, the window classes, the socket, the templates and the texts. It also tests the safe preview text with a secret section and a script. It also tests the logic of discovered pins, routes and the map key and, with a scene open, the fog of war functions that discovery reads and the layer routes are drawn on. The module was verified with Foundry 14.370. When Foundry is newer, the GM gets a hint once.
 
 ## Debug file
 
@@ -136,21 +188,32 @@ The first button in the module settings, *Sephral’s Modules* (GMs only), opens
 | --- | --- |
 | `open()` | Opens the pin list. |
 | `number(scene, options)` | GM. Numbers the pins of a scene. Options: `order` (`"reading"`, `"columns"`, `"name"`, `"listed"`), `prefix`, `start`, `keep`, `fromNames`. Returns `{changed, total}`. Without options the GM is asked. |
-| `styleOf(note)` | How a pin looks now: `label`, `number`, `labelMode`, `noBackground`, `constantSize`, `minZoom`, `preview`, `category`, `hidden`. Takes a note or a note document. |
+| `styleOf(note)` | How a pin looks now: `label`, `number`, `labelMode`, `noBackground`, `constantSize`, `minZoom`, `preview`, `category`, `hidden`, `undiscovered` (not shown to you yet), `hiddenPin` (hidden until discovered), `quest`. Takes a note or a note document. |
+| `isDiscovered(note, user)` | Whether a user discovered a pin. A pin that is not hidden counts as discovered. The user is you by default. |
+| `setHidden(note, hidden)` | GM. Hides a pin until it is discovered, or shows it like any pin again. |
+| `discover(note, options)` | GM. Reveals a pin. Options: `{all: true}` for everybody, `{users: [ids]}`, `{hideFor: [ids]}` to hide it again for them, `{reset: true}` to hide it again for everybody. Returns the list of users who found it. |
+| `askReveal(note)` | GM. Opens the window that asks whom to reveal the pin to. |
+| `setQuest(note, state)` | GM. `"open"`, `"done"`, `"failed"` or `""` for none. |
+| `mapKey(scene, options)` | GM. Makes or updates the map key. Options: `text` (`"lines"`, `"full"`, `"title"`), `open`. Returns `{journal, created, updated, kept, removed}`. Without options the GM is asked. |
+| `openRoute()` | Opens the route window. |
+| `addToRoute(note)` | Adds a pin (or a note id) to your route, the GM's route for a GM. |
+| `routes()` | The routes you see: `[{id, stops, distance, units, hours, pace}]`. `id` is `main` for the route you build and `shared` for the one the GM shared. |
 | `categories()` | The categories of the world: `[{id, name, icon, color}]`. |
 | `focus(note)` | Pans the map to a pin and pings it. |
 | `takeOverPins({scope, dryRun})` | GM. Takes over the pins of an older pin module. `scope` is `"scene"` or `"all"`. Returns the counts. |
 | `runSelfTest()` | GM. Runs the self test. |
 | `saveDebugFile()` | GM. Saves the debug file. |
 
-The module stores its choices in the flags of the note under `sephrals-map-pins`: `label`, `background`, `size`, `minZoom`, `number`, `category`, `preview`, `previewText`, `previewImage`, `scene`, and `owner`, `player` and `private` on pins players set.
+The module stores its choices in the flags of the note under `sephrals-map-pins`: `label`, `background`, `size`, `minZoom`, `number`, `category`, `preview`, `previewText`, `previewImage`, `scene`, `hidden` (hidden until discovered), `found` (user ids who discovered the pin, `*` for everybody), `blocked` (user ids the pin was hidden from again), `quest`, and `owner`, `player` and `private` on pins players set. The GM's route is the scene flag `route` (`stops` and `shared`). A player's own route is in a setting of that browser.
 
 ## Limits
 
 * A pin keeps its size on the screen by scaling the note. Very large pins at a very far zoom are drawn large.
 * The category symbol replaces the picture of a pin only when that picture is Foundry's default book icon.
 * Foundry 14 levels: a pin belongs to the levels set in its note. The list marks pins of other levels.
-* Pins set by players need a GM online.
+* Pins set by players need a GM online. So does discovering a pin, because the active GM writes it down. Without a GM the pin appears at the next try, when a GM is there.
+* Discovery by exploring needs token vision and fog exploration on the scene, and works for pins on the viewed level.
+* A route is a straight dashed line from stop to stop. It does not follow roads.
 
 ## Usage statistics
 
@@ -159,8 +222,8 @@ The module can take part in a small usage report shared by all of Sephral’s mo
 With the GM’s consent only the active GM’s browser counts, and it sends at most one report a day. The counts are kept in a hidden world setting, so all browsers and computers of the GM count together, and turning the statistics off deletes them. A copy of a world gets its own world ID. The question lists everything the report contains, from the Foundry version to a random world ID. For Map Pins it holds:
 
 * on how many of the last 30 days the module was used
-* how often the pin list is opened, a preview card is shown, pins are numbered, categories are created, players ask for a pin, a player's pin is created, a pin opens a scene and the pins of another module are taken over
-* the settings *Look*, *Pin labels*, *Pins without the dark box*, *Pins keep their size when zooming*, *Preview when the pointer rests on a pin*, *Number new pins automatically* and *Pins set by players* (only the chosen option)
+* how often the pin list is opened, a preview card is shown, pins are numbered, categories are created, players ask for a pin, a player's pin is created, a pin opens a scene, the pins of another module are taken over, a pin is discovered, a pin is revealed, a map key is made, a route stop is added and a quest state is set
+* the settings *Look*, *Pin labels*, *Pins without the dark box*, *Pins keep their size when zooming*, *Preview when the pointer rests on a pin*, *Number new pins automatically*, *Pins set by players*, *New pins are hidden until discovered*, *Players discover pins by exploring*, *Travel pace*, *Players can build routes* and *Text in the map key* (only the chosen option)
 * where errors occur in the module code: file, line, error type and whether the error arose in the module itself, in Foundry, in the game system or in another module, never the error message or the name of another module
 
 No names, notes, pictures or other content of the world are sent.

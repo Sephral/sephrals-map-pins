@@ -32,7 +32,19 @@ export const SETTINGS = {
     off: "SMP.SETTINGS.playerPins.off", confirm: "SMP.SETTINGS.playerPins.confirm",
     instant: "SMP.SETTINGS.playerPins.instant"}},
   playerPinsPrivate: {type: Boolean, default: true},
-  playerPinLimit: {type: Number, default: 10, range: {min: 1, max: 100, step: 1}}
+  playerPinLimit: {type: Number, default: 10, range: {min: 1, max: 100, step: 1}},
+  discoverDefault: {type: Boolean, default: false},
+  discoverAuto: {type: Boolean, default: true, onChange: "discover"},
+  discoverPing: {type: Boolean, default: true},
+  keyText: {type: String, default: "lines", choices: {
+    lines: "SMP.SETTINGS.keyText.lines", full: "SMP.SETTINGS.keyText.full", title: "SMP.SETTINGS.keyText.title"}},
+  pace: {type: String, default: "normal", onChange: "route", choices: {
+    slow: "SMP.SETTINGS.pace.slow", normal: "SMP.SETTINGS.pace.normal", fast: "SMP.SETTINGS.pace.fast"}},
+  paceSlow: {type: Number, default: 2, onChange: "route", range: {min: 0.5, max: 100, step: 0.5}},
+  paceNormal: {type: Number, default: 3, onChange: "route", range: {min: 0.5, max: 100, step: 0.5}},
+  paceFast: {type: Number, default: 4, onChange: "route", range: {min: 0.5, max: 100, step: 0.5}},
+  hoursPerDay: {type: Number, default: 8, onChange: "route", range: {min: 1, max: 24, step: 1}},
+  routePlayers: {type: Boolean, default: false, onChange: "playerPins"}
 };
 
 /** The functions the menus call, set by registerSettings. */
@@ -40,8 +52,8 @@ let menuHandlers = {};
 
 /**
  * Register all settings of the module and its menus.
- * @param {object} handlers   {language, redraw, restyle, notesOn, playerPins, categories, openList, openCategories,
- *   migrate}
+ * @param {object} handlers   {language, redraw, restyle, notesOn, playerPins, categories, discover, route, openList,
+ *   openCategories, migrate}
  */
 export function registerSettings(handlers) {
   menuHandlers = handlers;
@@ -67,6 +79,8 @@ export function registerSettings(handlers) {
     onChange: value => handlers.categories?.(value)});
   game.settings.register(MODULE_ID, "privatePins", {scope: "client", config: false, type: Object, default: {},
     onChange: value => handlers.privatePins?.(value)});
+  game.settings.register(MODULE_ID, "routes", {scope: "client", config: false, type: Object, default: {},
+    onChange: value => handlers.route?.(value)});
   game.settings.register(MODULE_ID, "notesApplied", {scope: "client", config: false, type: String, default: ""});
   game.settings.register(MODULE_ID, "acknowledgedVersions", {scope: "client", config: false, type: String, default: ""});
 
@@ -148,7 +162,7 @@ class SelfTestMenu extends foundry.applications.api.ApplicationV2 {
  */
 export function changeLanguage(value, redraw) {
   applyModuleLanguage(value).then(() => {
-    for ( const id of ["smp-list", "smp-categories"] ) {
+    for ( const id of ["smp-list", "smp-categories", "smp-route"] ) {
       const app = foundry.applications.instances.get(id);
       if ( isShown(app) ) app.render({window: {title: app.title}});
     }

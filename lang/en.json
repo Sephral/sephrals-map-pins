@@ -76,6 +76,52 @@
       "playerPinLimit": {
         "name": "Most pins per player and scene",
         "hint": "Stops a player from filling a map."
+      },
+      "discoverDefault": {
+        "name": "New pins are hidden until discovered",
+        "hint": "A new pin starts hidden: players do not see it until they discover it."
+      },
+      "discoverAuto": {
+        "name": "Players discover pins by exploring",
+        "hint": "A hidden pin appears for a player when its place is in explored ground of the map or in sight. Needs token vision and fog exploration on the scene. Reveals by Sephral's Map Knowledge count too."
+      },
+      "discoverPing": {
+        "name": "Ping and note when a pin appears",
+        "hint": "A player sees a ping at the pin and a short note."
+      },
+      "keyText": {
+        "name": "Text in the map key",
+        "hint": "What each page of the map key holds besides the title and the link.",
+        "lines": "First lines of the journal",
+        "full": "Full text of the journal",
+        "title": "Only title and link"
+      },
+      "pace": {
+        "name": "Travel pace",
+        "hint": "The pace used for the travel time of routes.",
+        "slow": "Slow",
+        "normal": "Normal",
+        "fast": "Fast"
+      },
+      "paceSlow": {
+        "name": "Slow pace (units per hour)",
+        "hint": "The distance a party covers in an hour, in the units of the scene (miles, kilometers and so on). Set it for the scale of your maps."
+      },
+      "paceNormal": {
+        "name": "Normal pace (units per hour)",
+        "hint": "The distance a party covers in an hour, in the units of the scene (miles, kilometers and so on). Set it for the scale of your maps."
+      },
+      "paceFast": {
+        "name": "Fast pace (units per hour)",
+        "hint": "The distance a party covers in an hour, in the units of the scene (miles, kilometers and so on). Set it for the scale of your maps."
+      },
+      "hoursPerDay": {
+        "name": "Hours of travel per day",
+        "hint": "A day of travel counts this many hours when the travel time is shown in days."
+      },
+      "routePlayers": {
+        "name": "Players can build routes",
+        "hint": "Players pick pins for a route of their own that only they see. A route you share with players is always shown."
       }
     },
     "gear": "Settings",
@@ -84,7 +130,9 @@
     },
     "Tool": {
       "list": "Pin list",
-      "pin": "Set a pin"
+      "pin": "Set a pin",
+      "route": "Route",
+      "key": "Map key"
     },
     "List": {
       "title": "Pin List",
@@ -102,7 +150,14 @@
       "link": "Opens a scene",
       "private": "Only for the one who set it",
       "removeTitle": "Delete pin",
-      "removeText": "Delete the pin \"{name}\"?"
+      "removeText": "Delete the pin \"{name}\"?",
+      "key": "Make map key",
+      "route": "Route",
+      "addToRoute": "Add to route",
+      "reveal": "Reveal for players",
+      "hiddenPin": "Hidden until discovered, found by",
+      "questCycle": "Change quest state",
+      "hiddenShort": "Hidden"
     },
     "Preview": {
       "title": "Preview"
@@ -145,7 +200,13 @@
       "previewImage": "Preview picture",
       "scene": "Opens a scene",
       "noScene": "No, open the journal",
-      "sceneHint": "A double click switches the view to this scene instead of opening the journal."
+      "sceneHint": "A double click switches the view to this scene instead of opening the journal.",
+      "hidden": "Hidden until discovered",
+      "hiddenHint": "Players do not see this pin until they explore its place on the map or you reveal it.",
+      "reveal": "Reveal for players…",
+      "foundBy": "Found by {count}.",
+      "quest": "Quest",
+      "questHint": "Shows a small mark on the pin: open, done or failed."
     },
     "Categories": {
       "title": "Pin Categories",
@@ -263,7 +324,11 @@
       "Toggle": "Foundry's setting for showing pins is missing.",
       "Preview": "The safe preview text keeps secrets or scripts. Do not use the preview card.",
       "Icon": "The pin icons of Foundry are built differently than expected.",
-      "Texts": "Missing texts: {keys}"
+      "Texts": "Missing texts: {keys}",
+      "Fog": "The fog of war of Foundry is built differently than expected. Pins cannot be discovered by exploring.",
+      "Route": "The route cannot be drawn or measured.",
+      "Key": "The pages of a map key cannot be made.",
+      "Discover": "Discovering pins gives wrong results."
     },
     "DEBUG": {
       "Title": "Debug file",
@@ -271,6 +336,85 @@
       "Hint": "One file about all of Sephral's modules in this world, for bug reports. It contains chat text and whispers.",
       "Entry": "Map Pins",
       "Saved": "Debug file saved: {file}. It contains chat text and whispers, check it before you share it."
+    },
+    "Discover": {
+      "found": "New pin found: {name}"
+    },
+    "Reveal": {
+      "title": "Reveal pin",
+      "all": "For everyone",
+      "chosen": "For ticked",
+      "reset": "Hide again",
+      "cancel": "Close",
+      "hint": "Players do not see this pin until they explore its place or you reveal it. Tick the players who should see it. Players you leave unticked do not see it.",
+      "hintVisible": "This pin is not hidden yet. Revealing makes it a hidden pin that only the players you choose can see.",
+      "online": "online",
+      "knows": "knows it",
+      "everybody": "everyone",
+      "noPlayers": "There are no players in this world."
+    },
+    "Quest": {
+      "none": "No quest",
+      "state": {
+        "open": "Quest open",
+        "done": "Quest done",
+        "failed": "Quest failed"
+      },
+      "set": {
+        "open": "Quest: open",
+        "done": "Quest: done",
+        "failed": "Quest: failed",
+        "none": "No quest"
+      }
+    },
+    "Menu": {
+      "reveal": "Reveal for players…",
+      "unhide": "Stop hiding",
+      "revealAll": "Reveal for everyone",
+      "hide": "Hide until discovered",
+      "addToRoute": "Add to route",
+      "settings": "Pin settings"
+    },
+    "Key": {
+      "name": "Map key: {scene}",
+      "hiddenPin": "hidden until discovered",
+      "done": "{name}: {created} new, {updated} updated, {kept} kept, {removed} removed.",
+      "title": "Map key",
+      "intro": "Creates a journal with one page for each of the {count} numbered pins of {scene}, in number order.",
+      "introUpdate": "Updates the map key journal of {scene} for the {count} numbered pins. Only the generated part of each page is rewritten, what you added stays.",
+      "text": "Text on each page",
+      "hint": "Pins without a number are left out. Secret parts of journals never appear.",
+      "update": "Update map key",
+      "create": "Create map key"
+    },
+    "Route": {
+      "title": "Route",
+      "gmRoute": "Route",
+      "ownRoute": "Your route",
+      "sharedRoute": "Shared route",
+      "days": "{n} d",
+      "hours": "{n} h",
+      "minutes": "{n} min",
+      "notAdded": "This pin cannot be added.",
+      "speed": "{speed} {units} per hour",
+      "units": "units",
+      "pick": "Pick pins on the map",
+      "picking": "Picking: click the pins in order",
+      "numbers": "Through all numbered pins",
+      "clear": "Clear",
+      "remove": "Remove",
+      "up": "Move up",
+      "down": "Move down",
+      "share": "Show to players",
+      "unshare": "Hide from players",
+      "emptyBuild": "No pins in the route yet. Pick pins on the map or use the route button in the pin list.",
+      "emptyView": "The GM has not shared a route.",
+      "noStops": "No stops yet.",
+      "pace": "Pace",
+      "total": "Distance",
+      "time": "Travel time",
+      "sharedHint": "Players see this route as a dashed line on the map and in this window, up to the first pin they have not discovered.",
+      "unavailable": "There is no route to show."
     }
   }
 }

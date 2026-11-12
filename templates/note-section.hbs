@@ -44,6 +44,17 @@
     <div class="form-fields"><file-picker type="image" name="{{prefix}}.previewImage" value="{{values.previewImage}}"></file-picker></div>
   </div>
   <div class="form-group">
+    <label>{{text.hidden}}</label>
+    <div class="form-fields"><input type="checkbox" name="{{prefix}}.hidden" {{#if values.hidden}}checked{{/if}}></div>
+    <p class="hint">{{text.hiddenHint}}{{#if foundText}} {{foundText}}{{/if}}</p>
+    {{#if existing}}<p class="hint"><button type="button" data-smp-reveal><i class="fa-solid fa-eye" inert></i> {{text.reveal}}</button></p>{{/if}}
+  </div>
+  <div class="form-group">
+    <label>{{text.quest}}</label>
+    <div class="form-fields"><select name="{{prefix}}.quest">{{#each choices.quest}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select></div>
+    <p class="hint">{{text.questHint}}</p>
+  </div>
+  <div class="form-group">
     <label>{{text.scene}}</label>
     <div class="form-fields"><select name="{{prefix}}.scene">{{#each choices.scene}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select></div>
     <p class="hint">{{text.sceneHint}}</p>

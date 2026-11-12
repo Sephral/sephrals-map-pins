@@ -1,6 +1,6 @@
 # Sephral’s Map Pins
 
-**Pins on a big map you can finally read: names that stay visible, numbers that count up, a preview when you point at one, a list to find them all, and pins your players can set themselves.**
+**Pins on a big map you can finally read: names that stay visible, numbers that count up, a preview when you point at one, pins your players discover as they explore, quest marks, a keyed handout and travel routes.**
 
 [![Install by link](https://img.shields.io/badge/Foundry%20VTT-Install%20by%20link-fe6a1f?logo=foundryvirtualtabletop&logoColor=white)](#install)
 [![Join Discord](https://img.shields.io/badge/Discord-Join%20the%20community-5865F2?logo=discord&logoColor=white)](https://discord.gg/7BjCgDYaBP)
@@ -10,14 +10,18 @@
 
 ## Highlights
 
-* **Readable pins:** labels that are always visible, pins without the dark box, and a size that stays the same on the screen however far you zoom. Pins can disappear below a zoom you choose.
-* **Numbers:** a clean badge with `12` or `B3`. New pins count up by themselves, one click numbers a whole scene in reading order, and a journal called `12. Hall` hands its number to its pin.
-* **Categories:** quest, shop, danger or your own, each with a color ring and a symbol. Every player can hide categories for themselves.
-* **Preview on hover:** a card with the title, the first picture and the first lines of the journal. It shows only what the person may read, and nothing of a secret section ever reaches the card.
-* **Pin list:** every pin of the scene with search and category filter. A click pans the map to the pin and pings it, a double click opens it. Players see only the pins they may see.
-* **Pins by players:** a player clicks the map, writes a name and a text, and the GM confirms, or lets it through at once. A pin can be for everybody or only for its author.
-* **Scene links:** a double click on a pin switches the view to another scene.
-* **Bring your old pins:** one button takes over the labels, backgrounds and preview texts another pin module left on your notes, and leaves its data untouched.
+* **Pins you discover:** hide a pin until your players find it. It appears for each player when their characters explore its place, or when you reveal it for everyone or chosen players, with a short ping.
+* **Quest marks:** a small mark shows a quest as open, done or failed, on the pin and in the list.
+* **Map key:** one click makes a journal with a page per numbered pin in number order. Update it later and your own notes stay.
+* **Routes and travel time:** pick pins in order on your overland map and see the distance in your scene's units and the time at a slow, normal or fast pace. Share the route with your players, it stops before the first pin they do not know yet.
+* **Readable pins:** labels that stay visible, no dark box, and a size that holds as you zoom. Pins can fade out below a zoom you choose.
+* **Numbers:** a clean badge with `12` or `B3`. New pins count up by themselves, and one click numbers a whole scene. A journal called `12. Hall` hands its number to its pin.
+* **Categories:** quest, shop, danger or your own, each with a color ring and a symbol. Players can hide categories for themselves.
+* **Preview on hover:** the title, the first picture and the first lines of the journal, only for those who may read them. Secrets never reach the card.
+* **Pin list:** search and filter every pin of the scene. A click pans to it, a double click opens it.
+* **Pins by players:** a player clicks the map and writes a name and a text. The GM confirms, or lets it through.
+* **Scene links:** a double click on a pin switches to another scene.
+* **Bring your old pins:** one button takes over the look another pin module left on your notes.
 
 Everything works on normal Foundry notes. Switch the module off and your pins are still there.
 

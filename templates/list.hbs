@@ -11,6 +11,12 @@
       class="fa-solid fa-arrow-down-1-9" inert></i></button>
     <button type="button" data-action="categories" data-tooltip="{{text.categories}}" aria-label="{{text.categories}}"><i
       class="fa-solid fa-tags" inert></i></button>
+    <button type="button" data-action="key" data-tooltip="{{text.key}}" aria-label="{{text.key}}"><i
+      class="fa-solid fa-book-open" inert></i></button>
+    {{/if}}
+    {{#if canRoute}}
+    <button type="button" data-action="route" data-tooltip="{{text.route}}" aria-label="{{text.route}}"><i
+      class="fa-solid fa-route" inert></i></button>
     {{/if}}
   </header>
   {{#if categories.length}}
@@ -37,6 +43,8 @@
         <span class="smp-pin-name">{{name}}</span>
         <span class="smp-pin-meta">
           {{#if category}}<span class="smp-tag" style="--smp-chip: {{color}}">{{category}}</span>{{/if}}
+          {{#if questLabel}}<span class="smp-quest is-{{quest}}"><i class="fa-solid fa-flag" inert></i> {{questLabel}}</span>{{/if}}
+          {{#if hiddenPin}}<span class="smp-note smp-hidden-pin" data-tooltip="{{../text.hiddenPin}}"><i class="fa-solid fa-eye-slash" inert></i> {{../text.hiddenShort}}: {{foundCount}}</span>{{/if}}
           {{#if link}}<span class="smp-note" data-tooltip="{{../text.link}}"><i class="fa-solid fa-link" inert></i></span>{{/if}}
           {{#if isPrivate}}<span class="smp-note" data-tooltip="{{../text.private}}"><i class="fa-solid fa-lock" inert></i></span>{{/if}}
           {{#if other}}<span class="smp-note"><i class="fa-solid fa-layer-group" inert></i> {{../text.otherLevel}}</span>{{/if}}
@@ -44,6 +52,12 @@
         </span>
       </span>
       <span class="smp-pin-actions">
+        {{#if hiddenPin}}<button type="button" class="smp-icon" data-action="reveal" data-tooltip="{{../text.reveal}}"
+          aria-label="{{../text.reveal}}"><i class="fa-solid fa-eye" inert></i></button>{{/if}}
+        {{#if gmEdit}}<button type="button" class="smp-icon" data-action="quest" data-tooltip="{{../text.questCycle}}"
+          aria-label="{{../text.questCycle}}"><i class="fa-solid fa-flag" inert></i></button>{{/if}}
+        {{#if ../canAddRoute}}<button type="button" class="smp-icon" data-action="addToRoute" data-tooltip="{{../text.addToRoute}}"
+          aria-label="{{../text.addToRoute}}"><i class="fa-solid fa-route" inert></i></button>{{/if}}
         {{#if canEdit}}<button type="button" class="smp-icon" data-action="edit" data-tooltip="{{../text.edit}}"
           aria-label="{{../text.edit}}"><i class="fa-solid fa-pen" inert></i></button>{{/if}}
         {{#if canDelete}}<button type="button" class="smp-icon" data-action="remove" data-tooltip="{{../text.remove}}"

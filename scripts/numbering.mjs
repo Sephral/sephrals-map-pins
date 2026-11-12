@@ -121,6 +121,10 @@ export function onPreCreateNote(doc, data, options, userId) {
   const flags = doc._source?.flags?.[MODULE_ID] ?? {};
   if ( flags.owner ) return;
   if ( setting("newGlobal") && !("global" in (data ?? {})) ) doc.updateSource({global: true});
+  // A pin made without the dialog (dropped on the map) follows the world default for hidden pins
+  if ( setting("discoverDefault") && game.user.isGM && !("hidden" in (data?.flags?.[MODULE_ID] ?? {})) ) {
+    doc.updateSource({[`flags.${MODULE_ID}.hidden`]: true});
+  }
   if ( setting("autoNumber") && game.user.isGM && !cleanNumber(flags.number) && doc.parent ) {
     doc.updateSource({[`flags.${MODULE_ID}.number`]: nextNumber(usedNumbers(doc.parent))});
   }

@@ -7,6 +7,8 @@ import {DEFAULT_NOTE_ICON, MODULE_ID, TEMPLATES, applyRemovals, flagsOf, setting
 import {FLAG_KEYS, cleanFlags, cleanNumber, nextNumber} from "./pin-logic.mjs";
 import {usedNumbers} from "./numbering.mjs";
 import {categoryList, worldStyle} from "./state.mjs";
+import {QUEST_STATES, cleanQuest, foundList, isHiddenPin} from "./discover-logic.mjs";
+import {askReveal} from "./discover.mjs";
 
 /**
  * Options of a select, with the current value marked.
@@ -41,7 +43,10 @@ export async function onRenderNoteConfig(app, html) {
     theme: setting("theme"),
     texture,
     values: {minZoom: flags.minZoom ?? "", number: flags.number ?? "", previewText: flags.previewText ?? "",
-      previewImage: flags.previewImage ?? ""},
+      previewImage: flags.previewImage ?? "", hidden: isHiddenPin(flags)},
+    existing: !!doc.collection?.has(doc.id),
+    foundText: isHiddenPin(flags) ? t("SMP.Config.foundBy", {count: foundList(flags).includes("*")
+      ? t("SMP.Reveal.everybody") : foundList(flags).length}) : "",
     numberHint: nextNumber(numbers),
     choices: {
       label: choices([["", `${like} (${worldLabel})`], ["always", t("SMP.Choice.label.always")],
@@ -56,11 +61,13 @@ export async function onRenderNoteConfig(app, html) {
       preview: choices([
         ["", `${like} (${pick(world.preview, "SMP.Choice.preview.on", "SMP.Choice.preview.off")})`],
         ["on", t("SMP.Choice.preview.on")], ["off", t("SMP.Choice.preview.off")]], flags.preview),
-      scene: choices([["", t("SMP.Config.noScene")], ...scenes.map(s => [s.id, s.name])], flags.scene)
+      scene: choices([["", t("SMP.Config.noScene")], ...scenes.map(s => [s.id, s.name])], flags.scene),
+      quest: choices([["", t("SMP.Quest.none")], ...QUEST_STATES.map(key => [key, t(`SMP.Quest.state.${key}`)])],
+        cleanQuest(flags.quest))
     },
     text: Object.fromEntries(["title", "imageHint", "label", "background", "size", "minZoom", "minZoomHint", "number",
       "numberHint", "category", "preview", "previewText", "previewTextHint", "previewImage", "scene", "sceneHint",
-      "like"].map(key => [key, t(`SMP.Config.${key}`)]))
+      "like", "hidden", "hiddenHint", "reveal", "quest", "questHint"].map(key => [key, t(`SMP.Config.${key}`)]))
   };
   const markup = await foundry.applications.handlebars.renderTemplate(`${TEMPLATES}/note-section.hbs`, data);
   if ( element.querySelector(".smp-config") ) return;
@@ -86,6 +93,15 @@ export async function onRenderNoteConfig(app, html) {
     if ( event.target?.name === "icon.custom" ) update();
   });
   update();
+  // Hidden until discovered: a new pin follows the world default, an existing one can be revealed from here
+  if ( setting("discoverDefault") && !doc.collection?.has(doc.id) ) {
+    const hiddenBox = form?.elements?.[`flags.${MODULE_ID}.hidden`];
+    if ( hiddenBox && ("checked" in hiddenBox) ) hiddenBox.checked = true;
+  }
+  section.querySelector("[data-smp-reveal]")?.addEventListener("click", event => {
+    event.preventDefault();
+    askReveal(doc);
+  });
   // New pins can be visible without line of sight by default
   if ( setting("newGlobal") && !doc.collection?.has(doc.id) ) {
     const box = form?.elements?.global;

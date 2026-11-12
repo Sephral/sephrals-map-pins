@@ -5,7 +5,7 @@
  * put into the page.
  */
 
-import {MODULE_ID, flagsOf, setting} from "./config.mjs";
+import {MODULE_ID, flagsOf, setting, t} from "./config.mjs";
 import {LIMITS, previewAccess, previewFromHtml, previewFromMarkdown, safeImageSrc} from "./pin-logic.mjs";
 import {describePin} from "./note-style.mjs";
 import {countFeature} from "./usage.mjs";
@@ -24,10 +24,23 @@ let shownFor = null;
  * @returns {{title: string, blocks: {kind: string, text: string}[], image: string, mode: string}|null}
  */
 export function buildPreview(note, user = game.user) {
+  const data = previewData(note, user);
+  const quest = data ? describePin(note).quest : "";
+  if ( data && quest ) data.quest = t(`SMP.Quest.state.${quest}`);
+  return data;
+}
+
+/**
+ * The card's content without the quest line.
+ * @param {Note} note
+ * @param {User} user
+ * @returns {{title: string, blocks: {kind: string, text: string}[], image: string, mode: string}|null}
+ */
+function previewData(note, user) {
   const doc = note.document;
   const flags = flagsOf(doc);
   const d = describePin(note);
-  if ( !d.style.preview || d.privateHidden ) return null;
+  if ( !d.style.preview || d.privateHidden || d.undiscovered ) return null;
   const maxChars = Math.min(Math.max(Number(setting("previewChars")) || 300, 80), 1000);
   const title = d.label;
 
@@ -84,7 +97,7 @@ function esc(text) {
  * @param {number} maxChars
  * @returns {{blocks: {kind: string, text: string}[], image: string}}
  */
-function readJournal(entry, page, user, maxChars) {
+export function readJournal(entry, page, user, maxChars) {
   const pages = page ? [page] : entry.pages.contents.sort((a, b) => a.sort - b.sort);
   // Permission first: a page the user may not observe is never read
   const readable = pages.filter(p => user.isGM || p.testUserPermission(user, "OBSERVER"));
@@ -136,6 +149,12 @@ export function buildCard(data) {
   title.className = "smp-card-title";
   title.textContent = data.title;
   el.append(title);
+  if ( data.quest ) {
+    const quest = document.createElement("div");
+    quest.className = "smp-card-quest";
+    quest.textContent = data.quest;
+    el.append(quest);
+  }
   if ( data.blocks.length ) {
     const body = document.createElement("div");
     body.className = "smp-card-body";

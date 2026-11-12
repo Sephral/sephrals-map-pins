@@ -76,6 +76,52 @@
       "playerPinLimit": {
         "name": "Höchstens so viele Pins je Spieler und Szene",
         "hint": "Verhindert, dass ein Spieler eine Karte füllt."
+      },
+      "discoverDefault": {
+        "name": "Neue Pins sind bis zur Entdeckung versteckt",
+        "hint": "Ein neuer Pin ist zunächst versteckt: Spieler sehen ihn erst, wenn sie ihn entdecken."
+      },
+      "discoverAuto": {
+        "name": "Spieler entdecken Pins durch Erkunden",
+        "hint": "Ein versteckter Pin erscheint für einen Spieler, wenn sein Ort im erkundeten Bereich der Karte liegt oder gerade in Sicht ist. Braucht Sicht der Figuren und Nebelerkundung auf der Szene. Aufdeckungen von Sephrals Map Knowledge zählen mit."
+      },
+      "discoverPing": {
+        "name": "Ping und Hinweis, wenn ein Pin erscheint",
+        "hint": "Der Spieler sieht einen Ping am Pin und einen kurzen Hinweis."
+      },
+      "keyText": {
+        "name": "Text im Kartenschlüssel",
+        "hint": "Was jede Seite des Kartenschlüssels neben Titel und Link enthält.",
+        "lines": "Erste Zeilen des Journals",
+        "full": "Ganzer Text des Journals",
+        "title": "Nur Titel und Link"
+      },
+      "pace": {
+        "name": "Reisetempo",
+        "hint": "Das Tempo für die Reisezeit von Routen.",
+        "slow": "Langsam",
+        "normal": "Normal",
+        "fast": "Schnell"
+      },
+      "paceSlow": {
+        "name": "Langsames Tempo (Einheiten pro Stunde)",
+        "hint": "Die Strecke, die die Gruppe in einer Stunde schafft, in den Einheiten der Szene (Meilen, Kilometer und so weiter). Stelle sie auf den Maßstab deiner Karten ein."
+      },
+      "paceNormal": {
+        "name": "Normales Tempo (Einheiten pro Stunde)",
+        "hint": "Die Strecke, die die Gruppe in einer Stunde schafft, in den Einheiten der Szene (Meilen, Kilometer und so weiter). Stelle sie auf den Maßstab deiner Karten ein."
+      },
+      "paceFast": {
+        "name": "Schnelles Tempo (Einheiten pro Stunde)",
+        "hint": "Die Strecke, die die Gruppe in einer Stunde schafft, in den Einheiten der Szene (Meilen, Kilometer und so weiter). Stelle sie auf den Maßstab deiner Karten ein."
+      },
+      "hoursPerDay": {
+        "name": "Reisestunden pro Tag",
+        "hint": "Ein Reisetag zählt so viele Stunden, wenn die Reisezeit in Tagen angezeigt wird."
+      },
+      "routePlayers": {
+        "name": "Spieler dürfen Routen bauen",
+        "hint": "Spieler wählen Pins für eine eigene Route, die nur sie sehen. Eine Route, die du den Spielern zeigst, sehen sie immer."
       }
     },
     "gear": "Einstellungen",
@@ -84,7 +130,9 @@
     },
     "Tool": {
       "list": "Pin-Liste",
-      "pin": "Pin setzen"
+      "pin": "Pin setzen",
+      "route": "Route",
+      "key": "Kartenschlüssel"
     },
     "List": {
       "title": "Pin-Liste",
@@ -102,7 +150,14 @@
       "link": "Öffnet eine Szene",
       "private": "Nur für den, der ihn gesetzt hat",
       "removeTitle": "Pin löschen",
-      "removeText": "Den Pin \"{name}\" löschen?"
+      "removeText": "Den Pin \"{name}\" löschen?",
+      "key": "Kartenschlüssel erstellen",
+      "route": "Route",
+      "addToRoute": "Zur Route hinzufügen",
+      "reveal": "Für Spieler aufdecken",
+      "hiddenPin": "Versteckt bis zur Entdeckung, entdeckt von",
+      "questCycle": "Queststatus wechseln",
+      "hiddenShort": "Versteckt"
     },
     "Preview": {
       "title": "Vorschau"
@@ -145,7 +200,13 @@
       "previewImage": "Vorschaubild",
       "scene": "Öffnet eine Szene",
       "noScene": "Nein, das Journal öffnen",
-      "sceneHint": "Ein Doppelklick wechselt die Ansicht zu dieser Szene, statt das Journal zu öffnen."
+      "sceneHint": "Ein Doppelklick wechselt die Ansicht zu dieser Szene, statt das Journal zu öffnen.",
+      "hidden": "Versteckt bis zur Entdeckung",
+      "hiddenHint": "Spieler sehen diesen Pin nicht, bis sie seinen Ort auf der Karte erkunden oder du ihn aufdeckst.",
+      "reveal": "Für Spieler aufdecken…",
+      "foundBy": "Entdeckt von {count}.",
+      "quest": "Quest",
+      "questHint": "Zeigt eine kleine Markierung am Pin: offen, erledigt oder gescheitert."
     },
     "Categories": {
       "title": "Pin-Kategorien",
@@ -263,7 +324,11 @@
       "Toggle": "Die Einstellung von Foundry zum Anzeigen von Pins fehlt.",
       "Preview": "Der sichere Vorschautext behält Geheimnisse oder Skripte. Die Vorschaukarte nicht benutzen.",
       "Icon": "Die Pin-Symbole von Foundry sind anders gebaut als erwartet.",
-      "Texts": "Fehlende Texte: {keys}"
+      "Texts": "Fehlende Texte: {keys}",
+      "Fog": "Der Nebel von Foundry ist anders gebaut als erwartet. Pins lassen sich nicht durch Erkunden entdecken.",
+      "Route": "Die Route lässt sich nicht zeichnen oder messen.",
+      "Key": "Die Seiten eines Kartenschlüssels lassen sich nicht anlegen.",
+      "Discover": "Das Entdecken von Pins liefert falsche Ergebnisse."
     },
     "DEBUG": {
       "Title": "Debug-Datei",
@@ -271,6 +336,85 @@
       "Hint": "Eine Datei über alle Module von Sephral in dieser Welt, für Fehlerberichte. Sie enthält Chattexte und Flüstern.",
       "Entry": "Map Pins",
       "Saved": "Debug-Datei gespeichert: {file}. Sie enthält Chattexte und Flüstern, prüfe sie, bevor du sie weitergibst."
+    },
+    "Discover": {
+      "found": "Neuer Pin entdeckt: {name}"
+    },
+    "Reveal": {
+      "title": "Pin aufdecken",
+      "all": "Für alle",
+      "chosen": "Für Angehakte",
+      "reset": "Wieder verstecken",
+      "cancel": "Schließen",
+      "hint": "Spieler sehen diesen Pin nicht, bis sie seinen Ort erkunden oder du ihn aufdeckst. Hake die Spieler an, die ihn sehen sollen. Alle ohne Haken sehen ihn nicht.",
+      "hintVisible": "Dieser Pin ist noch nicht versteckt. Beim Aufdecken wird er zum versteckten Pin, den nur die gewählten Spieler sehen.",
+      "online": "online",
+      "knows": "kennt ihn",
+      "everybody": "alle",
+      "noPlayers": "In dieser Welt gibt es keine Spieler."
+    },
+    "Quest": {
+      "none": "Keine Quest",
+      "state": {
+        "open": "Quest offen",
+        "done": "Quest erledigt",
+        "failed": "Quest gescheitert"
+      },
+      "set": {
+        "open": "Quest: offen",
+        "done": "Quest: erledigt",
+        "failed": "Quest: gescheitert",
+        "none": "Keine Quest"
+      }
+    },
+    "Menu": {
+      "reveal": "Für Spieler aufdecken…",
+      "unhide": "Nicht mehr verstecken",
+      "revealAll": "Für alle aufdecken",
+      "hide": "Bis zur Entdeckung verstecken",
+      "addToRoute": "Zur Route hinzufügen",
+      "settings": "Pin-Einstellungen"
+    },
+    "Key": {
+      "name": "Kartenschlüssel: {scene}",
+      "hiddenPin": "versteckt bis zur Entdeckung",
+      "done": "{name}: {created} neu, {updated} aktualisiert, {kept} behalten, {removed} entfernt.",
+      "title": "Kartenschlüssel",
+      "intro": "Legt ein Journal mit einer Seite für jeden der {count} nummerierten Pins von {scene} an, in der Reihenfolge der Nummern.",
+      "introUpdate": "Aktualisiert das Journal Kartenschlüssel von {scene} für die {count} nummerierten Pins. Nur der erzeugte Teil jeder Seite wird neu geschrieben, was du ergänzt hast, bleibt.",
+      "text": "Text auf jeder Seite",
+      "hint": "Pins ohne Nummer fehlen. Geheime Teile von Journalen erscheinen nie.",
+      "update": "Kartenschlüssel aktualisieren",
+      "create": "Kartenschlüssel anlegen"
+    },
+    "Route": {
+      "title": "Route",
+      "gmRoute": "Route",
+      "ownRoute": "Deine Route",
+      "sharedRoute": "Geteilte Route",
+      "days": "{n} T",
+      "hours": "{n} Std.",
+      "minutes": "{n} Min.",
+      "notAdded": "Dieser Pin lässt sich nicht hinzufügen.",
+      "speed": "{speed} {units} pro Stunde",
+      "units": "Einheiten",
+      "pick": "Pins auf der Karte wählen",
+      "picking": "Wähle: klicke die Pins der Reihe nach an",
+      "numbers": "Über alle nummerierten Pins",
+      "clear": "Leeren",
+      "remove": "Entfernen",
+      "up": "Nach oben",
+      "down": "Nach unten",
+      "share": "Den Spielern zeigen",
+      "unshare": "Vor den Spielern verbergen",
+      "emptyBuild": "Noch keine Pins in der Route. Wähle Pins auf der Karte oder nutze den Routenknopf in der Pin-Liste.",
+      "emptyView": "Die SL hat keine Route geteilt.",
+      "noStops": "Noch keine Stationen.",
+      "pace": "Tempo",
+      "total": "Strecke",
+      "time": "Reisezeit",
+      "sharedHint": "Spieler sehen diese Route als gestrichelte Linie auf der Karte und in diesem Fenster, bis zum ersten Pin, den sie noch nicht entdeckt haben.",
+      "unavailable": "Es gibt keine Route zu zeigen."
     }
   }
 }

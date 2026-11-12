@@ -6,8 +6,12 @@
 import {DEFAULT_NOTE_ICON, MODULE_ID, TEMPLATES, addSettingsGear, esc, flagsOf, isShown, isV14, onOtherLevel, setting, t}
   from "./config.mjs";
 import {hiddenPrivatePin, mayEditPin} from "./pin-logic.mjs";
+import {askReveal, setQuest} from "./discover.mjs";
+import {foundList, isHiddenPin, nextQuest, undiscoveredFor} from "./discover-logic.mjs";
+import {keyDialog} from "./map-key.mjs";
+import {addStop, canBuildRoute, openRoute, routeAvailable} from "./route.mjs";
 import {describePin, restyleAll} from "./note-style.mjs";
-import {categoryList, hiddenCategories, setCategoryHidden} from "./state.mjs";
+import {categoryList, hiddenCategories, localFound, setCategoryHidden} from "./state.mjs";
 import {editPlayerPin, deletePlayerPin, playerPinsAvailable, startPlayerPin} from "./player-pins.mjs";
 import {noteOf, openPin} from "./open-pin.mjs";
 import {openCategories} from "./categories-app.mjs";
@@ -47,7 +51,12 @@ export class PinListApp extends HandlebarsApplicationMixin(ApplicationV2) {
       remove: PinListApp.#onRemove,
       numbers: PinListApp.#onNumbers,
       categories: PinListApp.#onCategories,
-      newPin: PinListApp.#onNewPin
+      newPin: PinListApp.#onNewPin,
+      reveal: PinListApp.#onReveal,
+      quest: PinListApp.#onQuest,
+      route: PinListApp.#onRoute,
+      addToRoute: PinListApp.#onAddToRoute,
+      key: PinListApp.#onKey
     }
   };
 
@@ -72,6 +81,7 @@ export class PinListApp extends HandlebarsApplicationMixin(ApplicationV2) {
     return canvas.scene.notes.contents.filter(doc => {
       const flags = flagsOf(doc);
       if ( hiddenPrivatePin(flags, game.user.id, game.user.isGM) ) return false;
+      if ( undiscoveredFor(flags, game.user.id, game.user.isGM) && !localFound.has(doc.id) ) return false;
       if ( game.user.isGM || flags.private ) return true;
       const journal = doc.page ?? doc.entry;
       if ( journal ) return journal.testUserPermission(game.user, "LIMITED");
@@ -111,7 +121,11 @@ export class PinListApp extends HandlebarsApplicationMixin(ApplicationV2) {
         canEdit: game.user.isGM ? true : mine,
         canDelete: game.user.isGM || mine,
         gmEdit: game.user.isGM,
-        needle: `${d.number} ${d.label} ${cat?.name ?? ""}`.toLowerCase()
+        hiddenPin: game.user.isGM && isHiddenPin(flags),
+        foundCount: foundList(flags).includes("*") ? t("SMP.Reveal.everybody") : String(foundList(flags).length),
+        quest: d.quest,
+        questLabel: d.quest ? t(`SMP.Quest.state.${d.quest}`) : "",
+        needle: `${d.number} ${d.label} ${cat?.name ?? ""} ${d.quest ? t(`SMP.Quest.state.${d.quest}`) : ""}`.toLowerCase()
       };
     });
     // Numbered pins first, in number order, then the others by name
@@ -122,6 +136,8 @@ export class PinListApp extends HandlebarsApplicationMixin(ApplicationV2) {
       empty: !pins.length,
       search: this.#search,
       isGM: game.user.isGM,
+      canRoute: routeAvailable(),
+      canAddRoute: canBuildRoute(),
       canPlace: playerPinsAvailable(),
       scene: canvas.scene?.name ?? "",
       categories: categoryList().map(c => ({...c, hidden: hidden.has(c.id), count: counts.get(c.id) ?? 0})),
@@ -136,7 +152,14 @@ export class PinListApp extends HandlebarsApplicationMixin(ApplicationV2) {
         otherLevel: t("SMP.List.otherLevel"),
         link: t("SMP.List.link"),
         private: t("SMP.List.private"),
-        noMatch: t("SMP.List.noMatch")
+        noMatch: t("SMP.List.noMatch"),
+        key: t("SMP.List.key"),
+        route: t("SMP.List.route"),
+        addToRoute: t("SMP.List.addToRoute"),
+        reveal: t("SMP.List.reveal"),
+        hiddenPin: t("SMP.List.hiddenPin"),
+        hiddenShort: t("SMP.List.hiddenShort"),
+        questCycle: t("SMP.List.questCycle")
       }
     };
   }
@@ -238,6 +261,29 @@ export class PinListApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
   static #onNewPin() {
     startPlayerPin();
+  }
+
+  static #onReveal(event, target) {
+    const doc = PinListApp.#note(target);
+    if ( doc ) askReveal(doc);
+  }
+
+  static #onQuest(event, target) {
+    const doc = PinListApp.#note(target);
+    if ( doc && game.user.isGM ) setQuest(doc, nextQuest(describePin({document: doc}).quest));
+  }
+
+  static #onRoute() {
+    openRoute();
+  }
+
+  static #onAddToRoute(event, target) {
+    const doc = PinListApp.#note(target);
+    if ( doc ) addStop(doc.id).then(() => openRoute());
+  }
+
+  static #onKey() {
+    keyDialog();
   }
 }
 

@@ -26,8 +26,10 @@ let queue = Promise.resolve();
 
 /**
  * Install the socket listener. Call once in "ready".
+ * @param {Record<string, (message: object, sender: User) => Promise<object>>} [handlers]   More request types the
+ *   active GM answers: the handler returns the result {ok, reason?}
  */
-export function registerSocket() {
+export function registerSocket(handlers = {}) {
   game.socket.on(SOCKET, (message, senderId) => {
     if ( !message || (typeof message !== "object") ) return;
     if ( message.type === "result" ) {
@@ -35,11 +37,15 @@ export function registerSocket() {
       pending.get(message.id)?.(message);
       return;
     }
-    if ( !["create", "update", "delete"].includes(message.type) ) return;
+    const other = Object.hasOwn(handlers, message.type) ? handlers[message.type] : null;
+    if ( !other && !["create", "update", "delete"].includes(message.type) ) return;
     if ( !game.user.isGM || !game.users.activeGM?.isSelf ) return;
     const sender = game.users.get(senderId);
     if ( !sender ) return;
-    queue = queue.then(() => handleRequest(message, sender)).catch(err => {
+    queue = queue.then(async () => {
+      if ( !other ) return handleRequest(message, sender);
+      reply(message, sender, await other(message, sender));
+    }).catch(err => {
       console.error(`${MODULE_ID} | A pin request failed`, err);
     });
   });
@@ -51,7 +57,7 @@ export function registerSocket() {
  * @param {object} payload
  * @returns {Promise<{ok: boolean, reason?: string, noteId?: string}>}
  */
-function request(type, payload) {
+export function request(type, payload) {
   const gm = game.users.activeGM;
   if ( !gm ) return Promise.resolve({ok: false, reason: "noGM"});
   const id = foundry.utils.randomID();

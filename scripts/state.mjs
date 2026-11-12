@@ -97,3 +97,10 @@ export async function savePrivatePin(noteId, data) {
   if ( !Object.keys(mine).length ) delete all[game.world.id];
   await game.settings.set(MODULE_ID, "privatePins", all);
 }
+
+/**
+ * The pins this client discovered a moment ago and reported to the GM. They show at once, before the GM's write
+ * arrives. Cleared when the scene changes.
+ * @type {Set<string>}
+ */
+export const localFound = new Set();
