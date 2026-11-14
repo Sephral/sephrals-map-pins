@@ -44,7 +44,9 @@ export const SETTINGS = {
   paceNormal: {type: Number, default: 3, onChange: "route", range: {min: 0.5, max: 100, step: 0.5}},
   paceFast: {type: Number, default: 4, onChange: "route", range: {min: 0.5, max: 100, step: 0.5}},
   hoursPerDay: {type: Number, default: 8, onChange: "route", range: {min: 1, max: 24, step: 1}},
-  routePlayers: {type: Boolean, default: false, onChange: "playerPins"}
+  routePlayers: {type: Boolean, default: false, onChange: "playerPins"},
+  whereOn: {type: Boolean, default: true, onChange: "party"},
+  partyTrail: {type: Boolean, default: true, onChange: "party"}
 };
 
 /** The functions the menus call, set by registerSettings. */
@@ -74,7 +76,15 @@ export function registerSettings(handlers) {
 
   // Data of the module
   game.settings.register(MODULE_ID, "categories", {scope: "world", config: false, type: Array, default: [],
-    onChange: value => handlers.categories?.(value)});
+    onChange: value => {
+      handlers.categories?.(value);
+      handlers.categoryColors?.(value);
+    }});
+  // Where the party is ({manual, scene, source, since}) and the places it visited ([{scene, time}])
+  game.settings.register(MODULE_ID, "party", {scope: "world", config: false, type: Object, default: {},
+    onChange: value => handlers.party?.(value)});
+  game.settings.register(MODULE_ID, "trail", {scope: "world", config: false, type: Array, default: [],
+    onChange: value => handlers.party?.(value)});
   game.settings.register(MODULE_ID, "hiddenCategories", {scope: "client", config: false, type: Array, default: [],
     onChange: value => handlers.categories?.(value)});
   game.settings.register(MODULE_ID, "privatePins", {scope: "client", config: false, type: Object, default: {},
@@ -162,7 +172,7 @@ class SelfTestMenu extends foundry.applications.api.ApplicationV2 {
  */
 export function changeLanguage(value, redraw) {
   applyModuleLanguage(value).then(() => {
-    for ( const id of ["smp-list", "smp-categories", "smp-route"] ) {
+    for ( const id of ["smp-list", "smp-categories", "smp-route", "smp-where"] ) {
       const app = foundry.applications.instances.get(id);
       if ( isShown(app) ) app.render({window: {title: app.title}});
     }

@@ -52,8 +52,22 @@ function previewData(note, user) {
       {maxChars}).blocks : [], image: "", mode: "own"};
   }
 
-  const entry = doc.entry;
-  const page = doc.page;
+  return previewFromParts({title, flags, entry: doc.entry, page: doc.page, user});
+}
+
+/**
+ * The card's content for a title, the module's flags and the journal behind it. This is the rights check, the same for
+ * pins and for areas.
+ * @param {object} parts
+ * @param {string} parts.title
+ * @param {object} parts.flags            The module's flags (previewText and previewImage)
+ * @param {JournalEntry|null} parts.entry
+ * @param {JournalEntryPage|null} parts.page
+ * @param {User} parts.user
+ * @returns {{title: string, blocks: {kind: string, text: string}[], image: string, mode: string}|null}
+ */
+export function previewFromParts({title, flags, entry, page, user}) {
+  const maxChars = Math.min(Math.max(Number(setting("previewChars")) || 300, 80), 1000);
   const test = page ?? entry;
   const access = previewAccess({
     isGM: !!user.isGM,
@@ -178,19 +192,52 @@ function place(el, note) {
   const view = canvas.app?.view?.getBoundingClientRect();
   const bounds = note.controlIcon?.getBounds?.();
   if ( !view || !bounds ) return;
+  placeBox(el, {left: view.left + bounds.x, top: view.top + bounds.y, width: bounds.width, height: bounds.height});
+}
+
+/**
+ * Put the card next to a box on the screen, on the side with room, inside the window.
+ * @param {HTMLElement} el
+ * @param {{left: number, top: number, width: number, height: number}} box   In screen pixels
+ */
+function placeBox(el, box) {
   const gap = 12;
   const width = el.offsetWidth;
   const height = el.offsetHeight;
-  const left = view.left + bounds.x;
-  const right = left + bounds.width;
-  const top = view.top + bounds.y;
+  const left = box.left;
+  const right = left + box.width;
   let x = right + gap;
   if ( (x + width) > (window.innerWidth - 8) ) x = left - gap - width;
   x = Math.min(Math.max(x, 8), Math.max(window.innerWidth - width - 8, 8));
-  let y = top + (bounds.height / 2) - (height / 2);
+  let y = box.top + (box.height / 2) - (height / 2);
   y = Math.min(Math.max(y, 8), Math.max(window.innerHeight - height - 8, 8));
   el.style.left = `${Math.round(x)}px`;
   el.style.top = `${Math.round(y)}px`;
+}
+
+/**
+ * Show a card for something that is not a pin (an area) next to a box on the screen. The card is removed with
+ * hidePreview, like the one of a pin.
+ * @param {object} data   The result of buildPreview or previewFromParts
+ * @param {{left: number, top: number, width: number, height: number}} box
+ * @param {string} key    What the card is for
+ */
+export function showCardAt(data, box, key) {
+  hidePreview();
+  card = buildCard(data);
+  card.style.visibility = "hidden";
+  document.body.append(card);
+  placeBox(card, box);
+  card.style.visibility = "";
+  shownFor = key;
+}
+
+/**
+ * What the card shows now, if anything.
+ * @returns {string|null}
+ */
+export function cardKey() {
+  return card ? shownFor : null;
 }
 
 /** Remove the card. */
@@ -238,7 +285,8 @@ export function onHoverNote(note, hovered) {
 
 /** Keep the card at its pin while the canvas moves. */
 export function followPin() {
-  if ( !card || !shownFor ) return;
+  // The card of an area sits at the pointer, not at a pin
+  if ( !card || !shownFor || String(shownFor).startsWith("area:") ) return;
   const note = canvas.notes?.get(shownFor);
   if ( note ) place(card, note);
   else hidePreview();

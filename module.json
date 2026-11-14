@@ -1,8 +1,8 @@
 {
   "id": "sephrals-map-pins",
   "title": "Sephral’s Map Pins",
-  "description": "Map pins you can read: labels that stay visible, numbers, categories, a preview on hover, a list to search all pins, pins your players add or discover, quest marks, a map key and travel routes.",
-  "version": "1.0.1",
+  "description": "Map pins you can read: labels that stay visible, numbers, categories, a preview on hover, a list to search all pins, pins your players add or discover, quest marks, a map key, travel routes, the party's place on the map and labeled areas.",
+  "version": "1.0.2",
   "compatibility": {
     "minimum": 13,
     "verified": "14.370"

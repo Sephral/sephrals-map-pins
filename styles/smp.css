@@ -345,8 +345,26 @@
 /*  Note dialog section                         */
 /* -------------------------------------------- */
 
-.smp-config {
+.smp-config,
+.smp-area-config {
   --smp-ink: inherit;
+}
+
+.smp-area-config textarea {
+  width: 100%;
+  resize: vertical;
+}
+
+.smp-area-new {
+  padding: 10px 12px;
+  border-radius: var(--smp-radius);
+  background: var(--smp-paper);
+  color: var(--smp-ink);
+}
+
+.smp-area-new .hint {
+  color: var(--smp-muted);
+  font-size: 12px;
 }
 
 .smp-config .smp-config-image {
@@ -773,4 +791,245 @@
 .smp-app.smp-menu button:hover,
 .smp-app.smp-menu button.is-on {
   background: var(--smp-accent-soft);
+}
+
+/* -------------------------------------------- */
+/*  Areas in the pin list                       */
+/* -------------------------------------------- */
+
+.smp-section {
+  margin: 8px 0 4px;
+  padding: 0 2px;
+  color: var(--smp-muted);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.smp-area-row .smp-pin-icon i {
+  color: var(--smp-chip, var(--smp-accent));
+  font-size: 15px;
+}
+
+/* -------------------------------------------- */
+/*  Where are we? window                        */
+/* -------------------------------------------- */
+
+.smp-where .smp-shell {
+  gap: 8px;
+  padding: 10px 12px 12px;
+  overflow-y: auto;
+}
+
+.smp-where-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 12px;
+}
+
+.smp-where-status {
+  margin: 0;
+  font-size: 13px;
+}
+
+.smp-where-status small {
+  margin-left: 6px;
+  color: var(--smp-muted);
+  font-size: 11px;
+}
+
+.smp-where-maps {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--smp-muted);
+}
+
+.smp-where-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.smp-where-map-name {
+  font-size: 13px;
+}
+
+.smp-where-tools {
+  display: flex;
+  gap: 2px;
+}
+
+.smp-where-view {
+  position: relative;
+  flex: 1 1 260px;
+  min-height: 220px;
+  overflow: hidden;
+  border: 1px solid var(--smp-line);
+  border-radius: var(--smp-radius);
+  background: var(--smp-thumb);
+  cursor: grab;
+  touch-action: none;
+}
+
+.smp-where-view.is-dragging {
+  cursor: grabbing;
+}
+
+.smp-where-stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  --smp-inv: 1;
+}
+
+.smp-where-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  border: 0;
+  object-fit: fill;
+  user-select: none;
+  pointer-events: none;
+}
+
+.smp-where-nopicture {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #cfc6b8;
+  font-size: calc(14px * var(--smp-inv));
+}
+
+.smp-where-pin {
+  --smp-chip: #f3ecde;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  transform: scale(var(--smp-inv));
+  transform-origin: 0 0;
+}
+
+.smp-where-dot {
+  position: absolute;
+  top: -11px;
+  left: -11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 4px;
+  border: 2px solid var(--smp-chip);
+  border-radius: 999px;
+  background: #2b241e;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  box-sizing: border-box;
+  transform: translateX(0);
+}
+
+.smp-where-label {
+  position: absolute;
+  top: 14px;
+  left: 0;
+  transform: translateX(-50%);
+  padding: 0 5px;
+  border-radius: 6px;
+  background: rgb(20 15 10 / 0.7);
+  color: #fff;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.smp-where-mark {
+  position: absolute;
+  bottom: 18px;
+  left: 0;
+  transform: translateX(-50%);
+  padding: 2px 8px;
+  border: 2px solid #2b1d0e;
+  border-radius: 999px;
+  background: #ffd34d;
+  color: #2b1d0e;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.smp-where-pin.is-here .smp-where-dot {
+  border-color: #ffd34d;
+  background: #ffd34d;
+  color: #2b1d0e;
+  box-shadow: 0 0 0 4px rgb(255 211 77 / 0.45);
+}
+
+.smp-where-pin.is-this .smp-where-dot {
+  border-color: #ffffff;
+  box-shadow: 0 0 0 3px rgb(255 255 255 / 0.5);
+}
+
+.smp-where-pin.is-this .smp-where-mark {
+  background: #fffaf0;
+}
+
+.smp-where-pin.is-here {
+  z-index: 2;
+}
+
+.smp-where-trail h3 {
+  margin: 0 0 4px;
+  border: 0;
+  font-size: 12px;
+}
+
+.smp-trail {
+  max-height: 120px;
+  margin: 0;
+  padding: 0 4px 0 0;
+  list-style: none;
+  overflow-y: auto;
+}
+
+.smp-trail li {
+  display: flex;
+  gap: 10px;
+  padding: 1px 0;
+  font-size: 12px;
+}
+
+.smp-trail li.is-unknown {
+  color: var(--smp-muted);
+}
+
+.smp-trail-date {
+  flex: none;
+  min-width: 112px;
+  color: var(--smp-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.smp-where-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .smp-where-view {
+    scroll-behavior: auto;
+  }
 }

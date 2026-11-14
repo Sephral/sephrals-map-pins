@@ -122,6 +122,14 @@
       "routePlayers": {
         "name": "Spieler dürfen Routen bauen",
         "hint": "Spieler wählen Pins für eine eigene Route, die nur sie sehen. Eine Route, die du den Spielern zeigst, sehen sie immer."
+      },
+      "whereOn": {
+        "name": "Zeigen, wo die Gruppe ist",
+        "hint": "Markiert auf den Karten darüber den Pin, der die Szene der Gruppe öffnet, und fügt den Notizen-Werkzeugen die Schaltfläche Wo sind wir? hinzu."
+      },
+      "partyTrail": {
+        "name": "Spur der besuchten Orte führen",
+        "hint": "Der aktive SL hält jeden Ort fest, an dem die Gruppe ankommt, samt Weltzeit. Die Spur wird auf der Karte darüber gezeichnet, für Spieler nur an Pins, die sie sehen dürfen."
       }
     },
     "gear": "Einstellungen",
@@ -132,7 +140,9 @@
       "list": "Pin-Liste",
       "pin": "Pin setzen",
       "route": "Route",
-      "key": "Kartenschlüssel"
+      "key": "Kartenschlüssel",
+      "where": "Wo sind wir?",
+      "area": "Neues Gebiet"
     },
     "List": {
       "title": "Pin-Liste",
@@ -328,7 +338,9 @@
       "Fog": "Der Nebel von Foundry ist anders gebaut als erwartet. Pins lassen sich nicht durch Erkunden entdecken.",
       "Route": "Die Route lässt sich nicht zeichnen oder messen.",
       "Key": "Die Seiten eines Kartenschlüssels lassen sich nicht anlegen.",
-      "Discover": "Das Entdecken von Pins liefert falsche Ergebnisse."
+      "Discover": "Das Entdecken von Pins liefert falsche Ergebnisse.",
+      "Party": "Der Ort der Gruppe oder die Kette der Karten darüber stimmt nicht.",
+      "Area": "Gebiete (Foundry-Zeichnungen) sind anders aufgebaut als erwartet."
     },
     "DEBUG": {
       "Title": "Debug-Datei",
@@ -415,6 +427,65 @@
       "time": "Reisezeit",
       "sharedHint": "Spieler sehen diese Route als gestrichelte Linie auf der Karte und in diesem Fenster, bis zum ersten Pin, den sie noch nicht entdeckt haben.",
       "unavailable": "Es gibt keine Route zu zeigen."
+    },
+    "Where": {
+      "title": "Wo sind wir?",
+      "tool": "Wo sind wir?",
+      "partyHere": "Die Gruppe ist hier",
+      "youHere": "Ihr seid hier",
+      "thisPlace": "Dieser Ort",
+      "partyIn": "Die Gruppe ist in {scene}",
+      "nobody": "Noch weiß niemand, wo die Gruppe ist.",
+      "noMap": "Der Ort der Gruppe ist auf keiner Karte zu sehen, die du kennst.",
+      "unknownPlace": "Ein unbekannter Ort",
+      "sourceManual": "Vom SL festgelegt",
+      "sourceAuto": "Automatisch erkannt",
+      "sourceHint": "Der SL kann den Ort festlegen. Sonst ist es die Szene, die alle Spieler im Spiel ansehen, sonst die aktive Szene.",
+      "mapAbove": "Karte darüber",
+      "openMap": "Diese Karte öffnen",
+      "setHere": "Gruppe nach {scene} setzen",
+      "auto": "Automatisch erkennen",
+      "clearTrail": "Spur löschen",
+      "clearTitle": "Spur löschen",
+      "clearText": "Alle Orte aus der Spur entfernen?",
+      "trailTitle": "Wo die Gruppe war",
+      "trailEmpty": "Noch keine Orte.",
+      "dayAt": "Tag {day}, {clock}",
+      "zoomIn": "Vergrößern",
+      "zoomOut": "Verkleinern",
+      "center": "Auf diesen Ort zentrieren",
+      "noPicture": "Diese Karte hat kein Bild zum Anzeigen.",
+      "empty": "Keine Karte, die du sehen darfst, hat einen Pin für diesen Ort."
+    },
+    "Area": {
+      "unnamed": "Gebiet ohne Namen",
+      "noRights": "Du darfst dieses Journal nicht lesen.",
+      "found": "Neues Gebiet: {name}",
+      "title": "Gebiet",
+      "isArea": "Diese Zeichnung ist ein Gebiet",
+      "isAreaHint": "Ein Gebiet hat eine Kategorie, ein Journal und eine Vorschau beim Darüberfahren, und es steht in der Pin-Liste.",
+      "category": "Kategorie",
+      "journal": "Journal",
+      "previewText": "Eigener Vorschautext",
+      "previewTextHint": "Wird in der Vorschau statt der ersten Zeilen des Journals gezeigt.",
+      "hidden": "Versteckt bis entdeckt",
+      "hiddenHint": "Spieler sehen dieses Gebiet nicht, bis sie seinen Boden erkunden oder du es aufdeckst. Foundry versteckt die Zeichnung ebenfalls.",
+      "reveal": "Für Spieler aufdecken…",
+      "noJournal": "Kein Journal",
+      "name": "Name",
+      "namePlaceholder": "Aschenreich",
+      "shapeHint": "Wähle eine Form und zeichne sie dann auf der Karte. Der Name wird zur großen Beschriftung.",
+      "newTitle": "Neues Gebiet",
+      "polygon": "Vieleck",
+      "rect": "Rechteck",
+      "ellipse": "Ellipse",
+      "draw": "Zeichne das Gebiet {name} auf die Karte. Ein Vieleck schließt du mit einem Doppelklick.",
+      "newTool": "Neues Gebiet",
+      "listTitle": "Gebiete",
+      "hasJournal": "Hat ein Journal",
+      "removeTitle": "Gebiet löschen",
+      "removeText": "Das Gebiet {name} löschen?",
+      "word": "Gebiet"
     }
   }
 }

@@ -13,6 +13,12 @@ import {askReveal, checkDiscovery, handleDiscover, onCreateNote, onDeleteNote, o
   setHidden, setQuest, startDiscovery, stopDiscovery} from "./discover.mjs";
 import {isDiscovered} from "./discover-logic.mjs";
 import {keyDialog, makeKey} from "./map-key.mjs";
+import {applyAreaState, areasOf, checkAreaDiscovery, describeArea, askRevealArea, cancelArea, cleanAreaChanges, newArea, onAreaChanged, onAreaDeleted,
+  onCreateArea, onPreCreateDrawing, refreshAreaHover, onRenderDrawingConfig, restyleAreas, revealArea, setAreaHidden, startAreas, stopAreas,
+  syncAreaColors} from "./areas.mjs";
+import {clearParty, markNote, partyScene, partyState, refreshParty, setParty, startParty, trailList, updateParty,
+  whereAreWe} from "./party.mjs";
+import {openWhere, refreshWhere} from "./where-app.mjs";
 import {bindMenu} from "./pin-menu.mjs";
 import {addStop, bindRoutePick, canBuildRoute, clearRoute, currentRoutes, drawRoute, openRoute, refreshRoute,
   routeAvailable} from "./route.mjs";
@@ -26,7 +32,7 @@ import {categoryList, invalidate} from "./state.mjs";
 import {registerUsage} from "./usage.mjs";
 
 /** The tools in the notes controls. */
-const TOOLS = {list: "smpList", pin: "smpPin", route: "smpRoute", key: "smpKey"};
+const TOOLS = {list: "smpList", pin: "smpPin", route: "smpRoute", key: "smpKey", where: "smpWhere", area: "smpArea"};
 
 /** Redraw what the module shows after a language or look change. */
 function redraw() {
@@ -40,6 +46,7 @@ function redraw() {
 function restyle() {
   invalidate();
   restyleAll();
+  restyleAreas();
   refreshList();
 }
 
@@ -53,10 +60,19 @@ Hooks.once("init", () => {
     },
     restyle,
     categories: restyle,
+    categoryColors: () => syncAreaColors().catch(err => console.warn(`${MODULE_ID} | Could not update area colors`, err)),
+    party: () => {
+      refreshParty();
+      refreshWhere();
+      ui.controls?.render({reset: true});
+    },
     privatePins: restyle,
     notesOn: onNotesOnChanged,
     playerPins: () => ui.controls?.render({reset: true}),
-    discover: () => checkDiscovery(),
+    discover: () => {
+      checkDiscovery();
+      checkAreaDiscovery();
+    },
     route: refreshRoute,
     openList,
     openCategories,
@@ -66,9 +82,10 @@ Hooks.once("init", () => {
   registerUsage(MODULE_ID, {
     features: ["listOpened", "previewShown", "pinsNumbered", "categoryCreated", "playerPinRequested",
       "playerPinCreated", "sceneLinkOpened", "pinCushionMigrated", "pinDiscovered", "pinRevealed", "mapKeyMade",
-      "routeBuilt", "questSet"],
+      "routeBuilt", "questSet", "whereAsked", "partyPlaced", "areaCreated", "areaDiscovered", "areaRevealed",
+      "areaPreviewShown"],
     settings: ["theme", "labelMode", "noBackground", "constantSize", "preview", "autoNumber", "playerPins",
-      "discoverDefault", "discoverAuto", "pace", "routePlayers", "keyText"]
+      "discoverDefault", "discoverAuto", "pace", "routePlayers", "keyText", "whereOn", "partyTrail"]
   });
   registerDebug();
   registerKeys();
@@ -76,10 +93,15 @@ Hooks.once("init", () => {
   Hooks.on("getSceneControlButtons", onGetSceneControlButtons);
   Hooks.on("drawNote", applyStyle);
   Hooks.on("refreshNote", applyStyle);
+  Hooks.on("drawNote", markNote);
+  Hooks.on("refreshNote", markNote);
+  Hooks.on("drawDrawing", applyAreaState);
+  Hooks.on("refreshDrawing", applyAreaState);
   Hooks.on("hoverNote", onHoverNote);
   Hooks.on("canvasPan", () => {
     scheduleZoomUpdate();
     followPin();
+    refreshAreaHover();
   });
   Hooks.on("canvasReady", () => {
     bindStage();
@@ -88,12 +110,17 @@ Hooks.once("init", () => {
     hidePreview();
     updateZoom();
     startDiscovery();
+    startAreas();
     drawRoute();
+    refreshParty();
     refreshList();
   });
   Hooks.on("canvasTearDown", () => {
     hidePreview();
     stopDiscovery();
+    stopAreas();
+    clearParty();
+    cancelArea();
     clearRoute();
   });
   Hooks.on("sightRefresh", () => scheduleCheck());
@@ -101,6 +128,33 @@ Hooks.once("init", () => {
     if ( (scene === canvas.scene) && changes?.flags && (MODULE_ID in changes.flags) ) refreshRoute();
   });
   Hooks.on("renderNoteConfig", onRenderNoteConfig);
+  Hooks.on("renderDrawingConfig", onRenderDrawingConfig);
+  Hooks.on("preCreateDrawing", onPreCreateDrawing);
+  Hooks.on("preUpdateDrawing", (doc, changes) => cleanAreaChanges(doc, changes));
+  Hooks.on("createDrawing", onCreateArea);
+  Hooks.on("createDrawing", doc => onAreaChanged(doc));
+  Hooks.on("updateDrawing", onAreaChanged);
+  Hooks.on("deleteDrawing", onAreaDeleted);
+  Hooks.on("deleteDrawing", () => refreshList());
+  for ( const event of ["createDrawing", "updateDrawing"] ) Hooks.on(event, () => refreshList());
+  // The pins that open a scene decide where the party shows on the maps above
+  const linksChanged = () => {
+    refreshParty();
+    refreshWhere();
+  };
+  Hooks.on("createNote", linksChanged);
+  Hooks.on("deleteNote", linksChanged);
+  Hooks.on("updateNote", (doc, changes) => {
+    if ( (changes?.flags && (MODULE_ID in changes.flags)) || ("x" in changes) || ("y" in changes) ) linksChanged();
+  });
+  for ( const event of ["createScene", "deleteScene"] ) Hooks.on(event, () => {
+    refreshParty();
+    updateParty();
+  });
+  Hooks.on("updateScene", (scene, changes) => {
+    if ( "active" in changes ) updateParty();
+  });
+  Hooks.on("userConnected", () => updateParty());
   Hooks.on("preCreateNote", (doc, data, options, userId) => {
     cleanNewNote(doc);
     onPreCreateNote(doc, data, options, userId);
@@ -174,6 +228,32 @@ Hooks.once("init", () => {
     addToRoute: noteOrId => addStop(typeof noteOrId === "string" ? noteOrId : (noteOrId?.document ?? noteOrId)?.id),
     /** The routes this user sees: [{id, stops, distance, units, hours, pace}]. */
     routes: currentRoutes,
+    /**
+     * Where the party is: {scene (id or null), source ("manual", "players", "active" or "tokens"), manual (the scene set
+     * by hand or ""), since (world time)}.
+     */
+    party: () => ({...partyState(), scene: partyScene()?.id ?? null}),
+    /** Set the place of the party by hand (GM), or null to follow it automatically again. */
+    setParty: sceneOrId => setParty(sceneOrId),
+    /** Look where the party is now (active GM). Returns whether something changed. */
+    updateParty: options => updateParty(options),
+    /** The places the party visited, newest first: [{scene, name, date, known}]. */
+    trail: trailList,
+    /** What the control "Where are we?" does: pans to the marker, or opens the quick look at the map above. */
+    whereAreWe,
+    /** Open the quick look at the map above a scene (the viewed scene by default). */
+    openWhere: sceneId => openWhere(sceneId ?? canvas.scene?.id),
+    /** The areas of a scene (drawings with the area flag) that this user may see: [{id, name, category, hidden, entry}]. */
+    areas: scene => areasOf(scene ?? canvas.scene).filter(doc => !describeArea(doc).undiscovered).map(doc => ({id: doc.id, name: doc.text, category: doc.flags?.[MODULE_ID]?.category ?? "",
+      hidden: doc.flags?.[MODULE_ID]?.hidden === true, entry: doc.flags?.[MODULE_ID]?.entry ?? ""})),
+    /** Ask for a new area and let the GM draw its shape (GM). */
+    newArea,
+    /** Reveal an area for players or hide it again (GM). Options as for discover. */
+    revealArea: (drawing, options = {all: true}) => revealArea(drawing?.document ?? drawing, options),
+    /** Ask the GM whom to reveal an area to (GM). */
+    askRevealArea: drawing => askRevealArea(drawing?.document ?? drawing),
+    /** Hide an area until it is discovered, or show it like any drawing again (GM). */
+    setAreaHidden: (drawing, hidden = true) => setAreaHidden(drawing?.document ?? drawing, !!hidden),
     /** Take over the look of Pin Cushion's pins (GM). Options: {scope: "scene"|"all", dryRun}. */
     takeOverPins: migratePinCushion,
     /** Check the module (GM). */
@@ -194,6 +274,7 @@ Hooks.once("ready", async () => {
   await languageReady;
   registerSocket({discover: handleDiscover});
   applyNotesToggle(false);
+  startParty();
   noticeNewVersions();
 });
 
@@ -245,7 +326,13 @@ function onGetSceneControlButtons(controls) {
     tools.push({name: TOOLS.route, title: "SMP.Tool.route", icon: "fa-solid fa-route", button: true, visible: true,
       onChange: () => openRoute()});
   }
+  if ( setting("whereOn") ) {
+    tools.push({name: TOOLS.where, title: "SMP.Tool.where", icon: "fa-solid fa-location-dot", button: true, visible: true,
+      onChange: () => whereAreWe()});
+  }
   if ( game.user.isGM ) {
+    tools.push({name: TOOLS.area, title: "SMP.Tool.area", icon: "fa-solid fa-draw-polygon", button: true, visible: true,
+      onChange: () => newArea()});
     tools.push({name: TOOLS.key, title: "SMP.Tool.key", icon: "fa-solid fa-book-open", button: true, visible: true,
       onChange: () => keyDialog()});
   }

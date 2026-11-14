@@ -3,19 +3,22 @@
  * the pin and pings it, a double click opens it. Players see only the pins they may see.
  */
 
-import {DEFAULT_NOTE_ICON, MODULE_ID, TEMPLATES, addSettingsGear, esc, flagsOf, isShown, isV14, onOtherLevel, setting, t}
+import {DEFAULT_NOTE_ICON, MODULE_ID, TEMPLATES, addSettingsGear, esc, flagsOf, isShown, onOtherLevel, setting, t}
   from "./config.mjs";
-import {hiddenPrivatePin, mayEditPin} from "./pin-logic.mjs";
+import {mayEditPin} from "./pin-logic.mjs";
+import {pinVisible} from "./visibility.mjs";
 import {askReveal, setQuest} from "./discover.mjs";
-import {foundList, isHiddenPin, nextQuest, undiscoveredFor} from "./discover-logic.mjs";
+import {foundList, isHiddenPin, nextQuest} from "./discover-logic.mjs";
 import {keyDialog} from "./map-key.mjs";
 import {addStop, canBuildRoute, openRoute, routeAvailable} from "./route.mjs";
 import {describePin, restyleAll} from "./note-style.mjs";
-import {categoryList, hiddenCategories, localFound, setCategoryHidden} from "./state.mjs";
+import {categoryList, hiddenCategories, setCategoryHidden} from "./state.mjs";
 import {editPlayerPin, deletePlayerPin, playerPinsAvailable, startPlayerPin} from "./player-pins.mjs";
 import {noteOf, openPin} from "./open-pin.mjs";
 import {openCategories} from "./categories-app.mjs";
 import {numberDialog} from "./numbering.mjs";
+import {areaRows, askRevealArea, focusArea, newArea, openAreaJournal} from "./areas.mjs";
+import {whereAreWe} from "./party.mjs";
 import {countFeature, markUsed} from "./usage.mjs";
 
 const {ApplicationV2, HandlebarsApplicationMixin} = foundry.applications.api;
@@ -56,7 +59,12 @@ export class PinListApp extends HandlebarsApplicationMixin(ApplicationV2) {
       quest: PinListApp.#onQuest,
       route: PinListApp.#onRoute,
       addToRoute: PinListApp.#onAddToRoute,
-      key: PinListApp.#onKey
+      key: PinListApp.#onKey,
+      where: PinListApp.#onWhere,
+      newArea: PinListApp.#onNewArea,
+      editArea: PinListApp.#onEditArea,
+      removeArea: PinListApp.#onRemoveArea,
+      revealArea: PinListApp.#onRevealArea
     }
   };
 
@@ -78,18 +86,7 @@ export class PinListApp extends HandlebarsApplicationMixin(ApplicationV2) {
    */
   #notes() {
     if ( !canvas.ready || !canvas.scene ) return [];
-    return canvas.scene.notes.contents.filter(doc => {
-      const flags = flagsOf(doc);
-      if ( hiddenPrivatePin(flags, game.user.id, game.user.isGM) ) return false;
-      if ( undiscoveredFor(flags, game.user.id, game.user.isGM) && !localFound.has(doc.id) ) return false;
-      if ( game.user.isGM || flags.private ) return true;
-      const journal = doc.page ?? doc.entry;
-      if ( journal ) return journal.testUserPermission(game.user, "LIMITED");
-      // Without a journal Foundry 13 shows the pin to everybody, Foundry 14 only when a player wrote it
-      // (the module shows pins that link to a scene as Foundry 13 does)
-      if ( !isV14() || flags.scene ) return true;
-      return (doc._source.author === null) || !(doc.author?.isGM ?? true);
-    });
+    return canvas.scene.notes.contents.filter(doc => pinVisible(doc));
   }
 
   /** @override */
@@ -97,6 +94,10 @@ export class PinListApp extends HandlebarsApplicationMixin(ApplicationV2) {
     const hidden = hiddenCategories();
     const notes = this.#notes();
     const counts = new Map();
+    const areas = areaRows();
+    for ( const area of areas ) {
+      if ( area.categoryId ) counts.set(area.categoryId, (counts.get(area.categoryId) ?? 0) + 1);
+    }
     const pins = notes.map(doc => {
       const d = describePin({document: doc});
       const cat = d.category;
@@ -133,7 +134,9 @@ export class PinListApp extends HandlebarsApplicationMixin(ApplicationV2) {
       || a.name.localeCompare(b.name, game.i18n.lang));
     return {
       pins,
-      empty: !pins.length,
+      areas,
+      empty: !pins.length && !areas.length,
+      showWhere: setting("whereOn"),
       search: this.#search,
       isGM: game.user.isGM,
       canRoute: routeAvailable(),
@@ -159,7 +162,11 @@ export class PinListApp extends HandlebarsApplicationMixin(ApplicationV2) {
         reveal: t("SMP.List.reveal"),
         hiddenPin: t("SMP.List.hiddenPin"),
         hiddenShort: t("SMP.List.hiddenShort"),
-        questCycle: t("SMP.List.questCycle")
+        questCycle: t("SMP.List.questCycle"),
+        where: t("SMP.Where.tool"),
+        newArea: t("SMP.Area.newTool"),
+        areas: t("SMP.Area.listTitle"),
+        areaJournal: t("SMP.Area.hasJournal")
       }
     };
   }
@@ -181,19 +188,27 @@ export class PinListApp extends HandlebarsApplicationMixin(ApplicationV2) {
       this.#filter();
     });
     for ( const row of this.element.querySelectorAll(".smp-pin") ) {
+      const isArea = row.dataset.kind === "area";
+      const focus = () => (isArea ? focusArea(canvas.scene.drawings.get(row.dataset.id))
+        : focusPin(canvas.scene.notes.get(row.dataset.id)));
+      const open = () => {
+        if ( !isArea ) return openPin(canvas.scene.notes.get(row.dataset.id));
+        const doc = canvas.scene.drawings.get(row.dataset.id);
+        if ( !openAreaJournal(doc) ) focusArea(doc);
+      };
       row.addEventListener("click", event => {
         if ( event.target.closest("button") ) return;
-        focusPin(canvas.scene.notes.get(row.dataset.id));
+        focus();
       });
       row.addEventListener("dblclick", event => {
         if ( event.target.closest("button") ) return;
-        openPin(canvas.scene.notes.get(row.dataset.id));
+        open();
       });
       row.addEventListener("keydown", event => {
-        if ( event.key === "Enter" ) openPin(canvas.scene.notes.get(row.dataset.id));
+        if ( event.key === "Enter" ) open();
         else if ( event.key === " " ) {
           event.preventDefault();
-          focusPin(canvas.scene.notes.get(row.dataset.id));
+          focus();
         }
       });
     }
@@ -222,6 +237,43 @@ export class PinListApp extends HandlebarsApplicationMixin(ApplicationV2) {
    */
   static #note(target) {
     return canvas.scene?.notes.get(target.closest("[data-id]")?.dataset.id);
+  }
+
+  /**
+   * The drawing document of a clicked area row.
+   * @param {HTMLElement} target
+   * @returns {DrawingDocument|undefined}
+   */
+  static #area(target) {
+    return canvas.scene?.drawings.get(target.closest("[data-id]")?.dataset.id);
+  }
+
+  static #onWhere() {
+    whereAreWe();
+  }
+
+  static #onNewArea() {
+    newArea();
+  }
+
+  static #onEditArea(event, target) {
+    PinListApp.#area(target)?.sheet.render(true);
+  }
+
+  static async #onRemoveArea(event, target) {
+    const doc = PinListApp.#area(target);
+    if ( !doc || !game.user.isGM ) return;
+    const sure = await foundry.applications.api.DialogV2.confirm({
+      window: {title: t("SMP.Area.removeTitle"), icon: "fa-solid fa-trash"},
+      content: `<p>${esc(t("SMP.Area.removeText", {name: doc.text || t("SMP.Area.unnamed")}))}</p>`,
+      rejectClose: false
+    });
+    if ( sure ) await doc.delete();
+  }
+
+  static #onRevealArea(event, target) {
+    const doc = PinListApp.#area(target);
+    if ( doc ) askRevealArea(doc);
   }
 
   static async #onToggleCategory(event, target) {

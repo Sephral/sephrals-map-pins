@@ -1,6 +1,6 @@
 # Sephral’s Map Pins
 
-**Pins on a big map you can finally read: names that stay visible, numbers that count up, a preview when you point at one, pins your players discover as they explore, quest marks, a keyed handout and travel routes.**
+**Pins on a big map you can finally read: names that stay visible, numbers that count up, a preview when you point at one, pins your players discover, quest marks, routes, the party's place on the map and labeled realms.**
 
 [![Install by link](https://img.shields.io/badge/Foundry%20VTT-Install%20by%20link-fe6a1f?logo=foundryvirtualtabletop&logoColor=white)](#install)
 [![Join Discord](https://img.shields.io/badge/Discord-Join%20the%20community-5865F2?logo=discord&logoColor=white)](https://discord.gg/7BjCgDYaBP)
@@ -10,20 +10,20 @@
 
 ## Highlights
 
-* **Pins you discover:** hide a pin until your players find it. It appears for each player when their characters explore its place, or when you reveal it for everyone or chosen players, with a short ping.
-* **Quest marks:** a small mark shows a quest as open, done or failed, on the pin and in the list.
-* **Map key:** one click makes a journal with a page per numbered pin in number order. Update it later and your own notes stay.
-* **Routes and travel time:** pick pins in order on your overland map and see the distance in your scene's units and the time at a slow, normal or fast pace. Share the route with your players, it stops before the first pin they do not know yet.
-* **Readable pins:** labels that stay visible, no dark box, and a size that holds as you zoom. Pins can fade out below a zoom you choose.
-* **Numbers:** a clean badge with `12` or `B3`. New pins count up by themselves, and one click numbers a whole scene. A journal called `12. Hall` hands its number to its pin.
-* **Categories:** quest, shop, danger or your own, each with a color ring and a symbol. Players can hide categories for themselves.
-* **Preview on hover:** the title, the first picture and the first lines of the journal, only for those who may read them. Secrets never reach the card.
-* **Pin list:** search and filter every pin of the scene. A click pans to it, a double click opens it.
-* **Pins by players:** a player clicks the map and writes a name and a text. The GM confirms, or lets it through.
+* **Where are we?** The pin of the place the party is in lights up on your overland map, "The party is here" for you and "You are here" for your players. From inside the dungeon, one click shows the map above, with a trail of dates.
+* **Areas:** a realm, a faction's land or a danger zone with a large label in its category color and a journal preview on hover. Hide it until your players explore it or you reveal it.
+* **Pins you discover:** hide a pin until your players find it, by exploring its place or by your reveal.
+* **Quest marks:** open, done or failed, on the pin and in the list.
+* **Map key:** one click makes a handout with a page per numbered pin.
+* **Routes and travel time:** pick pins in order to see distance and time, and share the route with your players.
+* **Readable pins:** labels that stay visible, no dark box, a steady size while you zoom, numbers like `12` or `B3`, and categories with a color ring.
+* **Preview on hover:** title, picture and first lines of the journal, only for those who may read them.
+* **Pin list:** search and filter every pin of the scene.
+* **Pins by players:** players click the map to add a pin, and you confirm.
 * **Scene links:** a double click on a pin switches to another scene.
-* **Bring your old pins:** one button takes over the look another pin module left on your notes.
+* **Bring your old pins:** one button takes over the look of your old pins.
 
-Everything works on normal Foundry notes. Switch the module off and your pins are still there.
+Everything works on normal Foundry notes and drawings. Switch the module off and your pins are still there.
 
 ## How it works
 
@@ -51,7 +51,7 @@ Foundry VTT 13 and 14 · any game system · English and German
 
 ## Learn more
 
-Every setting, the rights of the preview, what other players' browsers receive and the macro API are explained in the [manual](MANUAL.md). Questions or ideas? Join us on [Discord](https://discord.gg/7BjCgDYaBP). Looking for more? See [all modules by Sephral](https://github.com/Sephral).
+Every setting and the macro API are explained in the [manual](MANUAL.md). Questions or ideas? Join us on [Discord](https://discord.gg/7BjCgDYaBP). Looking for more? See [all modules by Sephral](https://github.com/Sephral).
 
 ## License
 

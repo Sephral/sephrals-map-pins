@@ -1,0 +1,30 @@
+<fieldset class="smp-area-config smp-app" data-smp-theme="{{theme}}">
+  <legend><i class="fa-solid fa-draw-polygon" inert></i> {{text.title}}</legend>
+  <div class="form-group">
+    <label>{{text.isArea}}</label>
+    <div class="form-fields"><input type="checkbox" name="{{prefix}}.area" {{#if values.area}}checked{{/if}}></div>
+    <p class="hint">{{text.isAreaHint}}</p>
+  </div>
+  <div class="form-group">
+    <label>{{text.category}}</label>
+    <div class="form-fields"><select name="{{prefix}}.category">{{#each choices.category}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select></div>
+  </div>
+  <div class="form-group">
+    <label>{{text.journal}}</label>
+    <div class="form-fields"><select name="{{prefix}}.entry">{{#each choices.entry}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select></div>
+  </div>
+  <div class="form-group">
+    <label>{{text.previewText}}</label>
+    <div class="form-fields"><textarea name="{{prefix}}.previewText" rows="3" maxlength="600">{{values.previewText}}</textarea></div>
+    <p class="hint">{{text.previewTextHint}}</p>
+  </div>
+  <div class="form-group">
+    <label>{{text.hidden}}</label>
+    <div class="form-fields">
+      <input type="checkbox" name="{{prefix}}.hidden" {{#if values.hidden}}checked{{/if}}>
+      {{#if existing}}{{#if values.hidden}}<button type="button" data-smp-reveal><i class="fa-solid fa-eye" inert></i> {{text.reveal}}</button>{{/if}}{{/if}}
+    </div>
+    <p class="hint">{{text.hiddenHint}}</p>
+    {{#if foundText}}<p class="hint">{{foundText}}</p>{{/if}}
+  </div>
+</fieldset>

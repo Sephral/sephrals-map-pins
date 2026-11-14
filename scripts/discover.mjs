@@ -182,7 +182,14 @@ export function onDeleteNote(doc) {
  * @param {object} changes
  */
 export function onUpdateNote(doc, changes) {
-  if ( !changes?.flags || !(MODULE_ID in changes.flags) || (doc.parent !== canvas.scene) ) return;
+  if ( !changes?.flags || !(MODULE_ID in changes.flags) ) return;
+  // A pin on another map that the GM just revealed for this player (the party arrived): the note only
+  if ( doc.parent !== canvas.scene ) {
+    if ( !game.user.isGM && changes.flags[MODULE_ID].found && isHiddenPin(flagsOf(doc)) && isDiscovered(flagsOf(doc), game.user.id) ) {
+      announce(doc);
+    }
+    return;
+  }
   // The saved flags decide from here on, not the pin shown a moment ago
   localFound.delete(doc.id);
   refreshPin(doc);
@@ -199,7 +206,7 @@ export function onUpdateNote(doc, changes) {
 /* -------------------------------------------- */
 
 /**
- * The socket request of a player: these pins are in explored ground. The active GM checks that the pins are hidden
+ * The socket request of a player: these pins (and areas) are in explored ground. The active GM checks that the pins are hidden
  * pins of the scene and writes the user into their found lists.
  * @param {object} message
  * @param {User} sender
@@ -221,7 +228,23 @@ export async function handleDiscover(message, sender) {
     await scene.updateEmbeddedDocuments("Note", updates);
     countFeature(MODULE_ID, "pinDiscovered");
   }
-  return updates.length ? {ok: true, count: updates.length} : {ok: false, reason: "none"};
+  // Areas (drawings with the module's area flag) are found the same way
+  const areaIds = Array.isArray(message.drawingIds) ? message.drawingIds.slice(0, 50).map(String) : [];
+  const areaUpdates = [];
+  for ( const id of new Set(areaIds) ) {
+    const drawing = scene.drawings.get(id);
+    if ( !drawing ) continue;
+    const flags = flagsOf(drawing);
+    if ( (flags.area !== true) || !isHiddenPin(flags) || isDiscovered(flags, sender.id)
+      || blockedList(flags).includes(sender.id) ) continue;
+    areaUpdates.push({_id: id, flags: {[MODULE_ID]: {found: changeFound(foundList(flags), {add: [sender.id]})}}});
+  }
+  if ( areaUpdates.length ) {
+    await scene.updateEmbeddedDocuments("Drawing", areaUpdates);
+    countFeature(MODULE_ID, "areaDiscovered");
+  }
+  const count = updates.length + areaUpdates.length;
+  return count ? {ok: true, count} : {ok: false, reason: "none"};
 }
 
 /**
@@ -262,10 +285,11 @@ export async function revealPin(doc, {all = false, users = [], hideFor = [], res
 
 /**
  * Ask the GM whom to reveal a pin to, then do it. The window offers everybody, chosen players and hiding again.
- * @param {NoteDocument} doc
+ * @param {NoteDocument|DrawingDocument} doc
+ * @param {object} [options]   For an area: its name and the function that reveals it
  * @returns {Promise<boolean>} Whether something was done
  */
-export async function askReveal(doc) {
+export async function askReveal(doc, {name = null, apply = null} = {}) {
   const found = foundList(flagsOf(doc));
   const rows = game.users.filter(u => !u.isGM).map(user => {
     const knows = found.includes(EVERYBODY) || found.includes(user.id);
@@ -275,7 +299,7 @@ export async function askReveal(doc) {
       <small>${esc(user.active ? t("SMP.Reveal.online") : "")}${knows ? ` ${esc(t("SMP.Reveal.knows"))}` : ""}</small></label>`;
   });
   const content = `<div class="smp-app smp-reveal" data-smp-theme="${esc(setting("theme"))}">
-    <p class="smp-reveal-name-line">${esc(describePin({document: doc}).label)}</p>
+    <p class="smp-reveal-name-line">${esc(name ?? describePin({document: doc}).label)}</p>
     <p class="hint">${esc(t(isHiddenPin(flagsOf(doc)) ? "SMP.Reveal.hint" : "SMP.Reveal.hintVisible"))}</p>
     <div class="smp-reveal-users">${rows.join("") || `<p>${esc(t("SMP.Reveal.noPlayers"))}</p>`}</div></div>`;
   const checked = button => [...button.form.querySelectorAll("input[name=user]:checked")].map(i => i.value);
@@ -297,7 +321,7 @@ export async function askReveal(doc) {
     ]
   });
   if ( !result ) return false;
-  await revealPin(doc, result);
+  await (apply ?? revealPin)(doc, result);
   return true;
 }
 

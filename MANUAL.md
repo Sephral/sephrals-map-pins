@@ -1,6 +1,6 @@
 # Sephral’s Map Pins: Manual
 
-Map Pins changes how Foundry's map notes (the pins on a scene) look and gives you a list, a preview, pins that players set, pins that players discover, quest marks, a map key and routes with travel time. Everything works on normal Foundry notes. Switch the module off and every pin is still a valid note, only the extras are gone.
+Map Pins changes how Foundry's map notes (the pins on a scene) look and gives you a list, a preview, pins that players set, pins that players discover, quest marks, a map key, routes with travel time, the party's place on the maps above and labeled areas. Everything works on normal Foundry notes and drawings. Switch the module off and every pin is still a valid note and every area a drawing with its shape, color and label, only the extras are gone.
 
 ## The note dialog
 
@@ -52,6 +52,44 @@ A pin stays discovered for the player. The list of players who found it is part 
 ## Quest marks
 
 A pin can have a quest state: open, done or failed. It shows as a small round mark at the lower right of the pin, in orange, green or red, and in the preview card and the pin list. The GM sets it in the note dialog, in the pin menu, with the flag button in the pin list (it goes through open, done, failed and none), or with `api.setQuest`. Players see the state of the pins they see and cannot change it. The map key lists the state on each page. The state lives on the pin only, it is not synced with text in the journal.
+
+## Where are we?
+
+On an overland or region map the module shows where the party is. A pin that opens a scene (see *Opening a scene from a pin*) gets a marker when the party is in that scene: a gold ring and a banner above the pin, *The party is here* for the GM and *You are here* for players. A pin on a map further up is marked too when the party is in a place that map leads to over other maps (a dungeon opened from a town opened from a region: the town pin on the region map and the dungeon pin on the town map are both marked). The marker follows the rights of the pin: a player who has not discovered a hidden pin, or has switched its category off, does not see the marker on it either.
+
+**Where the party is.** In this order:
+
+1. The place the GM set by hand (*Place the party in …* in the *Where are we?* window, or `api.setParty`). *Find it automatically* lifts it.
+2. The scene that all online players look at. This covers a GM who pulled everybody to a scene and a party that went there together. One player peeking at another map does not move the party, because the players then look at different scenes.
+3. The active scene.
+4. The scene with the most player character tokens, only when there is no active scene.
+
+Only the active GM works it out, looks every few seconds, and writes the answer to a world setting that every client reads, so the GM and all players see the same place. A change must show twice in a row before it counts. Without a GM online the last answer stays.
+
+**The control.** *Where are we?* sits in the notes controls (and in the pin list). On a map that shows the party it pans to the marker. In a scene that a pin on another map opens, it opens the quick look: a small window with the picture of the map above, centered on the pin that opens the scene, with the pins that the user may see, the party's marker, the trail and, for the GM, buttons to place the party and to clear the trail. The look reads the scene data and draws plain elements. It does not switch anybody's view, so it never pulls a player out of their scene and never moves the party. *Open this map* switches the user's own view when they may view that map. When several maps have a pin for the scene, a choice list picks the map. A player sees only maps they may view and only pins they may see.
+
+**The trail.** With the setting *Keep a trail of visited places* the active GM notes every place the party arrives at, with the world time (the world's calendar formats it when there is one). The trail is drawn on a map as a dotted gold line with the date at each stop, the last stops only. Places in one spot on the map count as one stop. Players see only stops whose pin they may see, and the window names a place only when the player may view that scene. *Clear trail* empties it.
+
+## Areas
+
+An area is a labeled shape on a map: a realm, the land of a faction, a danger zone. It is an ordinary Foundry **drawing** (rectangle, ellipse or polygon with a text label) with flags of this module.
+
+*Why drawings:* players see drawings on Foundry 13 and 14, the label is real text that stays readable, they are documents of the scene (saved, copied and exported with it) and the GM already knows how to draw and edit them. Regions are not drawn for players and have no label. Without the module an area is still a drawing with its shape, its color and its large label, and a hidden area is still hidden (see below).
+
+**Making an area.** *New area* in the pin list or the notes controls asks for a name, a category, a journal and whether the area starts hidden, then starts Foundry's drawing tool for the shape you pick. The next shape you draw becomes the area: the name is the large label (sized to the shape), the fill and line take the color of the category. You can also open any drawing, tick *This drawing is an area* in the section *Area* and fill the fields. Unticking removes the module's flags and keeps the drawing. A category's color is applied when the category is set and when the category's color changes.
+
+| Field | What it does |
+| --- | --- |
+| Category | A world category (the same ones as for pins). The area is drawn in its color. A player who switches the category off for themselves does not see the area, and its row in the pin list is dimmed. |
+| Journal | A journal of the world. Hovering the area shows the same rights checked preview card as for a pin. |
+| Own preview text | Shown in the card instead of the first lines of the journal. An area without a journal shows a card only when it has this text. |
+| Hidden until discovered | Players do not see the area until they discover it. |
+
+**The pin list** has a section *Areas* below the pins: a click pans and zooms to the area, a double click opens its journal when the user may read it. The GM has buttons to reveal, edit and delete. The category buttons and the search work for areas too.
+
+**The preview card.** When the pointer rests inside an area, the card shows the title, the category and the journal's first lines and picture, only as far as Foundry's permissions allow (Observer reads, Limited shows the title only, otherwise no card). Secrets of journals never reach the card. Where areas overlap, the smallest one under the pointer wins, and a pin or a token under the pointer wins over the area. No card shows while the drawing tools are active.
+
+**Hidden areas.** A hidden area is not shown to a player before they discover it, not on the map, not in the list, not in a preview. Discovery works as for pins: the area is found when its ground is explored by a player's token (the module looks at up to forty points inside the shape against the fog exploration and the token's sight, so a realm is found when its edge is entered), or the GM reveals it (*For everyone*, *For ticked*, *Hide again* in the same window as for pins, or `api.revealArea`). The found list is stored in the area's flags. Foundry's own *hidden* mark of the drawing is set too, so the area stays hidden from players when the module is off. Revealing for everybody lifts that mark, hiding again sets it. As with pins, the interface hides what a player may not see, but the scene's data still reaches the browser, so a player who looks into the browser's tools can find a hidden area.
 
 ## The pin menu
 
@@ -156,6 +194,8 @@ The first button, *Sephral’s Modules*, and the module settings:
 | Travel pace | Slow, normal or fast, for the travel time of routes. |
 | Slow, normal and fast pace | Scene units per hour for each pace. |
 | Hours of travel per day | How many hours a day of travel has. |
+| Show where the party is | The marker on the maps above, the control *Where are we?* and the party's place. |
+| Keep a trail of visited places | The active GM notes the places with the world time. |
 | Players can build routes | Every player builds a route of their own. |
 | Players may set pins only they see | Allows private pins. |
 | Most pins per player and scene | A limit for the pins one player sets. |
@@ -168,7 +208,7 @@ The key that opens the pin list has no default. Choose one in Foundry's key sett
 
 ## Self test
 
-The settings button *Run self test* (GM) checks after a Foundry update that everything the module relies on is there: the note and its pieces, the window classes, the socket, the templates and the texts. It also tests the safe preview text with a secret section and a script. It also tests the logic of discovered pins, routes and the map key and, with a scene open, the fog of war functions that discovery reads and the layer routes are drawn on. The module was verified with Foundry 14.370. When Foundry is newer, the GM gets a hint once.
+The settings button *Run self test* (GM) checks after a Foundry update that everything the module relies on is there: the note and its pieces, the window classes, the socket, the templates and the texts. It also tests the safe preview text with a secret section and a script. It also tests the logic of discovered pins, routes and the map key, the party's place with the chain of maps above it, areas and their drawing class and, with a scene open, the fog of war functions that discovery reads, the layer routes are drawn on and the size of the scene the quick look reads. The module was verified with Foundry 14.370. When Foundry is newer, the GM gets a hint once.
 
 ## Debug file
 
@@ -195,6 +235,17 @@ The first button in the module settings, *Sephral’s Modules* (GMs only), opens
 | `askReveal(note)` | GM. Opens the window that asks whom to reveal the pin to. |
 | `setQuest(note, state)` | GM. `"open"`, `"done"`, `"failed"` or `""` for none. |
 | `mapKey(scene, options)` | GM. Makes or updates the map key. Options: `text` (`"lines"`, `"full"`, `"title"`), `open`. Returns `{journal, created, updated, kept, removed}`. Without options the GM is asked. |
+| `party()` | Where the party is: `{scene, source, manual, since}`. `scene` is an id or null, `source` is `"manual"`, `"players"`, `"active"` or `"tokens"`. |
+| `setParty(scene)` | GM. Places the party in a scene (or its id) by hand, `null` finds it automatically again. |
+| `updateParty({force})` | Active GM. Looks where the party is now. Returns whether something was written. |
+| `trail()` | The places the party visited, newest first: `[{scene, name, date, known}]`. |
+| `whereAreWe()` | What the control does: pans to the marker, or opens the quick look. Returns `"focus"`, `"look"` or `"none"`. |
+| `openWhere(sceneId)` | Opens the quick look at the map above a scene (the viewed scene by default). |
+| `areas(scene)` | The areas of a scene: `[{id, name, category, hidden, entry}]`. |
+| `newArea()` | GM. Asks for a new area and starts the drawing tool. |
+| `revealArea(drawing, options)` | GM. Reveals an area. Options as for `discover`. |
+| `askRevealArea(drawing)` | GM. Opens the window that asks whom to reveal the area to. |
+| `setAreaHidden(drawing, hidden)` | GM. Hides an area until it is discovered, or shows it like any drawing. |
 | `openRoute()` | Opens the route window. |
 | `addToRoute(note)` | Adds a pin (or a note id) to your route, the GM's route for a GM. |
 | `routes()` | The routes you see: `[{id, stops, distance, units, hours, pace}]`. `id` is `main` for the route you build and `shared` for the one the GM shared. |
@@ -204,7 +255,7 @@ The first button in the module settings, *Sephral’s Modules* (GMs only), opens
 | `runSelfTest()` | GM. Runs the self test. |
 | `saveDebugFile()` | GM. Saves the debug file. |
 
-The module stores its choices in the flags of the note under `sephrals-map-pins`: `label`, `background`, `size`, `minZoom`, `number`, `category`, `preview`, `previewText`, `previewImage`, `scene`, `hidden` (hidden until discovered), `found` (user ids who discovered the pin, `*` for everybody), `blocked` (user ids the pin was hidden from again), `quest`, and `owner`, `player` and `private` on pins players set. The GM's route is the scene flag `route` (`stops` and `shared`). A player's own route is in a setting of that browser.
+The module stores its choices in the flags of the note under `sephrals-map-pins`: `label`, `background`, `size`, `minZoom`, `number`, `category`, `preview`, `previewText`, `previewImage`, `scene`, `hidden` (hidden until discovered), `found` (user ids who discovered the pin, `*` for everybody), `blocked` (user ids the pin was hidden from again), `quest`, and `owner`, `player` and `private` on pins players set. The GM's route is the scene flag `route` (`stops` and `shared`). A player's own route is in a setting of that browser. An area is a drawing with the flags `area` (true), `category`, `entry` and `page` (the journal), `previewText`, `hidden`, `found` and `blocked` under the same module id. The party's place is the world setting `party` (`manual`, `scene`, `source`, `since`) and the trail the world setting `trail` (`scene`, `time`).
 
 ## Limits
 
@@ -212,7 +263,10 @@ The module stores its choices in the flags of the note under `sephrals-map-pins`
 * The category symbol replaces the picture of a pin only when that picture is Foundry's default book icon.
 * Foundry 14 levels: a pin belongs to the levels set in its note. The list marks pins of other levels.
 * Pins set by players need a GM online. So does discovering a pin, because the active GM writes it down. Without a GM the pin appears at the next try, when a GM is there.
-* Discovery by exploring needs token vision and fog exploration on the scene, and works for pins on the viewed level.
+* Discovery by exploring needs token vision and fog exploration on the scene, and works for pins and areas on the viewed level.
+* The party's place needs a GM online to change. The marker needs pins with a scene link, and the quick look needs a map with a picture it can show (a video background is left out, the pins still show).
+* The quick look draws the picture of the scene's first level on Foundry 14 and the scene background on Foundry 13, without offsets or scaling set in the scene.
+* An area is hit by the pointer by its shape (rotation included), freehand lines count as polygons.
 * A route is a straight dashed line from stop to stop. It does not follow roads.
 
 ## Usage statistics
@@ -222,8 +276,8 @@ The module can take part in a small usage report shared by all of Sephral’s mo
 With the GM’s consent only the active GM’s browser counts, and it sends at most one report a day. The counts are kept in a hidden world setting, so all browsers and computers of the GM count together, and turning the statistics off deletes them. A copy of a world gets its own world ID. The question lists everything the report contains, from the Foundry version to a random world ID. For Map Pins it holds:
 
 * on how many of the last 30 days the module was used
-* how often the pin list is opened, a preview card is shown, pins are numbered, categories are created, players ask for a pin, a player's pin is created, a pin opens a scene, the pins of another module are taken over, a pin is discovered, a pin is revealed, a map key is made, a route stop is added and a quest state is set
-* the settings *Look*, *Pin labels*, *Pins without the dark box*, *Pins keep their size when zooming*, *Preview when the pointer rests on a pin*, *Number new pins automatically*, *Pins set by players*, *New pins are hidden until discovered*, *Players discover pins by exploring*, *Travel pace*, *Players can build routes* and *Text in the map key* (only the chosen option)
+* how often the pin list is opened, a preview card is shown, pins are numbered, categories are created, players ask for a pin, a player's pin is created, a pin opens a scene, the pins of another module are taken over, a pin is discovered, a pin is revealed, a map key is made, a route stop is added, a quest state is set, the control *Where are we?* is used, the party is placed by hand, an area is created, discovered or revealed and an area's preview card is shown
+* the settings *Look*, *Pin labels*, *Pins without the dark box*, *Pins keep their size when zooming*, *Preview when the pointer rests on a pin*, *Number new pins automatically*, *Pins set by players*, *New pins are hidden until discovered*, *Players discover pins by exploring*, *Travel pace*, *Players can build routes*, *Text in the map key*, *Show where the party is* and *Keep a trail of visited places* (only the chosen option)
 * where errors occur in the module code: file, line, error type and whether the error arose in the module itself, in Foundry, in the game system or in another module, never the error message or the name of another module
 
 No names, notes, pictures or other content of the world are sent.

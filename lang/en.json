@@ -122,6 +122,14 @@
       "routePlayers": {
         "name": "Players can build routes",
         "hint": "Players pick pins for a route of their own that only they see. A route you share with players is always shown."
+      },
+      "whereOn": {
+        "name": "Show where the party is",
+        "hint": "Marks the pin that opens the party's scene on the maps above it, and adds the control Where are we? to the notes controls."
+      },
+      "partyTrail": {
+        "name": "Keep a trail of visited places",
+        "hint": "The active GM notes every place the party arrives at, with the world time. The trail is drawn on the map above, for players only at pins they may see."
       }
     },
     "gear": "Settings",
@@ -132,7 +140,9 @@
       "list": "Pin list",
       "pin": "Set a pin",
       "route": "Route",
-      "key": "Map key"
+      "key": "Map key",
+      "where": "Where are we?",
+      "area": "New area"
     },
     "List": {
       "title": "Pin List",
@@ -328,7 +338,9 @@
       "Fog": "The fog of war of Foundry is built differently than expected. Pins cannot be discovered by exploring.",
       "Route": "The route cannot be drawn or measured.",
       "Key": "The pages of a map key cannot be made.",
-      "Discover": "Discovering pins gives wrong results."
+      "Discover": "Discovering pins gives wrong results.",
+      "Party": "Where the party is, or the chain of maps above it, gives wrong results.",
+      "Area": "Areas (Foundry drawings) are built differently than expected."
     },
     "DEBUG": {
       "Title": "Debug file",
@@ -415,6 +427,65 @@
       "time": "Travel time",
       "sharedHint": "Players see this route as a dashed line on the map and in this window, up to the first pin they have not discovered.",
       "unavailable": "There is no route to show."
+    },
+    "Where": {
+      "title": "Where are we?",
+      "tool": "Where are we?",
+      "partyHere": "The party is here",
+      "youHere": "You are here",
+      "thisPlace": "This place",
+      "partyIn": "The party is in {scene}",
+      "nobody": "Nobody knows where the party is yet.",
+      "noMap": "The party's place is on none of the maps you can see.",
+      "unknownPlace": "Somewhere unknown",
+      "sourceManual": "Set by the GM",
+      "sourceAuto": "Found automatically",
+      "sourceHint": "The GM can set the place by hand. Otherwise it is the scene all online players look at, else the active scene.",
+      "mapAbove": "Map above",
+      "openMap": "Open this map",
+      "setHere": "Place the party in {scene}",
+      "auto": "Find it automatically",
+      "clearTrail": "Clear trail",
+      "clearTitle": "Clear the trail",
+      "clearText": "Remove all places from the trail?",
+      "trailTitle": "Where the party has been",
+      "trailEmpty": "No places yet.",
+      "dayAt": "Day {day}, {clock}",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "center": "Center on this place",
+      "noPicture": "This map has no picture to show.",
+      "empty": "No map you can see has a pin for this place."
+    },
+    "Area": {
+      "unnamed": "Unnamed area",
+      "noRights": "You may not read this journal.",
+      "found": "New area: {name}",
+      "title": "Area",
+      "isArea": "This drawing is an area",
+      "isAreaHint": "An area has a category, a journal and a preview on hover, and it shows in the pin list.",
+      "category": "Category",
+      "journal": "Journal",
+      "previewText": "Own preview text",
+      "previewTextHint": "Shown in the preview instead of the first lines of the journal.",
+      "hidden": "Hidden until discovered",
+      "hiddenHint": "Players do not see this area until they explore its ground or you reveal it. Foundry hides the drawing too.",
+      "reveal": "Reveal for players…",
+      "noJournal": "No journal",
+      "name": "Name",
+      "namePlaceholder": "Kingdom of Ash",
+      "shapeHint": "Pick a shape, then draw it on the map. The name becomes the large label.",
+      "newTitle": "New area",
+      "polygon": "Polygon",
+      "rect": "Rectangle",
+      "ellipse": "Ellipse",
+      "draw": "Draw the area {name} on the map. Finish a polygon with a double click.",
+      "newTool": "New area",
+      "listTitle": "Areas",
+      "hasJournal": "Has a journal",
+      "removeTitle": "Delete area",
+      "removeText": "Delete the area {name}?",
+      "word": "area"
     }
   }
 }

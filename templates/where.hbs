@@ -1,0 +1,58 @@
+<div class="smp-shell smp-where-shell">
+  <header class="smp-where-head">
+    <p class="smp-where-status"><i class="fa-solid fa-location-dot" inert></i> <strong>{{status}}</strong>
+      <small data-tooltip="{{text.sourceHint}}">{{source}}</small></p>
+    {{#if several}}
+    <label class="smp-where-maps"><span>{{text.mapAbove}}</span>
+      <select name="map">{{#each maps}}<option value="{{index}}" {{#if selected}}selected{{/if}}>{{name}}</option>{{/each}}</select>
+    </label>
+    {{/if}}
+  </header>
+  {{#if empty}}
+  <p class="smp-empty"><i class="fa-solid fa-map" inert></i> {{text.empty}}</p>
+  {{else}}
+  <div class="smp-where-bar">
+    <strong class="smp-where-map-name"><i class="fa-solid fa-map" inert></i> {{mapName}}</strong>
+    <span class="smp-where-tools">
+      <button type="button" class="smp-icon" data-action="zoomOut" data-tooltip="{{text.zoomOut}}" aria-label="{{text.zoomOut}}"><i class="fa-solid fa-magnifying-glass-minus" inert></i></button>
+      <button type="button" class="smp-icon" data-action="zoomIn" data-tooltip="{{text.zoomIn}}" aria-label="{{text.zoomIn}}"><i class="fa-solid fa-magnifying-glass-plus" inert></i></button>
+      <button type="button" class="smp-icon" data-action="center" data-tooltip="{{text.center}}" aria-label="{{text.center}}"><i class="fa-solid fa-crosshairs" inert></i></button>
+    </span>
+  </div>
+  <div class="smp-where-view" tabindex="0">
+    <div class="smp-where-stage" style="width: {{width}}px; height: {{height}}px">
+      {{#if src}}<img class="smp-where-image" src="{{src}}" alt="" draggable="false" data-textures="{{textures}}">{{else}}<span class="smp-where-nopicture">{{text.noPicture}}</span>{{/if}}
+      {{#each pins}}
+      <span class="smp-where-pin {{#if here}}is-here{{/if}} {{#if focus}}is-this{{/if}}" style="left: {{x}}px; top: {{y}}px{{#if color}}; --smp-chip: {{color}}{{/if}}"
+        data-pin="{{id}}">
+        {{#if mark}}<span class="smp-where-mark">{{mark}}</span>{{/if}}
+        <span class="smp-where-dot">{{#if number}}{{number}}{{else}}<i class="fa-solid fa-map-pin" inert></i>{{/if}}</span>
+        <span class="smp-where-label">{{label}}</span>
+      </span>
+      {{/each}}
+    </div>
+  </div>
+  {{/if}}
+  {{#if trailOn}}
+  <section class="smp-where-trail">
+    <h3>{{text.trailTitle}}</h3>
+    {{#if trail.length}}
+    <ol class="smp-trail">
+      {{#each trail}}<li class="{{#if unknown}}is-unknown{{/if}}"><span class="smp-trail-date">{{date}}</span> <span class="smp-trail-name">{{names}}</span></li>{{/each}}
+    </ol>
+    {{else}}
+    <p class="hint">{{text.trailEmpty}}</p>
+    {{/if}}
+  </section>
+  {{/if}}
+  <footer class="smp-where-foot">
+    {{#unless empty}}{{#if canOpen}}
+    <button type="button" class="smp-primary" data-action="openMap"><i class="fa-solid fa-up-right-from-square" inert></i> {{text.openMap}}</button>
+    {{/if}}{{/unless}}
+    {{#if isGM}}
+    <button type="button" data-action="setHere"><i class="fa-solid fa-flag" inert></i> {{text.setHere}}</button>
+    {{#if manual}}<button type="button" data-action="auto"><i class="fa-solid fa-rotate" inert></i> {{text.auto}}</button>{{/if}}
+    {{#if trailOn}}<button type="button" data-action="clearTrail"><i class="fa-solid fa-trash" inert></i> {{text.clearTrail}}</button>{{/if}}
+    {{/if}}
+  </footer>
+</div>
