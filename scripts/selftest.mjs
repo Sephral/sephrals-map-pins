@@ -9,6 +9,7 @@ import {previewFromHtml} from "./pin-logic.mjs";
 import {dashSegments, routeStats, visiblePrefix} from "./route-logic.mjs";
 import {areaAt, areaPolygon, newlyExploredAreas, samplePoints} from "./area-logic.mjs";
 import {buildLinks, locateOnMap, pickPartyScene, pinChain} from "./party-logic.mjs";
+import {LEVELS, ownershipAfter, readableByAll, secretSections, setAllSecrets} from "./rumor-logic.mjs";
 
 /**
  * Run all checks.
@@ -84,10 +85,18 @@ async function checkAll() {
     && (samplePoints(square).length > 0)
     && (newlyExploredAreas([{id: "a", flags: {hidden: true}, samples: [{x: 1, y: 1}]}], "u", () => true).length === 1)
     && (!canvas?.ready || (!!canvas.drawings && (typeof canvas.stage?.toLocal === "function"))), "SMP.SELFTEST.Area");
+  // Rumors bit by bit: Foundry's ownership levels, the pages' permission test and the secret sections it reads
+  const levels = CONST.DOCUMENT_OWNERSHIP_LEVELS;
+  const secrets = secretSections("<section class=\"secret\" id=\"a\"><p>x</p></section>");
+  const told = ownershipAfter({default: LEVELS.NONE}, {everyone: true, playerIds: ["u"]});
+  check((levels.NONE === LEVELS.NONE) && (levels.OBSERVER === LEVELS.OBSERVER) && (levels.INHERIT === LEVELS.INHERIT)
+    && (typeof CONFIG.JournalEntryPage?.documentClass?.prototype?.testUserPermission === "function")
+    && (secrets.length === 1) && setAllSecrets("<section class=\"secret\"></section>", true).includes("revealed")
+    && readableByAll(told, {default: LEVELS.NONE}), "SMP.SELFTEST.Rumor");
   const keys = ["SMP.gear", "SMP.SELFTEST.Title", "SMP.List.title", "SMP.Categories.title", "SMP.Config.title",
     "SMP.Player.newTitle", "SMP.Numbers.title", "SMP.Migrate.title", "SMP.Preview.title", "SMP.Route.title", "SMP.Reveal.title",
     "SMP.Key.title", "SMP.Quest.state.open", "SMP.Menu.hide", "SMP.Where.title", "SMP.Where.youHere", "SMP.Area.newTitle",
-    "SMP.Area.title"];
+    "SMP.Area.title", "SMP.Rumor.title", "SMP.Rumor.new"];
   const missing = keys.filter(key => !game.i18n.has(key));
   check(!missing.length, "SMP.SELFTEST.Texts", {keys: missing.join(", ")});
   return {problems, checks};

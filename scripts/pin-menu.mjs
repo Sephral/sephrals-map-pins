@@ -8,6 +8,8 @@ import {MODULE_ID, flagsOf, setting, t} from "./config.mjs";
 import {QUEST_STATES, cleanQuest, isHiddenPin} from "./discover-logic.mjs";
 import {askReveal, revealPin, setHidden, setQuest} from "./discover.mjs";
 import {describePin} from "./note-style.mjs";
+import {cleanRumorMode} from "./rumor-logic.mjs";
+import {askParts, partsOf, possibleMode, revealNext, startRumors, stopRumors} from "./rumors.mjs";
 import {addStop, canBuildRoute, inRoute} from "./route.mjs";
 
 let menu = null;
@@ -54,6 +56,19 @@ export function menuEntries(doc) {
       entries.push({label: t("SMP.Menu.revealAll"), icon: "fa-users", run: () => revealPin(doc, {all: true})});
     } else {
       entries.push({label: t("SMP.Menu.hide"), icon: "fa-eye-slash", run: () => setHidden(doc, true)});
+    }
+    // Rumors bit by bit
+    if ( doc.entry && (cleanRumorMode(flags.rumors) || possibleMode(doc)) ) {
+      entries.push({divider: true});
+      if ( cleanRumorMode(flags.rumors) ) {
+        const done = !partsOf(doc)?.parts.some(p => !p.all);
+        entries.push({label: t(done ? "SMP.Menu.rumorDone" : "SMP.Menu.rumorNext"), icon: "fa-forward-step",
+          run: () => revealNext(doc)});
+        entries.push({label: t("SMP.Menu.rumorParts"), icon: "fa-comment-dots", run: () => askParts(doc)});
+        entries.push({label: t("SMP.Menu.rumorStop"), icon: "fa-ban", run: () => stopRumors(doc)});
+      } else {
+        entries.push({label: t("SMP.Menu.rumorStart"), icon: "fa-comment-dots", run: () => startRumors(doc)});
+      }
     }
     const quest = cleanQuest(flags.quest);
     entries.push({divider: true});

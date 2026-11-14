@@ -49,6 +49,13 @@
     <p class="hint">{{text.hiddenHint}}{{#if foundText}} {{foundText}}{{/if}}</p>
     {{#if existing}}<p class="hint"><button type="button" data-smp-reveal><i class="fa-solid fa-eye" inert></i> {{text.reveal}}</button></p>{{/if}}
   </div>
+  {{#if rumorOffer}}
+  <div class="form-group">
+    <label>{{text.rumors}}</label>
+    <div class="form-fields"><button type="button" data-smp-rumors><i class="fa-solid fa-comment-dots" inert></i> {{text.rumorsButton}}</button></div>
+    <p class="hint">{{text.rumorsHint}}{{#if rumorState}} {{rumorState}}{{/if}}</p>
+  </div>
+  {{/if}}
   <div class="form-group">
     <label>{{text.quest}}</label>
     <div class="form-fields"><select name="{{prefix}}.quest">{{#each choices.quest}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select></div>

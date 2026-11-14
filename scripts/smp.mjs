@@ -26,6 +26,8 @@ import {numberDialog, numberPins, onPreCreateNote} from "./numbering.mjs";
 import {onActivateNote, openPin} from "./open-pin.mjs";
 import {playerPinsAvailable, registerSocket, startPlayerPin} from "./player-pins.mjs";
 import {followPin, hidePreview, onHoverNote} from "./preview.mjs";
+import {askParts, checkRumors, onJournalOpened, partsOf, revealNext, revealParts, rumorSummary, scheduleRumorCheck,
+  startRumors, stopRumors} from "./rumors.mjs";
 import {noticeNewVersions, runSelfTest} from "./selftest.mjs";
 import {changeLanguage, registerSettings} from "./settings.mjs";
 import {categoryList, invalidate} from "./state.mjs";
@@ -83,7 +85,7 @@ Hooks.once("init", () => {
     features: ["listOpened", "previewShown", "pinsNumbered", "categoryCreated", "playerPinRequested",
       "playerPinCreated", "sceneLinkOpened", "pinCushionMigrated", "pinDiscovered", "pinRevealed", "mapKeyMade",
       "routeBuilt", "questSet", "whereAsked", "partyPlaced", "areaCreated", "areaDiscovered", "areaRevealed",
-      "areaPreviewShown"],
+      "areaPreviewShown", "rumorStarted", "rumorRevealed"],
     settings: ["theme", "labelMode", "noBackground", "constantSize", "preview", "autoNumber", "playerPins",
       "discoverDefault", "discoverAuto", "pace", "routePlayers", "keyText", "whereOn", "partyTrail"]
   });
@@ -144,6 +146,18 @@ Hooks.once("init", () => {
   };
   Hooks.on("createNote", linksChanged);
   Hooks.on("deleteNote", linksChanged);
+  // Rumors bit by bit: a part came in (a page's ownership, a revealed secret) or a pin started to tell its journal
+  const rumorChanged = () => {
+    scheduleRumorCheck();
+    refreshList();
+  };
+  for ( const event of ["updateJournalEntryPage", "createJournalEntryPage", "deleteJournalEntryPage",
+    "updateJournalEntry"] ) Hooks.on(event, rumorChanged);
+  Hooks.on("updateNote", (doc, changes) => {
+    if ( changes?.flags?.[MODULE_ID] && ("rumors" in changes.flags[MODULE_ID]) ) scheduleRumorCheck();
+  });
+  Hooks.on("renderJournalEntrySheet", app => onJournalOpened(app.document));
+  Hooks.on("renderJournalSheet", app => onJournalOpened(app.document ?? app.object));
   Hooks.on("updateNote", (doc, changes) => {
     if ( (changes?.flags && (MODULE_ID in changes.flags)) || ("x" in changes) || ("y" in changes) ) linksChanged();
   });
@@ -254,6 +268,23 @@ Hooks.once("init", () => {
     askRevealArea: drawing => askRevealArea(drawing?.document ?? drawing),
     /** Hide an area until it is discovered, or show it like any drawing again (GM). */
     setAreaHidden: (drawing, hidden = true) => setAreaHidden(drawing?.document ?? drawing, !!hidden),
+    /**
+     * Rumors bit by bit (GM unless noted): tell the journal of a pin part by part. The parts are the pages of its
+     * journal or the secret sections of its page. start(pin, {confirm}) prepares the pin and hides every part, stop(pin)
+     * ends it (told parts stay told), next(pin, {users}) tells the next part to everybody or chosen players,
+     * reveal(pin, plan) tells parts by key ({key: {everyone, users}}), ask(pin) opens the window, parts(pin) lists
+     * them: [{key, name, all, users}] (everyone), summary(pin) counts them: {mode, total, all, some, none}.
+     */
+    rumors: {
+      start: (noteOrDoc, options) => startRumors(noteOrDoc?.document ?? noteOrDoc, options),
+      stop: noteOrDoc => stopRumors(noteOrDoc?.document ?? noteOrDoc),
+      next: (noteOrDoc, options) => revealNext(noteOrDoc?.document ?? noteOrDoc, options),
+      reveal: (noteOrDoc, plan) => revealParts(noteOrDoc?.document ?? noteOrDoc, plan),
+      ask: noteOrDoc => askParts(noteOrDoc?.document ?? noteOrDoc),
+      parts: noteOrDoc => (partsOf(noteOrDoc?.document ?? noteOrDoc)?.parts ?? [])
+        .map(({key, name, all, users}) => ({key, name, all, users: [...users]})),
+      summary: noteOrDoc => rumorSummary(noteOrDoc?.document ?? noteOrDoc)
+    },
     /** Take over the look of Pin Cushion's pins (GM). Options: {scope: "scene"|"all", dryRun}. */
     takeOverPins: migratePinCushion,
     /** Check the module (GM). */
@@ -275,6 +306,7 @@ Hooks.once("ready", async () => {
   registerSocket({discover: handleDiscover});
   applyNotesToggle(false);
   startParty();
+  checkRumors();
   noticeNewVersions();
 });
 

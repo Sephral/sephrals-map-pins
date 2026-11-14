@@ -89,6 +89,8 @@ export function registerSettings(handlers) {
     onChange: value => handlers.categories?.(value)});
   game.settings.register(MODULE_ID, "privatePins", {scope: "client", config: false, type: Object, default: {},
     onChange: value => handlers.privatePins?.(value)});
+  // What this player knows of the pins that are told bit by bit: {"<world>:<user>": {"<pin id>": {known, seen}}}
+  game.settings.register(MODULE_ID, "rumorSeen", {scope: "client", config: false, type: Object, default: {}});
   game.settings.register(MODULE_ID, "routes", {scope: "client", config: false, type: Object, default: {},
     onChange: value => handlers.route?.(value)});
   game.settings.register(MODULE_ID, "notesApplied", {scope: "client", config: false, type: String, default: ""});

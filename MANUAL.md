@@ -19,6 +19,7 @@ Open a pin with a double click in the notes controls, or *Edit* in the pin list.
 | Opens a scene | A double click switches the view to this scene instead of opening the journal. |
 | Hidden until discovered | Players do not see this pin until they discover it. See *Pins you discover*. A button opens the window to reveal it for players. |
 | Quest | *Quest open*, *Quest done* or *Quest failed* shows as a small mark on the pin. See *Quest marks*. |
+| Rumors | The button *Parts…* (GM, saved pins with a journal) opens the window to tell the journal part by part. See *Rumors bit by bit*. |
 
 Above the fields a small picture shows the image of the pin. It follows the icon fields of Foundry's dialog. The image itself is Foundry's own field *Custom Icon*.
 
@@ -52,6 +53,31 @@ A pin stays discovered for the player. The list of players who found it is part 
 ## Quest marks
 
 A pin can have a quest state: open, done or failed. It shows as a small round mark at the lower right of the pin, in orange, green or red, and in the preview card and the pin list. The GM sets it in the note dialog, in the pin menu, with the flag button in the pin list (it goes through open, done, failed and none), or with `api.setQuest`. Players see the state of the pins they see and cannot change it. The map key lists the state on each page. The state lives on the pin only, it is not synced with text in the journal.
+
+## Rumors bit by bit
+
+A pin can tell its journal part by part. You reveal the parts one at a time, and the preview card and the journal show players only what you have told so far. A rumor in the tavern, a letter read line by line, a legend that fills in as the party learns more.
+
+**What a part is.** The module uses what Foundry already has:
+
+* *By pages.* A pin that opens a whole journal with two or more pages tells it page by page, in the order of the pages. Whether a page is told is the **ownership of that page**: a told page is Observer for everyone (or for chosen players), a page not told yet has the default None. Foundry's own journal window lists only the pages a player may read.
+* *By secret blocks.* A pin that points at one page (or a journal with one page) tells the **secret blocks** of that page, in order. A told block carries Foundry's own class `revealed`, the same one the *Reveal Secret* button of the journal sets. Secret blocks are told to everyone who may read the page, not to chosen players.
+
+Because the state is in the journal itself, nothing is lost when the module is switched off: told pages and blocks stay told, hidden ones stay hidden. The pin only carries the flag `rumors` (`pages` or `secrets`).
+
+**Starting.** Right click the pin and choose *Tell the journal bit by bit…*, or use the button *Parts…* in the note dialog or in the pin list. The module asks first, because it hides every part from the players and opens the journal for them (the journal's default becomes Observer, so Foundry opens it). Then:
+
+* *Tell next part* (pin menu, the forward button in the pin list, or the button in the window) tells the first part that not everybody can read yet, to everybody.
+* *Parts and players…* opens a table with a row per part and a column for everyone and for each player. Tick who may read each part and press *Apply*. Ticking every player counts as everyone. Unticking takes a part back. A part told again later counts as new again.
+* *Stop telling bit by bit* removes the flag. The journal keeps its state.
+
+The GM's pin list shows `2/5` (parts told to everyone, of all parts) on such a pin.
+
+**What players see.** The preview card lists the told parts, each with its name and first lines, the newest few when there are many. A small *new* mark sits on parts the player has not seen yet. A part counts as seen when the card is gone again or when the player opens the journal. The pin list marks a pin with new parts. When a part comes in, the player gets a quiet notice and, for a pin on the viewed scene, a ping (setting *Ping and note when a pin appears*). What a player has seen is kept in the browser. The card's rights come first, as for every pin: Foundry's permission check for the journal and for each page decides, a part the player may not read is never put into the card.
+
+**The GM's card** lists every part and marks those not told yet, without reading them.
+
+**The map key** takes only the parts told to everyone.
 
 ## Where are we?
 
@@ -93,7 +119,7 @@ An area is a labeled shape on a map: a realm, the land of a faction, a danger zo
 
 ## The pin menu
 
-A right click on a pin (without moving the mouse, so panning the map still works) opens a small menu. For the GM it holds: reveal for players, stop hiding, reveal for everyone, hide until discovered, the quest states, add to route and the pin settings. A player sees *Add to route* when routes are open to players.
+A right click on a pin (without moving the mouse, so panning the map still works) opens a small menu. For the GM it holds: reveal for players, stop hiding, reveal for everyone, hide until discovered, the quest states, on a pin with a journal the entries to tell it bit by bit (see *Rumors bit by bit*), add to route and the pin settings. A player sees *Add to route* when routes are open to players.
 
 ## The map key
 
@@ -125,6 +151,7 @@ When the pointer rests on a pin for a moment, a card shows the title, the first 
 * Users with Limited permission see only the title.
 * Others see nothing of the journal. On Foundry a pin whose journal is hidden from you is not shown at all.
 * Pages you may not observe are skipped. The first readable text page and the first picture are used.
+* A pin that tells its journal bit by bit lists the told parts instead (see *Rumors bit by bit*).
 
 The text is reduced to plain lines. Secret sections, scripts, links and styles of the journal never reach the card, and links and rolls written for Foundry's text editor show as their plain text. If the pin has an own preview text or picture, they replace the journal's lines and picture for users who may read the journal. For users with only Limited permission the title stays the only thing shown.
 
@@ -252,12 +279,22 @@ The first button in the module settings, *Sephral’s Modules* (GMs only), opens
 | `categories()` | The categories of the world: `[{id, name, icon, color}]`. |
 | `focus(note)` | Pans the map to a pin and pings it. |
 | `takeOverPins({scope, dryRun})` | GM. Takes over the pins of an older pin module. `scope` is `"scene"` or `"all"`. Returns the counts. |
+| `rumors.start(pin, {confirm})` | GM. Starts telling a pin bit by bit and hides every part. `confirm: false` skips the question. |
+| `rumors.next(pin, {users, quiet})` | GM. Tells the next part, to everybody or to these users. Returns the name of the part, or null when nothing is left. |
+| `rumors.reveal(pin, plan)` | GM. `plan` maps a part key to `{everyone, users}`, for example `{[pageId]: {everyone: false, users: [userId]}}`. Everyone false with no users takes a part back. Returns the names of the parts newly told. |
+| `rumors.ask(pin)` | GM. Opens the window with the parts and the players. |
+| `rumors.stop(pin)` | GM. Stops telling bit by bit. |
+| `rumors.parts(pin)` | The parts: `[{key, name, all, users}]`, `all` when everyone may read it. |
+| `rumors.summary(pin)` | `{mode, total, all, some, none}`, or null for a pin that does not tell bit by bit. |
 | `runSelfTest()` | GM. Runs the self test. |
 | `saveDebugFile()` | GM. Saves the debug file. |
 
-The module stores its choices in the flags of the note under `sephrals-map-pins`: `label`, `background`, `size`, `minZoom`, `number`, `category`, `preview`, `previewText`, `previewImage`, `scene`, `hidden` (hidden until discovered), `found` (user ids who discovered the pin, `*` for everybody), `blocked` (user ids the pin was hidden from again), `quest`, and `owner`, `player` and `private` on pins players set. The GM's route is the scene flag `route` (`stops` and `shared`). A player's own route is in a setting of that browser. An area is a drawing with the flags `area` (true), `category`, `entry` and `page` (the journal), `previewText`, `hidden`, `found` and `blocked` under the same module id. The party's place is the world setting `party` (`manual`, `scene`, `source`, `since`) and the trail the world setting `trail` (`scene`, `time`).
+The module stores its choices in the flags of the note under `sephrals-map-pins`: `label`, `background`, `size`, `minZoom`, `number`, `category`, `preview`, `previewText`, `previewImage`, `scene`, `hidden` (hidden until discovered), `found` (user ids who discovered the pin, `*` for everybody), `blocked` (user ids the pin was hidden from again), `quest`, `rumors` (`pages` or `secrets`), and `owner`, `player` and `private` on pins players set. The GM's route is the scene flag `route` (`stops` and `shared`). A player's own route is in a setting of that browser. An area is a drawing with the flags `area` (true), `category`, `entry` and `page` (the journal), `previewText`, `hidden`, `found` and `blocked` under the same module id. The party's place is the world setting `party` (`manual`, `scene`, `source`, `since`) and the trail the world setting `trail` (`scene`, `time`).
 
 ## Limits
+
+* Telling bit by bit hides parts through Foundry's ownership and the revealed class of secret blocks. Foundry itself still sends the text of the whole journal to a player's browser, because that is how it handles every journal. Foundry's windows and the module's card show only what the player may read.
+* Secret blocks cannot be told to chosen players only, because Foundry reveals a secret for everyone who reads the page.
 
 * A pin keeps its size on the screen by scaling the note. Very large pins at a very far zoom are drawn large.
 * The category symbol replaces the picture of a pin only when that picture is Foundry's default book icon.
@@ -276,7 +313,7 @@ The module can take part in a small usage report shared by all of Sephral’s mo
 With the GM’s consent only the active GM’s browser counts, and it sends at most one report a day. The counts are kept in a hidden world setting, so all browsers and computers of the GM count together, and turning the statistics off deletes them. A copy of a world gets its own world ID. The question lists everything the report contains, from the Foundry version to a random world ID. For Map Pins it holds:
 
 * on how many of the last 30 days the module was used
-* how often the pin list is opened, a preview card is shown, pins are numbered, categories are created, players ask for a pin, a player's pin is created, a pin opens a scene, the pins of another module are taken over, a pin is discovered, a pin is revealed, a map key is made, a route stop is added, a quest state is set, the control *Where are we?* is used, the party is placed by hand, an area is created, discovered or revealed and an area's preview card is shown
+* how often the pin list is opened, a preview card is shown, pins are numbered, categories are created, players ask for a pin, a player's pin is created, a pin opens a scene, the pins of another module are taken over, a pin is discovered, a pin is revealed, a map key is made, a route stop is added, a quest state is set, the control *Where are we?* is used, the party is placed by hand, an area is created, discovered or revealed and an area's preview card is shown, a pin is started to be told bit by bit and a part is told
 * the settings *Look*, *Pin labels*, *Pins without the dark box*, *Pins keep their size when zooming*, *Preview when the pointer rests on a pin*, *Number new pins automatically*, *Pins set by players*, *New pins are hidden until discovered*, *Players discover pins by exploring*, *Travel pace*, *Players can build routes*, *Text in the map key*, *Show where the party is* and *Keep a trail of visited places* (only the chosen option)
 * where errors occur in the module code: file, line, error type and whether the error arose in the module itself, in Foundry, in the game system or in another module, never the error message or the name of another module
 

@@ -10,13 +10,14 @@
 
 ## Highlights
 
-* **Where are we?** The pin of the place the party is in lights up on your overland map, "The party is here" for you and "You are here" for your players. From inside the dungeon, one click shows the map above, with a trail of dates.
-* **Areas:** a realm, a faction's land or a danger zone with a large label in its category color and a journal preview on hover. Hide it until your players explore it or you reveal it.
+* **Where are we?** The pin of the party's place lights up on your overland map. From inside a town or a dungeon, one click shows the map above, with a trail of dates.
+* **Areas:** a realm or a danger zone with a large label in its category color and a journal preview. Hide it until your players explore it.
+* **Rumors bit by bit:** tell a pin's journal part by part. Players see only what you told, with a *new* mark and a notice.
 * **Pins you discover:** hide a pin until your players find it, by exploring its place or by your reveal.
 * **Quest marks:** open, done or failed, on the pin and in the list.
 * **Map key:** one click makes a handout with a page per numbered pin.
 * **Routes and travel time:** pick pins in order to see distance and time, and share the route with your players.
-* **Readable pins:** labels that stay visible, no dark box, a steady size while you zoom, numbers like `12` or `B3`, and categories with a color ring.
+* **Readable pins:** labels that stay visible, no dark box, a steady size while zooming, numbers like `12` or `B3`, category rings.
 * **Preview on hover:** title, picture and first lines of the journal, only for those who may read them.
 * **Pin list:** search and filter every pin of the scene.
 * **Pins by players:** players click the map to add a pin, and you confirm.

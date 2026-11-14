@@ -507,6 +507,119 @@
   color: #b79bdc;
 }
 
+/* Rumors bit by bit: the parts of a pin's journal in the preview card */
+.smp-card-parts {
+  display: grid;
+  gap: 6px;
+  padding: 0 12px 10px;
+}
+
+.smp-card-part {
+  padding: 6px 8px;
+  border-left: 3px solid var(--smp-accent);
+  border-radius: 0 6px 6px 0;
+  background: var(--smp-soft);
+}
+
+.smp-card-part.is-hidden {
+  border-left-style: dashed;
+  opacity: 0.6;
+}
+
+.smp-card-part-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--smp-muted);
+}
+
+.smp-card-part p {
+  margin: 3px 0 0;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.smp-card-new,
+.smp-new-mark {
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--smp-accent);
+  color: var(--smp-on-accent);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.smp-new-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.smp-card-hidden {
+  font-weight: 400;
+  font-style: italic;
+  text-transform: none;
+}
+
+.smp-card-more {
+  color: var(--smp-muted);
+  font-size: 11px;
+  font-style: italic;
+}
+
+.smp-rumor-count {
+  color: var(--smp-accent);
+}
+
+.smp-rumor {
+  padding: 10px 12px;
+  border-radius: var(--smp-radius);
+  background: var(--smp-paper);
+  color: var(--smp-ink);
+}
+
+.smp-rumor .hint {
+  margin: 0 0 8px;
+  color: var(--smp-muted);
+  font-size: 12px;
+}
+
+.smp-rumor-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.smp-rumor-table th,
+.smp-rumor-table td {
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--smp-line);
+  text-align: center;
+}
+
+.smp-rumor-table th:first-child,
+.smp-rumor-table th[scope="row"] {
+  text-align: left;
+}
+
+.smp-rumor-table input {
+  margin: 0;
+}
+
+.smp-rumor-user .smp-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 4px;
+  border-radius: 50%;
+  background: var(--smp-chip);
+}
+
 .smp-card-quest {
   padding: 0 12px 6px;
   color: var(--smp-muted);

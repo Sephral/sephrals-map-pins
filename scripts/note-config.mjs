@@ -9,6 +9,7 @@ import {usedNumbers} from "./numbering.mjs";
 import {categoryList, worldStyle} from "./state.mjs";
 import {QUEST_STATES, cleanQuest, foundList, isHiddenPin} from "./discover-logic.mjs";
 import {askReveal} from "./discover.mjs";
+import {askParts, possibleMode, rumorSummary} from "./rumors.mjs";
 
 /**
  * Options of a select, with the current value marked.
@@ -45,6 +46,8 @@ export async function onRenderNoteConfig(app, html) {
     values: {minZoom: flags.minZoom ?? "", number: flags.number ?? "", previewText: flags.previewText ?? "",
       previewImage: flags.previewImage ?? "", hidden: isHiddenPin(flags)},
     existing: !!doc.collection?.has(doc.id),
+    rumorOffer: game.user.isGM && !!doc.collection?.has(doc.id) && !!doc.entry && !!(rumorSummary(doc) || possibleMode(doc)),
+    rumorState: rumorSummary(doc) ? t("SMP.Config.rumorsState", {all: rumorSummary(doc).all, total: rumorSummary(doc).total}) : "",
     foundText: isHiddenPin(flags) ? t("SMP.Config.foundBy", {count: foundList(flags).includes("*")
       ? t("SMP.Reveal.everybody") : foundList(flags).length}) : "",
     numberHint: nextNumber(numbers),
@@ -67,7 +70,7 @@ export async function onRenderNoteConfig(app, html) {
     },
     text: Object.fromEntries(["title", "imageHint", "label", "background", "size", "minZoom", "minZoomHint", "number",
       "numberHint", "category", "preview", "previewText", "previewTextHint", "previewImage", "scene", "sceneHint",
-      "like", "hidden", "hiddenHint", "reveal", "quest", "questHint"].map(key => [key, t(`SMP.Config.${key}`)]))
+      "like", "hidden", "hiddenHint", "reveal", "quest", "questHint", "rumors", "rumorsButton", "rumorsHint"].map(key => [key, t(`SMP.Config.${key}`)]))
   };
   const markup = await foundry.applications.handlebars.renderTemplate(`${TEMPLATES}/note-section.hbs`, data);
   if ( element.querySelector(".smp-config") ) return;
@@ -101,6 +104,10 @@ export async function onRenderNoteConfig(app, html) {
   section.querySelector("[data-smp-reveal]")?.addEventListener("click", event => {
     event.preventDefault();
     askReveal(doc);
+  });
+  section.querySelector("[data-smp-rumors]")?.addEventListener("click", event => {
+    event.preventDefault();
+    askParts(doc);
   });
   // New pins can be visible without line of sight by default
   if ( setting("newGlobal") && !doc.collection?.has(doc.id) ) {

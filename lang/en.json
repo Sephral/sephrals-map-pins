@@ -167,7 +167,10 @@
       "reveal": "Reveal for players",
       "hiddenPin": "Hidden until discovered, found by",
       "questCycle": "Change quest state",
-      "hiddenShort": "Hidden"
+      "hiddenShort": "Hidden",
+      "rumorNext": "Tell next part",
+      "rumorParts": "Parts and players",
+      "rumorTold": "Parts told to everyone"
     },
     "Preview": {
       "title": "Preview"
@@ -216,7 +219,11 @@
       "reveal": "Reveal for players…",
       "foundBy": "Found by {count}.",
       "quest": "Quest",
-      "questHint": "Shows a small mark on the pin: open, done or failed."
+      "questHint": "Shows a small mark on the pin: open, done or failed.",
+      "rumors": "Rumors",
+      "rumorsButton": "Parts…",
+      "rumorsHint": "Tell the journal of this pin part by part. The preview and the journal show players only what you told.",
+      "rumorsState": "Told: {all} of {total}."
     },
     "Categories": {
       "title": "Pin Categories",
@@ -340,7 +347,8 @@
       "Key": "The pages of a map key cannot be made.",
       "Discover": "Discovering pins gives wrong results.",
       "Party": "Where the party is, or the chain of maps above it, gives wrong results.",
-      "Area": "Areas (Foundry drawings) are built differently than expected."
+      "Area": "Areas (Foundry drawings) are built differently than expected.",
+      "Rumor": "The ownership of journal pages or their secret blocks works differently than expected. Telling bit by bit may give wrong results."
     },
     "DEBUG": {
       "Title": "Debug file",
@@ -385,7 +393,12 @@
       "revealAll": "Reveal for everyone",
       "hide": "Hide until discovered",
       "addToRoute": "Add to route",
-      "settings": "Pin settings"
+      "settings": "Pin settings",
+      "rumorStart": "Tell the journal bit by bit…",
+      "rumorNext": "Tell next part",
+      "rumorDone": "All parts told",
+      "rumorParts": "Parts and players…",
+      "rumorStop": "Stop telling bit by bit"
     },
     "Key": {
       "name": "Map key: {scene}",
@@ -486,6 +499,30 @@
       "removeTitle": "Delete area",
       "removeText": "Delete the area {name}?",
       "word": "area"
+    },
+    "Rumor": {
+      "title": "Tell the journal bit by bit",
+      "part": "Part {n}",
+      "partHead": "Part",
+      "everyone": "Everyone",
+      "hintPages": "Every page of the journal is a part. Tick who may read each one, or use Tell next part. Parts nobody may read are not in the players' journal window.",
+      "hintSecrets": "Every secret block of the page is a part. A secret block is told to everyone who may read the page. Tick the parts you want to tell.",
+      "noParts": "This journal has nothing to divide into parts.",
+      "apply": "Apply",
+      "next": "Tell next part",
+      "stop": "Stop telling bit by bit",
+      "new": "new",
+      "hidden": "not told yet",
+      "earlier": "{count} earlier parts",
+      "notice": "A new rumor at {name}",
+      "noticeMany": "New rumors at {count} pins",
+      "nothing": "This pin has no journal with pages or secret blocks to tell bit by bit.",
+      "startTitle": "Tell this journal bit by bit",
+      "startPages": "{name}: every page of the journal is hidden from the players, and the journal opens for them. Then you tell one page after the other. Pages stay hidden or told in Foundry itself, also when the module is off.",
+      "startSecrets": "{name}: every secret block of the page is hidden again, and the page opens for the players. Then you tell one block after the other. The state lives in the page itself, also when the module is off.",
+      "allTold": "Everything of {name} is told already.",
+      "told": "Told: {part} of {name}",
+      "toldMany": "{count} parts of {name} changed"
     }
   }
 }

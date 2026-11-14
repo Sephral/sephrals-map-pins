@@ -167,7 +167,10 @@
       "reveal": "Für Spieler aufdecken",
       "hiddenPin": "Versteckt bis zur Entdeckung, entdeckt von",
       "questCycle": "Queststatus wechseln",
-      "hiddenShort": "Versteckt"
+      "hiddenShort": "Versteckt",
+      "rumorNext": "Nächsten Teil erzählen",
+      "rumorParts": "Teile und Spieler",
+      "rumorTold": "Teile, die allen erzählt sind"
     },
     "Preview": {
       "title": "Vorschau"
@@ -216,7 +219,11 @@
       "reveal": "Für Spieler aufdecken…",
       "foundBy": "Entdeckt von {count}.",
       "quest": "Quest",
-      "questHint": "Zeigt eine kleine Markierung am Pin: offen, erledigt oder gescheitert."
+      "questHint": "Zeigt eine kleine Markierung am Pin: offen, erledigt oder gescheitert.",
+      "rumors": "Gerüchte",
+      "rumorsButton": "Teile…",
+      "rumorsHint": "Erzähle das Journal dieses Pins Teil für Teil. Vorschau und Journal zeigen den Spielern nur, was du erzählt hast.",
+      "rumorsState": "Erzählt: {all} von {total}."
     },
     "Categories": {
       "title": "Pin-Kategorien",
@@ -340,7 +347,8 @@
       "Key": "Die Seiten eines Kartenschlüssels lassen sich nicht anlegen.",
       "Discover": "Das Entdecken von Pins liefert falsche Ergebnisse.",
       "Party": "Der Ort der Gruppe oder die Kette der Karten darüber stimmt nicht.",
-      "Area": "Gebiete (Foundry-Zeichnungen) sind anders aufgebaut als erwartet."
+      "Area": "Gebiete (Foundry-Zeichnungen) sind anders aufgebaut als erwartet.",
+      "Rumor": "Die Rechte von Journalseiten oder ihre Geheimblöcke verhalten sich anders als erwartet. Das Erzählen nach und nach kann falsche Ergebnisse liefern."
     },
     "DEBUG": {
       "Title": "Debug-Datei",
@@ -385,7 +393,12 @@
       "revealAll": "Für alle aufdecken",
       "hide": "Bis zur Entdeckung verstecken",
       "addToRoute": "Zur Route hinzufügen",
-      "settings": "Pin-Einstellungen"
+      "settings": "Pin-Einstellungen",
+      "rumorStart": "Journal nach und nach erzählen…",
+      "rumorNext": "Nächsten Teil erzählen",
+      "rumorDone": "Alle Teile erzählt",
+      "rumorParts": "Teile und Spieler…",
+      "rumorStop": "Nicht mehr nach und nach erzählen"
     },
     "Key": {
       "name": "Kartenschlüssel: {scene}",
@@ -486,6 +499,30 @@
       "removeTitle": "Gebiet löschen",
       "removeText": "Das Gebiet {name} löschen?",
       "word": "Gebiet"
+    },
+    "Rumor": {
+      "title": "Das Journal nach und nach erzählen",
+      "part": "Teil {n}",
+      "partHead": "Teil",
+      "everyone": "Alle",
+      "hintPages": "Jede Seite des Journals ist ein Teil. Setze den Haken bei denen, die den Teil lesen dürfen, oder nimm Nächsten Teil erzählen. Teile, die niemand lesen darf, fehlen im Journalfenster der Spieler.",
+      "hintSecrets": "Jeder Geheimblock der Seite ist ein Teil. Ein Geheimblock wird allen erzählt, die die Seite lesen dürfen. Setze den Haken bei den Teilen, die du erzählen willst.",
+      "noParts": "Dieses Journal hat nichts, was sich in Teile gliedern lässt.",
+      "apply": "Übernehmen",
+      "next": "Nächsten Teil erzählen",
+      "stop": "Nicht mehr nach und nach erzählen",
+      "new": "neu",
+      "hidden": "noch nicht erzählt",
+      "earlier": "{count} frühere Teile",
+      "notice": "Ein neues Gerücht bei {name}",
+      "noticeMany": "Neue Gerüchte bei {count} Pins",
+      "nothing": "Dieser Pin hat kein Journal mit Seiten oder Geheimblöcken, das sich nach und nach erzählen lässt.",
+      "startTitle": "Dieses Journal nach und nach erzählen",
+      "startPages": "{name}: Jede Seite des Journals wird vor den Spielern verborgen und das Journal für sie geöffnet. Danach erzählst du eine Seite nach der anderen. Welche Seite verborgen oder erzählt ist, steht in Foundry selbst, auch wenn das Modul aus ist.",
+      "startSecrets": "{name}: Jeder Geheimblock der Seite wird wieder verborgen und die Seite für die Spieler geöffnet. Danach erzählst du einen Block nach dem anderen. Der Stand steht in der Seite selbst, auch wenn das Modul aus ist.",
+      "allTold": "Von {name} ist schon alles erzählt.",
+      "told": "Erzählt: {part} von {name}",
+      "toldMany": "{count} Teile von {name} geändert"
     }
   }
 }

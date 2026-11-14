@@ -51,6 +51,8 @@
           {{#if category}}<span class="smp-tag" style="--smp-chip: {{color}}">{{category}}</span>{{/if}}
           {{#if questLabel}}<span class="smp-quest is-{{quest}}"><i class="fa-solid fa-flag" inert></i> {{questLabel}}</span>{{/if}}
           {{#if hiddenPin}}<span class="smp-note smp-hidden-pin" data-tooltip="{{../text.hiddenPin}}"><i class="fa-solid fa-eye-slash" inert></i> {{../text.hiddenShort}}: {{foundCount}}</span>{{/if}}
+          {{#if rumor}}<span class="smp-note smp-rumor-count" data-tooltip="{{../text.rumorTold}}"><i class="fa-solid fa-comment-dots" inert></i> {{rumorLabel}}</span>{{/if}}
+          {{#if newParts}}<span class="smp-new-mark"><i class="fa-solid fa-comment-dots" inert></i> {{../text.newPart}}</span>{{/if}}
           {{#if link}}<span class="smp-note" data-tooltip="{{../text.link}}"><i class="fa-solid fa-link" inert></i></span>{{/if}}
           {{#if isPrivate}}<span class="smp-note" data-tooltip="{{../text.private}}"><i class="fa-solid fa-lock" inert></i></span>{{/if}}
           {{#if other}}<span class="smp-note"><i class="fa-solid fa-layer-group" inert></i> {{../text.otherLevel}}</span>{{/if}}
@@ -60,6 +62,12 @@
       <span class="smp-pin-actions">
         {{#if hiddenPin}}<button type="button" class="smp-icon" data-action="reveal" data-tooltip="{{../text.reveal}}"
           aria-label="{{../text.reveal}}"><i class="fa-solid fa-eye" inert></i></button>{{/if}}
+        {{#if rumor}}<button type="button" class="smp-icon" data-action="rumorNext" data-tooltip="{{../text.rumorNext}}"
+          aria-label="{{../text.rumorNext}}" {{#if rumorDone}}disabled{{/if}}><i class="fa-solid fa-forward-step" inert></i></button>{{/if}}
+        {{#if rumor}}<button type="button" class="smp-icon" data-action="rumorParts" data-tooltip="{{../text.rumorParts}}"
+          aria-label="{{../text.rumorParts}}"><i class="fa-solid fa-comment-dots" inert></i></button>{{/if}}
+        {{#if canRumor}}<button type="button" class="smp-icon" data-action="rumorParts" data-tooltip="{{../text.rumorParts}}"
+          aria-label="{{../text.rumorParts}}"><i class="fa-regular fa-comment-dots" inert></i></button>{{/if}}
         {{#if gmEdit}}<button type="button" class="smp-icon" data-action="quest" data-tooltip="{{../text.questCycle}}"
           aria-label="{{../text.questCycle}}"><i class="fa-solid fa-flag" inert></i></button>{{/if}}
         {{#if ../canAddRoute}}<button type="button" class="smp-icon" data-action="addToRoute" data-tooltip="{{../text.addToRoute}}"

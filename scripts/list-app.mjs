@@ -8,6 +8,7 @@ import {DEFAULT_NOTE_ICON, MODULE_ID, TEMPLATES, addSettingsGear, esc, flagsOf, 
 import {mayEditPin} from "./pin-logic.mjs";
 import {pinVisible} from "./visibility.mjs";
 import {askReveal, setQuest} from "./discover.mjs";
+import {askParts, newCount, possibleMode, revealNext, rumorSummary} from "./rumors.mjs";
 import {foundList, isHiddenPin, nextQuest} from "./discover-logic.mjs";
 import {keyDialog} from "./map-key.mjs";
 import {addStop, canBuildRoute, openRoute, routeAvailable} from "./route.mjs";
@@ -56,6 +57,8 @@ export class PinListApp extends HandlebarsApplicationMixin(ApplicationV2) {
       categories: PinListApp.#onCategories,
       newPin: PinListApp.#onNewPin,
       reveal: PinListApp.#onReveal,
+      rumorNext: PinListApp.#onRumorNext,
+      rumorParts: PinListApp.#onRumorParts,
       quest: PinListApp.#onQuest,
       route: PinListApp.#onRoute,
       addToRoute: PinListApp.#onAddToRoute,
@@ -105,6 +108,9 @@ export class PinListApp extends HandlebarsApplicationMixin(ApplicationV2) {
       const flags = d.flags;
       const mine = mayEditPin(flags, game.user.id, false) && !!flags.owner;
       const other = onOtherLevel(doc);
+      // Rumors bit by bit: the GM sees how many parts are told, a player what is new
+      const rumor = game.user.isGM ? rumorSummary(doc) : null;
+      const fresh = newCount(doc);
       return {
         id: doc.id,
         name: d.label,
@@ -124,6 +130,11 @@ export class PinListApp extends HandlebarsApplicationMixin(ApplicationV2) {
         gmEdit: game.user.isGM,
         hiddenPin: game.user.isGM && isHiddenPin(flags),
         foundCount: foundList(flags).includes("*") ? t("SMP.Reveal.everybody") : String(foundList(flags).length),
+        rumor: !!rumor,
+        canRumor: game.user.isGM && !rumor && !!possibleMode(doc),
+        rumorLabel: rumor ? `${rumor.all}/${rumor.total}` : "",
+        rumorDone: !!rumor && (rumor.all >= rumor.total),
+        newParts: fresh,
         quest: d.quest,
         questLabel: d.quest ? t(`SMP.Quest.state.${d.quest}`) : "",
         needle: `${d.number} ${d.label} ${cat?.name ?? ""} ${d.quest ? t(`SMP.Quest.state.${d.quest}`) : ""}`.toLowerCase()
@@ -163,6 +174,10 @@ export class PinListApp extends HandlebarsApplicationMixin(ApplicationV2) {
         hiddenPin: t("SMP.List.hiddenPin"),
         hiddenShort: t("SMP.List.hiddenShort"),
         questCycle: t("SMP.List.questCycle"),
+        rumorNext: t("SMP.List.rumorNext"),
+        rumorParts: t("SMP.List.rumorParts"),
+        rumorTold: t("SMP.List.rumorTold"),
+        newPart: t("SMP.Rumor.new"),
         where: t("SMP.Where.tool"),
         newArea: t("SMP.Area.newTool"),
         areas: t("SMP.Area.listTitle"),
@@ -318,6 +333,16 @@ export class PinListApp extends HandlebarsApplicationMixin(ApplicationV2) {
   static #onReveal(event, target) {
     const doc = PinListApp.#note(target);
     if ( doc ) askReveal(doc);
+  }
+
+  static #onRumorNext(event, target) {
+    const doc = PinListApp.#note(target);
+    if ( doc && game.user.isGM ) revealNext(doc);
+  }
+
+  static #onRumorParts(event, target) {
+    const doc = PinListApp.#note(target);
+    if ( doc && game.user.isGM ) askParts(doc);
   }
 
   static #onQuest(event, target) {

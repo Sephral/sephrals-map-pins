@@ -8,6 +8,8 @@
 import {MODULE_ID, flagsOf, setting, t} from "./config.mjs";
 import {LIMITS, previewAccess, previewFromHtml, previewFromMarkdown, safeImageSrc} from "./pin-logic.mjs";
 import {describePin} from "./note-style.mjs";
+import {cleanRumorMode} from "./rumor-logic.mjs";
+import {markSeen, rumorPreview} from "./rumors.mjs";
 import {countFeature} from "./usage.mjs";
 
 /** How long the pointer rests on a pin before the card appears, in milliseconds. */
@@ -16,6 +18,9 @@ const DELAY = 220;
 let card = null;
 let timer = 0;
 let shownFor = null;
+
+/** The parts of a pin the card shows to a player, they count as seen when the card goes away: {pin, keys}. */
+let shownParts = null;
 
 /**
  * The card's content for a pin and the user, or null when there is nothing to show. This is the rights check.
@@ -52,7 +57,7 @@ function previewData(note, user) {
       {maxChars}).blocks : [], image: "", mode: "own"};
   }
 
-  return previewFromParts({title, flags, entry: doc.entry, page: doc.page, user});
+  return previewFromParts({title, flags, entry: doc.entry, page: doc.page, user, doc});
 }
 
 /**
@@ -64,9 +69,10 @@ function previewData(note, user) {
  * @param {JournalEntry|null} parts.entry
  * @param {JournalEntryPage|null} parts.page
  * @param {User} parts.user
+ * @param {NoteDocument} [parts.doc]       The pin, for a pin that is told bit by bit
  * @returns {{title: string, blocks: {kind: string, text: string}[], image: string, mode: string}|null}
  */
-export function previewFromParts({title, flags, entry, page, user}) {
+export function previewFromParts({title, flags, entry, page, user, doc = null}) {
   const maxChars = Math.min(Math.max(Number(setting("previewChars")) || 300, 80), 1000);
   const test = page ?? entry;
   const access = previewAccess({
@@ -84,6 +90,14 @@ export function previewFromParts({title, flags, entry, page, user}) {
   const own = String(flags.previewText ?? "").trim().slice(0, LIMITS.previewText);
   if ( own ) {
     blocks = previewFromHtml(own.split(/\n+/).map(l => `<p>${esc(l)}</p>`).join(""), {maxChars}).blocks;
+  }
+  // A pin that is told bit by bit: each part for itself, only the parts this user may read
+  if ( (access === "full") && entry && doc && cleanRumorMode(flags.rumors) ) {
+    const told = rumorPreview(doc, user, maxChars);
+    if ( told ) {
+      return {title, blocks, image: image || told.image, mode: access, parts: told.parts, more: told.more,
+        keys: user.isGM ? [] : told.keys, pinId: doc.id};
+    }
   }
   if ( access === "full" && entry && (!blocks.length || !image) ) {
     const found = readJournal(entry, page, user, maxChars);
@@ -180,7 +194,51 @@ export function buildCard(data) {
     }
     el.append(body);
   }
+  if ( data.parts?.length ) el.append(buildParts(data));
   return el;
+}
+
+/**
+ * The parts of a pin that is told bit by bit: a heading per part with its lines, "new" on the parts a player has not
+ * seen, "hidden" on the parts the GM has not told yet.
+ * @param {object} data
+ * @returns {HTMLElement}
+ */
+function buildParts(data) {
+  const wrap = document.createElement("div");
+  wrap.className = "smp-card-parts";
+  if ( data.more > 0 ) {
+    const more = document.createElement("div");
+    more.className = "smp-card-more";
+    more.textContent = t("SMP.Rumor.earlier", {count: data.more});
+    wrap.append(more);
+  }
+  for ( const part of data.parts ) {
+    const box = document.createElement("div");
+    box.className = "smp-card-part";
+    box.dataset.key = part.key;
+    if ( part.hidden ) box.classList.add("is-hidden");
+    const head = document.createElement("div");
+    head.className = "smp-card-part-head";
+    const name = document.createElement("span");
+    name.textContent = part.name;
+    head.append(name);
+    if ( part.isNew || part.hidden ) {
+      const mark = document.createElement("span");
+      mark.className = part.isNew ? "smp-card-new" : "smp-card-hidden";
+      mark.textContent = t(part.isNew ? "SMP.Rumor.new" : "SMP.Rumor.hidden");
+      head.append(mark);
+    }
+    box.append(head);
+    for ( const block of part.blocks ) {
+      const line = document.createElement("p");
+      line.className = "smp-card-" + block.kind;
+      line.textContent = block.text;
+      box.append(line);
+    }
+    wrap.append(box);
+  }
+  return wrap;
 }
 
 /**
@@ -244,6 +302,11 @@ export function cardKey() {
 export function hidePreview() {
   clearTimeout(timer);
   timer = 0;
+  if ( shownParts ) {
+    const {pin, keys} = shownParts;
+    shownParts = null;
+    markSeen(pin, keys);
+  }
   shownFor = null;
   card?.remove();
   card = null;
@@ -265,6 +328,7 @@ export function showPreview(note) {
   place(card, note);
   card.style.visibility = "";
   shownFor = note.id;
+  if ( data.keys?.length ) shownParts = {pin: data.pinId, keys: data.keys};
   countFeature(MODULE_ID, "previewShown");
   return true;
 }

@@ -11,6 +11,8 @@ import {cleanKeyText, keyPageHtml, keyPins, planKey} from "./key-logic.mjs";
 import {describePin} from "./note-style.mjs";
 import {previewFromHtml} from "./pin-logic.mjs";
 import {readJournal} from "./preview.mjs";
+import {cleanRumorMode} from "./rumor-logic.mjs";
+import {publicBlocks} from "./rumors.mjs";
 import {countFeature, markUsed} from "./usage.mjs";
 
 /** The most characters of "the full text" of a page. */
@@ -37,7 +39,8 @@ function textOf(doc, text) {
   const own = String(flagsOf(doc).previewText ?? "").trim();
   const entry = doc.entry;
   if ( entry ) {
-    const found = readJournal(entry, doc.page, game.user, max).blocks;
+    // A pin that is told bit by bit puts only what everybody may read into the key
+    const found = cleanRumorMode(flagsOf(doc).rumors) ? publicBlocks(doc, max) : readJournal(entry, doc.page, game.user, max).blocks;
     if ( found.length && ((text === "full") || !own) ) return found;
   }
   if ( own ) return previewFromHtml(own.split(/\n+/).map(l => `<p>${l.replace(/[&<>]/g, c => ({"&": "&amp;", "<": "&lt;",
