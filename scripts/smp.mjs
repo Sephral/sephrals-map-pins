@@ -66,11 +66,11 @@ Hooks.once("init", () => {
     party: () => {
       refreshParty();
       refreshWhere();
-      ui.controls?.render({reset: true});
+      ui.controls?.render({reset: true})?.catch?.(() => {});
     },
     privatePins: restyle,
     notesOn: onNotesOnChanged,
-    playerPins: () => ui.controls?.render({reset: true}),
+    playerPins: () => ui.controls?.render({reset: true})?.catch?.(() => {}),
     discover: () => {
       checkDiscovery();
       checkAreaDiscovery();
