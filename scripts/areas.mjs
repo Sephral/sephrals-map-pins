@@ -346,7 +346,7 @@ export function onAreaDeleted(doc) {
   known.delete(doc.id);
   announced.delete(doc.id);
   localFound.delete(doc.id);
-  if ( cardKey() === `area:${doc.id}` ) hidePreview();
+  if ( cardKey() === `area:${doc.id}` ) hidePreview({keepTimer: true});
 }
 
 /* -------------------------------------------- */
@@ -400,7 +400,7 @@ function clearHover() {
   clearTimeout(hoverTimer);
   hoverTimer = 0;
   hoverArea = null;
-  if ( cardKey()?.startsWith("area:") ) hidePreview();
+  if ( cardKey()?.startsWith("area:") ) hidePreview({keepTimer: true});
 }
 
 /**

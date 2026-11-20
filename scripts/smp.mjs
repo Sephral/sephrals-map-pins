@@ -177,7 +177,7 @@ Hooks.once("init", () => {
   Hooks.on("preUpdateNote", (doc, changes) => cleanNoteChanges(doc, changes));
   Hooks.on("activateNote", onActivateNote);
   for ( const event of ["createNote", "updateNote", "deleteNote", "drawNote"] ) Hooks.on(event, refreshList);
-  Hooks.on("deleteNote", hidePreview);
+  Hooks.on("deleteNote", () => hidePreview());
   Hooks.on("createNote", onCreateNote);
   Hooks.on("deleteNote", onDeleteNote);
   Hooks.on("updateNote", onUpdateNote);

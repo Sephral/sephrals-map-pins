@@ -368,10 +368,16 @@ export function cardKey() {
   return card ? shownFor : null;
 }
 
-/** Remove the card. */
-export function hidePreview() {
-  clearTimeout(timer);
-  timer = 0;
+/**
+ * Remove the card.
+ * @param {object} [options]
+ * @param {boolean} [options.keepTimer]  Keep a pin's card that is about to show (an area card going away must not stop it)
+ */
+export function hidePreview({keepTimer = false} = {}) {
+  if ( !keepTimer ) {
+    clearTimeout(timer);
+    timer = 0;
+  }
   if ( shownParts ) {
     const {pin, keys} = shownParts;
     shownParts = null;
