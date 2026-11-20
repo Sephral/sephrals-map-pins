@@ -50,6 +50,10 @@
         "name": "Preview when the pointer rests on a pin",
         "hint": "A card with the title, the first picture and the first lines of the journal. It shows only what the user may read."
       },
+      "previewPlayers": {
+        "name": "Previews for players",
+        "hint": "Players see the preview card too, only as far as they may read the journal. Secret sections, undiscovered pins and switched off categories never show."
+      },
       "previewChars": {
         "name": "Length of the preview text (characters)",
         "hint": "How much text the preview card shows at most."
@@ -173,6 +177,7 @@
       "rumorTold": "Parts told to everyone"
     },
     "Preview": {
+      "scene": "Scene",
       "title": "Preview"
     },
     "Choice": {

@@ -50,6 +50,10 @@
         "name": "Vorschau, wenn der Mauszeiger auf einem Pin ruht",
         "hint": "Eine Karte mit Titel, erstem Bild und den ersten Zeilen des Journals. Sie zeigt nur, was der Benutzer lesen darf."
       },
+      "previewPlayers": {
+        "name": "Vorschau für Spieler",
+        "hint": "Auch Spieler sehen die Vorschau, aber nur so weit, wie sie das Journal lesen dürfen. Geheime Abschnitte, unentdeckte Pins und ausgeschaltete Kategorien zeigen sich nie."
+      },
       "previewChars": {
         "name": "Länge des Vorschautextes (Zeichen)",
         "hint": "Wie viel Text die Vorschau höchstens zeigt."
@@ -173,6 +177,7 @@
       "rumorTold": "Teile, die allen erzählt sind"
     },
     "Preview": {
+      "scene": "Szene",
       "title": "Vorschau"
     },
     "Choice": {

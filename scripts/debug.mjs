@@ -30,7 +30,7 @@ export function describeState() {
       zoom: Number((canvas.stage.scale.x).toFixed(3))
     } : null,
     settings: Object.fromEntries(["labelMode", "noBackground", "constantSize", "constantScale", "minZoom",
-      "numberFromName", "autoNumber", "preview", "previewChars", "newGlobal", "notesOn", "playerPins", "playerPinsPrivate",
+      "numberFromName", "autoNumber", "preview", "previewPlayers", "previewChars", "newGlobal", "notesOn", "playerPins", "playerPinsPrivate",
       "playerPinLimit", "theme"].map(key => [key, setting(key)])),
     categories: categoryList().length,
     categoriesHiddenHere: hiddenCategories().size,

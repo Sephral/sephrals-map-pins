@@ -5,12 +5,13 @@
  * put into the page.
  */
 
-import {MODULE_ID, flagsOf, setting, t} from "./config.mjs";
+import {MODULE_ID, flagsOf, isV14, setting, t} from "./config.mjs";
 import {LIMITS, previewAccess, previewFromHtml, previewFromMarkdown, safeImageSrc} from "./pin-logic.mjs";
 import {describePin} from "./note-style.mjs";
 import {cleanRumorMode} from "./rumor-logic.mjs";
 import {markSeen, rumorPreview} from "./rumors.mjs";
 import {countFeature} from "./usage.mjs";
+import {request} from "./player-pins.mjs";
 
 /** How long the pointer rests on a pin before the card appears, in milliseconds. */
 const DELAY = 220;
@@ -22,6 +23,12 @@ let shownFor = null;
 /** The parts of a pin the card shows to a player, they count as seen when the card goes away: {pin, keys}. */
 let shownParts = null;
 
+/** The pins a player already saw a card of in this session (counted once each). */
+const countedPlayerPins = new Set();
+
+/** When the canvas moved last, in milliseconds. A card waits until the view rests. */
+let lastPan = 0;
+
 /**
  * The card's content for a pin and the user, or null when there is nothing to show. This is the rights check.
  * @param {Note} note
@@ -30,6 +37,7 @@ let shownParts = null;
  */
 export function buildPreview(note, user = game.user) {
   const data = previewData(note, user);
+  if ( data && !data.parts && data.mode !== "title" ) attachScene(data, note, user);
   const quest = data ? describePin(note).quest : "";
   if ( data && quest ) data.quest = t(`SMP.Quest.state.${quest}`);
   return data;
@@ -46,6 +54,8 @@ function previewData(note, user) {
   const flags = flagsOf(doc);
   const d = describePin(note);
   if ( !d.style.preview || d.privateHidden || d.undiscovered ) return null;
+  // Players get the card only when the GM allows it, and never for a category they switched off
+  if ( !user.isGM && (!setting("previewPlayers") || d.categoryHidden) ) return null;
   const maxChars = Math.min(Math.max(Number(setting("previewChars")) || 300, 80), 1000);
   const title = d.label;
 
@@ -58,6 +68,34 @@ function previewData(note, user) {
   }
 
   return previewFromParts({title, flags, entry: doc.entry, page: doc.page, user, doc});
+}
+
+/**
+ * The background picture of a scene, for a scene without a thumbnail (Foundry 14 keeps it on the first level).
+ * @param {Scene} scene
+ * @returns {string}
+ */
+function sceneBackground(scene) {
+  if ( isV14() ) {
+    const level = scene.initialLevel ?? [...(scene.levels ?? [])][0];
+    return level?.background?.src ?? "";
+  }
+  return scene.background?.src ?? "";
+}
+
+/**
+ * Add the thumbnail of the scene a pin links to, when this user may go there.
+ * @param {object} data
+ * @param {Note} note
+ * @param {User} user
+ */
+function attachScene(data, note, user) {
+  const flags = flagsOf(note.document);
+  if ( flags.private || !flags.scene ) return;
+  const scene = game.scenes.get(flags.scene);
+  if ( !scene || !(user.isGM || scene.active || scene.visible) ) return;
+  const image = safeImageSrc(scene.thumb || sceneBackground(scene));
+  data.scene = {name: scene.name, image};
 }
 
 /**
@@ -195,7 +233,39 @@ export function buildCard(data) {
     el.append(body);
   }
   if ( data.parts?.length ) el.append(buildParts(data));
+  if ( data.scene ) el.append(buildScene(data.scene));
   return el;
+}
+
+/**
+ * The row for the linked scene: a small thumbnail and its name.
+ * @param {{name: string, image: string}} scene
+ * @returns {HTMLElement}
+ */
+function buildScene(scene) {
+  const row = document.createElement("div");
+  row.className = "smp-card-scene";
+  if ( scene.image ) {
+    const img = document.createElement("img");
+    img.className = "smp-card-scene-image";
+    img.alt = "";
+    img.draggable = false;
+    img.referrerPolicy = "no-referrer";
+    img.src = scene.image;
+    img.addEventListener("error", () => img.remove());
+    row.append(img);
+  }
+  const text = document.createElement("div");
+  text.className = "smp-card-scene-text";
+  const label = document.createElement("span");
+  label.className = "smp-card-scene-label";
+  label.textContent = t("SMP.Preview.scene");
+  const name = document.createElement("span");
+  name.className = "smp-card-scene-name";
+  name.textContent = scene.name;
+  text.append(label, name);
+  row.append(text);
+  return row;
 }
 
 /**
@@ -330,7 +400,45 @@ export function showPreview(note) {
   shownFor = note.id;
   if ( data.keys?.length ) shownParts = {pin: data.pinId, keys: data.keys};
   countFeature(MODULE_ID, "previewShown");
+  countPlayerPreview(note);
   return true;
+}
+
+/**
+ * Count the card a player saw, once per pin and session. Only the active GM's browser counts, so the player asks it.
+ * @param {Note} note
+ */
+function countPlayerPreview(note) {
+  if ( game.user.isGM || countedPlayerPins.has(note.id) ) return;
+  countedPlayerPins.add(note.id);
+  request("previewPlayer", {}).catch(() => {});
+}
+
+/**
+ * The active GM counts a player's card.
+ * @returns {Promise<{ok: boolean}>}
+ */
+export async function handlePreviewCount() {
+  countFeature(MODULE_ID, "previewPlayer");
+  return {ok: true};
+}
+
+/** Escape closes the card. */
+function onKey(event) {
+  if ( (event.key !== "Escape") || !card ) return;
+  // The first Escape only closes the card, Foundry's menu stays shut
+  hidePreview();
+  event.stopPropagation();
+}
+
+/** Note that the view moved, a card appears only after it rested. */
+export function notePan() {
+  lastPan = performance.now();
+}
+
+/** Listen for Escape. Call once in "ready". */
+export function bindPreviewKeys() {
+  window.addEventListener("keydown", onKey, true);
 }
 
 /**
@@ -344,7 +452,15 @@ export function onHoverNote(note, hovered) {
     if ( !shownFor || (shownFor === note.id) ) hidePreview();
     return;
   }
-  timer = setTimeout(() => showPreview(note), DELAY);
+  const wait = () => {
+    // No card while the view is moving: the pointer crosses pins when panning
+    if ( (performance.now() - lastPan) < DELAY ) {
+      timer = setTimeout(wait, DELAY / 2);
+      return;
+    }
+    if ( !note.destroyed ) showPreview(note);
+  };
+  timer = setTimeout(wait, DELAY);
 }
 
 /** Keep the card at its pin while the canvas moves. */

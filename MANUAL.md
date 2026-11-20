@@ -151,11 +151,13 @@ When the pointer rests on a pin for a moment, a card shows the title, the first 
 * Users with Limited permission see only the title.
 * Others see nothing of the journal. On Foundry a pin whose journal is hidden from you is not shown at all.
 * Pages you may not observe are skipped. The first readable text page and the first picture are used.
+* A pin that links to a scene adds a small thumbnail and the name of that scene, for users who may go there (the GM, or the scene is active or visible to them).
+* Players get the card too (world setting *Preview for players*, on by default). Pins that are not discovered, categories a player switched off and private pins of others never show a card. Secret sections never reach the card, for the GM either.
 * A pin that tells its journal bit by bit lists the told parts instead (see *Rumors bit by bit*).
 
 The text is reduced to plain lines. Secret sections, scripts, links and styles of the journal never reach the card, and links and rolls written for Foundry's text editor show as their plain text. If the pin has an own preview text or picture, they replace the journal's lines and picture for users who may read the journal. For users with only Limited permission the title stays the only thing shown.
 
-The length of the text is a setting. The preview can be switched off for the world and for a single pin.
+The card appears after a short rest of the pointer and not while the view is being panned. Escape closes it. The length of the text is a setting. The preview can be switched off for the world and for a single pin.
 
 ## Numbers
 
@@ -210,6 +212,7 @@ The first button, *Sephral’s Modules*, and the module settings:
 | Take pin numbers from journal names | On by default. |
 | Number new pins automatically | A new pin gets the next free number. |
 | Preview when the pointer rests on a pin | World default for the preview card. |
+| Preview for players | Players see the card too, within their rights. On by default. |
 | Length of the preview text | At most this many characters. |
 | New pins are visible without line of sight | New pins are marked as global. |
 | Show pins to players | Switches Foundry's display of pins on for every player, once. Players can still switch it off for themselves. Turning the setting off and on again applies it to everybody once more. |
@@ -313,8 +316,8 @@ The module can take part in a small usage report shared by all of Sephral’s mo
 With the GM’s consent only the active GM’s browser counts, and it sends at most one report a day. The counts are kept in a hidden world setting, so all browsers and computers of the GM count together, and turning the statistics off deletes them. A copy of a world gets its own world ID. The question lists everything the report contains, from the Foundry version to a random world ID. For Map Pins it holds:
 
 * on how many of the last 30 days the module was used
-* how often the pin list is opened, a preview card is shown, pins are numbered, categories are created, players ask for a pin, a player's pin is created, a pin opens a scene, the pins of another module are taken over, a pin is discovered, a pin is revealed, a map key is made, a route stop is added, a quest state is set, the control *Where are we?* is used, the party is placed by hand, an area is created, discovered or revealed and an area's preview card is shown, a pin is started to be told bit by bit and a part is told
-* the settings *Look*, *Pin labels*, *Pins without the dark box*, *Pins keep their size when zooming*, *Preview when the pointer rests on a pin*, *Number new pins automatically*, *Pins set by players*, *New pins are hidden until discovered*, *Players discover pins by exploring*, *Travel pace*, *Players can build routes*, *Text in the map key*, *Show where the party is* and *Keep a trail of visited places* (only the chosen option)
+* how often the pin list is opened, a preview card is shown (and how many pins a player saw a card of, once per pin and session), pins are numbered, categories are created, players ask for a pin, a player's pin is created, a pin opens a scene, the pins of another module are taken over, a pin is discovered, a pin is revealed, a map key is made, a route stop is added, a quest state is set, the control *Where are we?* is used, the party is placed by hand, an area is created, discovered or revealed and an area's preview card is shown, a pin is started to be told bit by bit and a part is told
+* the settings *Look*, *Pin labels*, *Pins without the dark box*, *Pins keep their size when zooming*, *Preview when the pointer rests on a pin*, *Preview for players*, *Number new pins automatically*, *Pins set by players*, *New pins are hidden until discovered*, *Players discover pins by exploring*, *Travel pace*, *Players can build routes*, *Text in the map key*, *Show where the party is* and *Keep a trail of visited places* (only the chosen option)
 * where errors occur in the module code: file, line, error type and whether the error arose in the module itself, in Foundry, in the game system or in another module, never the error message or the name of another module
 
 No names, notes, pictures or other content of the world are sent.

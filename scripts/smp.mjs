@@ -25,7 +25,7 @@ import {addStop, bindRoutePick, canBuildRoute, clearRoute, currentRoutes, drawRo
 import {numberDialog, numberPins, onPreCreateNote} from "./numbering.mjs";
 import {onActivateNote, openPin} from "./open-pin.mjs";
 import {playerPinsAvailable, registerSocket, startPlayerPin} from "./player-pins.mjs";
-import {followPin, hidePreview, onHoverNote} from "./preview.mjs";
+import {bindPreviewKeys, followPin, handlePreviewCount, hidePreview, notePan, onHoverNote} from "./preview.mjs";
 import {askParts, checkRumors, onJournalOpened, partsOf, revealNext, revealParts, rumorSummary, scheduleRumorCheck,
   startRumors, stopRumors} from "./rumors.mjs";
 import {noticeNewVersions, runSelfTest} from "./selftest.mjs";
@@ -82,11 +82,11 @@ Hooks.once("init", () => {
   });
   // Counted only on the active GM's client, like every Sephral module
   registerUsage(MODULE_ID, {
-    features: ["listOpened", "previewShown", "pinsNumbered", "categoryCreated", "playerPinRequested",
+    features: ["listOpened", "previewShown", "previewPlayer", "pinsNumbered", "categoryCreated", "playerPinRequested",
       "playerPinCreated", "sceneLinkOpened", "pinCushionMigrated", "pinDiscovered", "pinRevealed", "mapKeyMade",
       "routeBuilt", "questSet", "whereAsked", "partyPlaced", "areaCreated", "areaDiscovered", "areaRevealed",
       "areaPreviewShown", "rumorStarted", "rumorRevealed"],
-    settings: ["theme", "labelMode", "noBackground", "constantSize", "preview", "autoNumber", "playerPins",
+    settings: ["theme", "labelMode", "noBackground", "constantSize", "preview", "previewPlayers", "autoNumber", "playerPins",
       "discoverDefault", "discoverAuto", "pace", "routePlayers", "keyText", "whereOn", "partyTrail"]
   });
   registerDebug();
@@ -101,6 +101,7 @@ Hooks.once("init", () => {
   Hooks.on("refreshDrawing", applyAreaState);
   Hooks.on("hoverNote", onHoverNote);
   Hooks.on("canvasPan", () => {
+    notePan();
     scheduleZoomUpdate();
     followPin();
     refreshAreaHover();
@@ -303,7 +304,8 @@ Hooks.once("i18nInit", () => {
 
 Hooks.once("ready", async () => {
   await languageReady;
-  registerSocket({discover: handleDiscover});
+  registerSocket({discover: handleDiscover, previewPlayer: handlePreviewCount});
+  bindPreviewKeys();
   applyNotesToggle(false);
   startParty();
   checkRumors();

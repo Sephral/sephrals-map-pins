@@ -25,6 +25,7 @@ export const SETTINGS = {
   numberFromName: {type: Boolean, default: true, onChange: "restyle"},
   autoNumber: {type: Boolean, default: false},
   preview: {type: Boolean, default: true, onChange: "restyle"},
+  previewPlayers: {type: Boolean, default: true},
   previewChars: {type: Number, default: 300, range: {min: 80, max: 1000, step: 20}},
   newGlobal: {type: Boolean, default: false},
   notesOn: {type: Boolean, default: true, onChange: "notesOn"},

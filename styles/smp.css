@@ -626,6 +626,43 @@
   font-size: 11px;
 }
 
+.smp-card-scene {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px 10px;
+  border-top: 1px solid var(--smp-line);
+}
+
+.smp-card-scene-image {
+  flex: none;
+  width: 64px;
+  height: 40px;
+  border: 1px solid var(--smp-line);
+  border-radius: 3px;
+  object-fit: cover;
+}
+
+.smp-card-scene-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.smp-card-scene-label {
+  color: var(--smp-muted);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.smp-card-scene-name {
+  overflow: hidden;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* -------------------------------------------- */
 /*  Reveal window                               */
 /* -------------------------------------------- */
