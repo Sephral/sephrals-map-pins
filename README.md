@@ -18,7 +18,7 @@
 * **Map key:** one click makes a handout with a page per numbered pin.
 * **Routes and travel time:** pick pins in order to see distance and time, and share the route with your players.
 * **Readable pins:** labels that stay visible, no dark box, a steady size while zooming, numbers like `12` or `B3`, category rings.
-* **Preview on hover:** title, picture and first lines of the journal, only for those who may read them.
+* **Preview on hover:** title, picture, a thumbnail of the linked scene and the first lines of the journal, for players too, within their rights.
 * **Pin list:** search and filter every pin of the scene.
 * **Pins by players:** players click the map to add a pin, and you confirm.
 * **Scene links:** a double click on a pin switches to another scene.
