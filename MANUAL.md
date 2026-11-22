@@ -4,7 +4,7 @@ Map Pins changes how Foundry's map notes (the pins on a scene) look and gives yo
 
 ## The note dialog
 
-Open a pin with a double click in the notes controls, or *Edit* in the pin list. Below Foundry's own sections there is a section *Map Pins*:
+Open a pin's settings with *Pin settings* in the pin menu, or with *Edit* in the pin list. Below Foundry's own sections there is a section *Map Pins*:
 
 | Field | What it does |
 | --- | --- |
@@ -44,7 +44,7 @@ A pin can be *hidden until discovered*. Tick the field *Hidden until discovered*
 A player discovers a pin in two ways:
 
 * **By exploring.** The player's browser looks at Foundry's own fog exploration. As soon as the place of a hidden pin is in ground the player has explored, or in sight of one of their tokens, the browser tells the active GM, who writes the player into the pin. This is checked when the exploration changes and when the scene loads, for each player alone. Reveals made with Sephral's Map Knowledge count as well, because they write into the same exploration. It needs token vision and fog exploration on the scene. On a scene without them a hidden pin waits for the GM. The setting *Players discover pins by exploring* turns it off.
-* **By the GM.** Right click a pin and choose *Reveal for players*, use the eye button in the pin list or the button in the note dialog. The window offers *For everyone*, *For ticked* (the ticked players see it, the others do not) and *Hide again*. The API does the same.
+* **By the GM.** Right click a pin and choose *Reveal for players*, use the eye button in the pin list or the button in the note dialog. The window offers *For everyone*, *For ticked players* (the ticked players see it, the others do not) and *Hide again*. The API does the same.
 
 A pin stays discovered for the player. The list of players who found it is part of the pin (`found`). When a pin appears for a player, a short ping and a note show where it is (setting *Ping and note when a pin appears*).
 
@@ -115,7 +115,7 @@ An area is a labeled shape on a map: a realm, the land of a faction, a danger zo
 
 **The preview card.** When the pointer rests inside an area, the card shows the title, the category and the journal's first lines and picture, only as far as Foundry's permissions allow (Observer reads, Limited shows the title only, otherwise no card). Secrets of journals never reach the card. Where areas overlap, the smallest one under the pointer wins, and a pin or a token under the pointer wins over the area. No card shows while the drawing tools are active.
 
-**Hidden areas.** A hidden area is not shown to a player before they discover it, not on the map, not in the list, not in a preview. Discovery works as for pins: the area is found when its ground is explored by a player's token (the module looks at up to forty points inside the shape against the fog exploration and the token's sight, so a realm is found when its edge is entered), or the GM reveals it (*For everyone*, *For ticked*, *Hide again* in the same window as for pins, or `api.revealArea`). The found list is stored in the area's flags. Foundry's own *hidden* mark of the drawing is set too, so the area stays hidden from players when the module is off. Revealing for everybody lifts that mark, hiding again sets it. As with pins, the interface hides what a player may not see, but the scene's data still reaches the browser, so a player who looks into the browser's tools can find a hidden area.
+**Hidden areas.** A hidden area is not shown to a player before they discover it, not on the map, not in the list, not in a preview. Discovery works as for pins: the area is found when its ground is explored by a player's token (the module looks at up to forty points inside the shape against the fog exploration and the token's sight, so a realm is found when its edge is entered), or the GM reveals it (*For everyone*, *For ticked players*, *Hide again* in the same window as for pins, or `api.revealArea`). The found list is stored in the area's flags. Foundry's own *hidden* mark of the drawing is set too, so the area stays hidden from players when the module is off. Revealing for everybody lifts that mark, hiding again sets it. As with pins, the interface hides what a player may not see, but the scene's data still reaches the browser, so a player who looks into the browser's tools can find a hidden area.
 
 ## The pin menu
 
@@ -152,7 +152,7 @@ When the pointer rests on a pin for a moment, a card shows the title, the first 
 * Others see nothing of the journal. On Foundry a pin whose journal is hidden from you is not shown at all.
 * Pages you may not observe are skipped. The first readable text page and the first picture are used.
 * A pin that links to a scene adds a small thumbnail and the name of that scene, for users who may go there (the GM, or the scene is active or visible to them).
-* Players get the card too (world setting *Preview for players*, on by default). Pins that are not discovered, categories a player switched off and private pins of others never show a card. Secret sections never reach the card, for the GM either.
+* Players get the card too (world setting *Previews for players*, on by default). Pins that are not discovered, categories a player switched off and private pins of others never show a card. Secret sections never reach the card, for the GM either.
 * A pin that tells its journal bit by bit lists the told parts instead (see *Rumors bit by bit*).
 
 The text is reduced to plain lines. Secret sections, scripts, links and styles of the journal never reach the card, and links and rolls written for Foundry's text editor show as their plain text. If the pin has an own preview text or picture, they replace the journal's lines and picture for users who may read the journal. For users with only Limited permission the title stays the only thing shown.
@@ -172,7 +172,7 @@ A pin shows a number as a badge. Where the number comes from:
 
 With the world setting *Pins set by players* on *The GM confirms each pin* or *At once*, players get the tool *Set a pin* in the notes controls and a *New pin* button in the pin list. They click the map and give a name, a text and a color. Foundry does not let players create notes, so the request goes to the active GM, whose browser writes the pin. A GM must be online.
 
-* A pin for everybody is a note with its own journal entry in the folder *Pins of players*. Everybody may observe it, the player who set it owns it. It is a normal note and journal entry.
+* A pin for everybody is a note with its own journal entry in the folder *Pins by players*. Everybody may observe it, the player who set it owns it. It is a normal note and journal entry.
 * A pin only for the player who set it is a note without a journal entry and without a name. Its name and text stay in that player's browser. Other players do not see the pin, and its text is in no document of the world. See *What other browsers receive* below.
 * The player can change and delete their own pins in the pin list (name, text and color, not who sees it). The GM can change and delete every pin as usual.
 * The setting *Most pins per player and scene* stops a player from filling a map. With *Players may set pins only they see* off, the choice for pins only for the player is not offered.
@@ -212,7 +212,7 @@ The first button, *Sephral’s Modules*, and the module settings:
 | Take pin numbers from journal names | On by default. |
 | Number new pins automatically | A new pin gets the next free number. |
 | Preview when the pointer rests on a pin | World default for the preview card. |
-| Preview for players | Players see the card too, within their rights. On by default. |
+| Previews for players | Players see the card too, within their rights. On by default. |
 | Length of the preview text | At most this many characters. |
 | New pins are visible without line of sight | New pins are marked as global. |
 | Show pins to players | Switches Foundry's display of pins on for every player, once. Players can still switch it off for themselves. Turning the setting off and on again applies it to everybody once more. |
@@ -229,7 +229,7 @@ The first button, *Sephral’s Modules*, and the module settings:
 | Players can build routes | Every player builds a route of their own. |
 | Players may set pins only they see | Allows private pins. |
 | Most pins per player and scene | A limit for the pins one player sets. |
-| Pin list, Categories, Take over pins | Buttons that open the windows. |
+| Open the pin list, Edit categories, Take over pins | Buttons that open the windows. |
 | Self test, Save debug file | See below. |
 
 ## Keys
@@ -238,7 +238,7 @@ The key that opens the pin list has no default. Choose one in Foundry's key sett
 
 ## Self test
 
-The settings button *Run self test* (GM) checks after a Foundry update that everything the module relies on is there: the note and its pieces, the window classes, the socket, the templates and the texts. It also tests the safe preview text with a secret section and a script. It also tests the logic of discovered pins, routes and the map key, the party's place with the chain of maps above it, areas and their drawing class and, with a scene open, the fog of war functions that discovery reads, the layer routes are drawn on and the size of the scene the quick look reads. The module was verified with Foundry 14.370. When Foundry is newer, the GM gets a hint once.
+The settings button *Run self test* (GM) checks after a Foundry update that everything the module relies on is there: the note and its pieces, the window classes, the socket, the templates and the texts. It also tests the safe preview text with a secret section and a script, and the logic of discovered pins, routes and the map key, the party's place with the chain of maps above it, areas and their drawing class and, with a scene open, the fog of war functions that discovery reads, the layer routes are drawn on and the size of the scene the quick look reads. The module was verified with Foundry 14.370. When Foundry is newer, the GM gets a hint once.
 
 ## Debug file
 

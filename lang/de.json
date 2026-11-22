@@ -202,7 +202,7 @@
     "Config": {
       "title": "Map Pins",
       "imageHint": "Das Bild des Pins, oben im Abschnitt Symbol eingestellt.",
-      "like": "Wie die Welt",
+      "like": "Wie die Welteinstellung",
       "label": "Beschriftung",
       "background": "Hintergrund",
       "size": "Größe beim Zoomen",
@@ -226,7 +226,7 @@
       "quest": "Quest",
       "questHint": "Zeigt eine kleine Markierung am Pin: offen, erledigt oder gescheitert.",
       "rumors": "Gerüchte",
-      "rumorsButton": "Teile…",
+      "rumorsButton": "Teile verwalten…",
       "rumorsHint": "Erzähle das Journal dieses Pins Teil für Teil. Vorschau und Journal zeigen den Spielern nur, was du erzählt hast.",
       "rumorsState": "Erzählt: {all} von {total}."
     },
@@ -257,7 +257,7 @@
         "reading": "Zeilen von oben nach unten",
         "columns": "Spalten von links nach rechts",
         "name": "Nach Name",
-        "listed": "Wie Foundry sie hält"
+        "listed": "In der Reihenfolge von Foundry"
       },
       "prefix": "Buchstaben davor",
       "start": "Erste Nummer",
@@ -368,7 +368,7 @@
     "Reveal": {
       "title": "Pin aufdecken",
       "all": "Für alle",
-      "chosen": "Für Angehakte",
+      "chosen": "Für angehakte Spieler",
       "reset": "Wieder verstecken",
       "cancel": "Schließen",
       "hint": "Spieler sehen diesen Pin nicht, bis sie seinen Ort erkunden oder du ihn aufdeckst. Hake die Spieler an, die ihn sehen sollen. Alle ohne Haken sehen ihn nicht.",
@@ -456,9 +456,9 @@
       "nobody": "Noch weiß niemand, wo die Gruppe ist.",
       "noMap": "Der Ort der Gruppe ist auf keiner Karte zu sehen, die du kennst.",
       "unknownPlace": "Ein unbekannter Ort",
-      "sourceManual": "Vom SL festgelegt",
+      "sourceManual": "Von der SL festgelegt",
       "sourceAuto": "Automatisch erkannt",
-      "sourceHint": "Der SL kann den Ort festlegen. Sonst ist es die Szene, die alle Spieler im Spiel ansehen, sonst die aktive Szene.",
+      "sourceHint": "Die SL kann den Ort festlegen. Sonst gilt die Szene, die alle Spieler im Spiel ansehen, sonst die aktive Szene.",
       "mapAbove": "Karte darüber",
       "openMap": "Diese Karte öffnen",
       "setHere": "Gruppe nach {scene} setzen",

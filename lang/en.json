@@ -149,7 +149,7 @@
       "area": "New area"
     },
     "List": {
-      "title": "Pin List",
+      "title": "Pin list",
       "open": "Open the pin list",
       "menuHint": "All pins of the viewed scene with search and category filter.",
       "search": "Search pins",
@@ -231,7 +231,7 @@
       "rumorsState": "Told: {all} of {total}."
     },
     "Categories": {
-      "title": "Pin Categories",
+      "title": "Pin categories",
       "open": "Edit categories",
       "menuHint": "The world's categories with symbol and color, for example quest, shop or danger.",
       "hint": "A pin in a category gets a ring in its color, and its symbol when the pin has no image of its own. Players can hide categories for themselves in the pin list.",
@@ -312,7 +312,7 @@
       "confirmText": "{user} wants to set this pin on \"{scene}\":",
       "accept": "Accept",
       "decline": "Decline",
-      "folder": "Pins of players",
+      "folder": "Pins by players",
       "fail": {
         "noGM": "No GM is online, so the pin cannot be set now.",
         "timeout": "The GM did not answer.",
@@ -368,7 +368,7 @@
     "Reveal": {
       "title": "Reveal pin",
       "all": "For everyone",
-      "chosen": "For ticked",
+      "chosen": "For ticked players",
       "reset": "Hide again",
       "cancel": "Close",
       "hint": "Players do not see this pin until they explore its place or you reveal it. Tick the players who should see it. Players you leave unticked do not see it.",

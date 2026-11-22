@@ -24,6 +24,8 @@ import {addStop, bindRoutePick, canBuildRoute, clearRoute, currentRoutes, drawRo
   routeAvailable} from "./route.mjs";
 import {numberDialog, numberPins, onPreCreateNote} from "./numbering.mjs";
 import {onActivateNote, openPin} from "./open-pin.mjs";
+import {startTranslatorRefresh} from "./translator-refresh.mjs";
+import {GROUPS as CANVAS_TEXT_GROUPS} from "./refresh-logic.mjs";
 import {playerPinsAvailable, registerSocket, startPlayerPin} from "./player-pins.mjs";
 import {bindPreviewKeys, followPin, handlePreviewCount, hidePreview, notePan, onHoverNote} from "./preview.mjs";
 import {askParts, checkRumors, onJournalOpened, partsOf, revealNext, revealParts, rumorSummary, scheduleRumorCheck,
@@ -186,7 +188,12 @@ Hooks.once("init", () => {
   });
   onOpenWithoutJournal(openPin);
 
+  startTranslatorRefresh();
   game.modules.get(MODULE_ID).api = {
+    /** True: this module redraws its canvas texts on the hook "sephrals-translator.refresh". */
+    translatorRefresh: true,
+    /** Is this key drawn on the canvas? Lets the translator show it as live on the map. */
+    translatorRefreshKeys: key => Object.values(CANVAS_TEXT_GROUPS).some(test => test.test(String(key))),
     /** Open the pin list (everyone). */
     open: openList,
     /**
