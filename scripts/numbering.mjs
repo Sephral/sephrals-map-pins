@@ -61,20 +61,7 @@ export async function numberPins(scene = canvas.scene, {order = "reading", prefi
  */
 export async function numberDialog() {
   if ( !game.user.isGM || !canvas.scene ) return null;
-  const orders = ["reading", "columns", "name", "listed"];
-  const content = `<div class="smp-app smp-dialog" data-smp-theme="${esc(setting("theme"))}">
-    <p>${esc(t("SMP.Numbers.intro", {scene: canvas.scene.name, count: canvas.scene.notes.size}))}</p>
-    <div class="form-group"><label>${esc(t("SMP.Numbers.order"))}</label><div class="form-fields"><select name="order">
-      ${orders.map(o => `<option value="${o}">${esc(t(`SMP.Numbers.orders.${o}`))}</option>`).join("")}</select></div></div>
-    <div class="form-group"><label>${esc(t("SMP.Numbers.prefix"))}</label><div class="form-fields">
-      <input type="text" name="prefix" maxlength="2" value="" placeholder="B"></div></div>
-    <div class="form-group"><label>${esc(t("SMP.Numbers.start"))}</label><div class="form-fields">
-      <input type="number" name="start" min="0" max="9999" value="1"></div></div>
-    <div class="form-group"><label>${esc(t("SMP.Numbers.keep"))}</label><div class="form-fields">
-      <input type="checkbox" name="keep"></div><p class="hint">${esc(t("SMP.Numbers.keepHint"))}</p></div>
-    <div class="form-group"><label>${esc(t("SMP.Numbers.fromNames"))}</label><div class="form-fields">
-      <input type="checkbox" name="fromNames" checked></div><p class="hint">${esc(t("SMP.Numbers.fromNamesHint"))}</p></div>
-  </div>`;
+  const content = numberContent({scene: canvas.scene.name, count: canvas.scene.notes.size});
   const options = await DialogV2.prompt({
     window: {title: t("SMP.Numbers.title"), icon: "fa-solid fa-arrow-down-1-9"},
     position: {width: 520},
@@ -93,6 +80,28 @@ export async function numberDialog() {
   const result = await numberPins(canvas.scene, options);
   ui.notifications.info(t("SMP.Numbers.done", result));
   return result;
+}
+
+/**
+ * The content of the question how to number the pins.
+ * @param {{scene: string, count: number}} data
+ * @returns {string}
+ */
+export function numberContent({scene, count}) {
+  const orders = ["reading", "columns", "name", "listed"];
+  return `<div class="smp-app smp-dialog" data-smp-theme="${esc(setting("theme"))}">
+    <p>${esc(t("SMP.Numbers.intro", {scene, count}))}</p>
+    <div class="form-group"><label>${esc(t("SMP.Numbers.order"))}</label><div class="form-fields"><select name="order">
+      ${orders.map(o => `<option value="${o}">${esc(t(`SMP.Numbers.orders.${o}`))}</option>`).join("")}</select></div></div>
+    <div class="form-group"><label>${esc(t("SMP.Numbers.prefix"))}</label><div class="form-fields">
+      <input type="text" name="prefix" maxlength="2" value="" placeholder="B"></div></div>
+    <div class="form-group"><label>${esc(t("SMP.Numbers.start"))}</label><div class="form-fields">
+      <input type="number" name="start" min="0" max="9999" value="1"></div></div>
+    <div class="form-group"><label>${esc(t("SMP.Numbers.keep"))}</label><div class="form-fields">
+      <input type="checkbox" name="keep"></div><p class="hint">${esc(t("SMP.Numbers.keepHint"))}</p></div>
+    <div class="form-group"><label>${esc(t("SMP.Numbers.fromNames"))}</label><div class="form-fields">
+      <input type="checkbox" name="fromNames" checked></div><p class="hint">${esc(t("SMP.Numbers.fromNamesHint"))}</p></div>
+  </div>`;
 }
 
 /**

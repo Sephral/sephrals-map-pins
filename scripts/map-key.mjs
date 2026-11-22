@@ -140,22 +140,30 @@ export async function makeKey(scene = canvas.scene, {text, open = true} = {}) {
 }
 
 /**
+ * The content of the question what the key pages should hold.
+ * @param {{scene: string, count: number, exists: boolean, current: string}} data
+ * @returns {string}
+ */
+export function keyContent({scene, count, exists, current}) {
+  const options = ["lines", "full", "title"].map(key => `<option value="${key}" ${key === current ? "selected" : ""}>${
+    esc(t(`SMP.SETTINGS.keyText.${key}`))}</option>`).join("");
+  return `<div class="smp-app smp-keydialog" data-smp-theme="${esc(setting("theme"))}">
+    <p>${esc(t(exists ? "SMP.Key.introUpdate" : "SMP.Key.intro", {scene, count}))}</p>
+    <div class="form-group"><label>${esc(t("SMP.Key.text"))}</label>
+      <div class="form-fields"><select name="text">${options}</select></div></div>
+    <p class="hint">${esc(t("SMP.Key.hint"))}</p></div>`;
+}
+
+/**
  * Ask what the key pages should hold, then make the key (GM).
  * @returns {Promise<object|null>}
  */
 export async function keyDialog() {
   if ( !game.user.isGM || !canvas.scene ) return null;
   const scene = canvas.scene;
-  const current = cleanKeyText(setting("keyText"));
   const numbered = scene.notes.filter(doc => describePin({document: doc}).number).length;
   const exists = !!keyJournal(scene);
-  const options = ["lines", "full", "title"].map(key => `<option value="${key}" ${key === current ? "selected" : ""}>${
-    esc(t(`SMP.SETTINGS.keyText.${key}`))}</option>`).join("");
-  const content = `<div class="smp-app smp-keydialog" data-smp-theme="${esc(setting("theme"))}">
-    <p>${esc(t(exists ? "SMP.Key.introUpdate" : "SMP.Key.intro", {scene: scene.name, count: numbered}))}</p>
-    <div class="form-group"><label>${esc(t("SMP.Key.text"))}</label>
-      <div class="form-fields"><select name="text">${options}</select></div></div>
-    <p class="hint">${esc(t("SMP.Key.hint"))}</p></div>`;
+  const content = keyContent({scene: scene.name, count: numbered, exists, current: cleanKeyText(setting("keyText"))});
   const choice = await foundry.applications.api.DialogV2.prompt({
     window: {title: t("SMP.Key.title"), icon: "fa-solid fa-book-open"},
     position: {width: 460},

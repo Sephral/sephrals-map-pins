@@ -290,6 +290,7 @@ The first button in the module settings, *Sephral’s Modules* (GMs only), opens
 | `rumors.parts(pin)` | The parts: `[{key, name, all, users}]`, `all` when everyone may read it. |
 | `rumors.summary(pin)` | `{mode, total, all, some, none}`, or null for a pin that does not tell bit by bit. |
 | `runSelfTest()` | GM. Runs the self test. |
+| `samples()` | Sample windows with made-up pins: `[{id, label, group, open}]`. `open()` shows the pin list, categories, route, Where are we, the preview cards, the pin menu, the questions and the settings sections in a window. Nothing is saved and the canvas stays as it is. |
 | `saveDebugFile()` | GM. Saves the debug file. |
 
 The module stores its choices in the flags of the note under `sephrals-map-pins`: `label`, `background`, `size`, `minZoom`, `number`, `category`, `preview`, `previewText`, `previewImage`, `scene`, `hidden` (hidden until discovered), `found` (user ids who discovered the pin, `*` for everybody), `blocked` (user ids the pin was hidden from again), `quest`, `rumors` (`pages` or `secrets`), and `owner`, `player` and `private` on pins players set. The GM's route is the scene flag `route` (`stops` and `shared`). A player's own route is in a setting of that browser. An area is a drawing with the flags `area` (true), `category`, `entry` and `page` (the journal), `previewText`, `hidden`, `found` and `blocked` under the same module id. The party's place is the world setting `party` (`manual`, `scene`, `source`, `since`) and the trail the world setting `trail` (`scene`, `time`).

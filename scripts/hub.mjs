@@ -16,7 +16,7 @@
  */
 
 export const HUB_LIB_VERSION = 5;
-export const CATALOG_REVISION = 2026112201;
+export const CATALOG_REVISION = 2026112202;
 
 const REGISTRY_KEY = "sephralsHub";
 const WINDOW_ID = "sephrals-hub";
@@ -150,6 +150,9 @@ const CATALOG = [
   { id: "sephrals-token-wardrobe", title: "Token Wardrobe", listed: false, supports: ["dnd5e", "pf2e", "swade", "crucible"],
     text: { en: "Outfits for every character, a conversation stage with backdrops and crowds where nobody looks the same.",
       de: "Outfits für jede Figur, eine Gesprächsbühne mit Kulissen und Gruppen, in denen keiner gleich aussieht." } },
+  { id: "sephrals-translator", title: "Translator", listed: false,
+    text: { en: "Translate a module into your language and see every word at once in its real windows.",
+      de: "Übersetze ein Modul in deine Sprache und sieh jedes Wort sofort in seinen echten Fenstern." } },
   { id: "sephrals-update-guard", title: "Update Guard", listed: false,
     text: { en: "Is your world ready for tonight? Errors of your players, modules in each other's way and the way back.",
       de: "Ist deine Welt bereit für heute Abend? Fehler deiner Spieler, Module, die sich in die Quere kommen, und der Weg zurück." } },

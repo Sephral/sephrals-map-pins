@@ -81,8 +81,8 @@ export class WhereApp extends HandlebarsApplicationMixin(ApplicationV2) {
   /** The zoom and the offset of the picture, kept while the window is open. */
   #view = null;
 
-  /** What the last render showed, for the buttons. */
-  #current = null;
+  /** What the last render showed, for the buttons and the picture: {scene, doc, dims}. Sample windows set it too. */
+  current = null;
 
   /**
    * Show the map above another scene.
@@ -123,7 +123,7 @@ export class WhereApp extends HandlebarsApplicationMixin(ApplicationV2) {
         "zoomIn", "zoomOut", "center", "noPicture", "empty", "sourceHint"].map(key => [key, t(`SMP.Where.${key}`)]))
     };
     context.text.setHere = t("SMP.Where.setHere", {scene: context.viewed});
-    this.#current = null;
+    this.current = null;
     const picked = parents[this.index];
     if ( !picked ) return context;
     const {scene, doc} = picked;
@@ -151,7 +151,7 @@ export class WhereApp extends HandlebarsApplicationMixin(ApplicationV2) {
       focusX: Math.round(doc.x - dims.sceneX),
       focusY: Math.round(doc.y - dims.sceneY)
     });
-    this.#current = {scene, doc, dims};
+    this.current = {scene, doc, dims};
     return context;
   }
 
@@ -173,7 +173,7 @@ export class WhereApp extends HandlebarsApplicationMixin(ApplicationV2) {
       this.render();
     });
     const viewport = this.element.querySelector(".smp-where-view");
-    if ( !viewport || !this.#current ) return;
+    if ( !viewport || !this.current ) return;
     this.#placePicture();
     this.#bindView(viewport);
   }
@@ -190,7 +190,7 @@ export class WhereApp extends HandlebarsApplicationMixin(ApplicationV2) {
     }
     if ( !config ) return;
     const apply = () => {
-      const {dims} = this.#current;
+      const {dims} = this.current;
       const box = backgroundBox(config, {width: dims.sceneWidth, height: dims.sceneHeight},
         {width: img.naturalWidth, height: img.naturalHeight});
       Object.assign(img.style, {position: "absolute", left: `${box.left}px`, top: `${box.top}px`, width: `${box.width}px`,
@@ -207,7 +207,7 @@ export class WhereApp extends HandlebarsApplicationMixin(ApplicationV2) {
    */
   #bindView(viewport) {
     const stage = viewport.querySelector(".smp-where-stage");
-    const {dims, doc} = this.#current;
+    const {dims, doc} = this.current;
     const focus = {x: doc.x - dims.sceneX, y: doc.y - dims.sceneY};
     const fit = () => Math.min(viewport.clientWidth / dims.sceneWidth, viewport.clientHeight / dims.sceneHeight);
     const apply = () => {
@@ -274,7 +274,7 @@ export class WhereApp extends HandlebarsApplicationMixin(ApplicationV2) {
   /* -------------------------------------------- */
 
   static #onOpenMap() {
-    const scene = this.#current?.scene;
+    const scene = this.current?.scene;
     if ( scene && mayViewScene(scene) ) scene.view();
   }
 

@@ -67,6 +67,22 @@ export async function migratePinCushion({scope = "scene", dryRun = false} = {}) 
 }
 
 /**
+ * The content of the question what to take over.
+ * @param {{scene: string, here: number, all: number, scenes: number}} data   scene is empty without a viewed scene
+ * @returns {string}
+ */
+export function migrateContent({scene, here, all, scenes}) {
+  return `<div class="smp-app smp-dialog" data-smp-theme="${esc(setting("theme"))}">
+    <p>${esc(t("SMP.Migrate.intro"))}</p>
+    <div class="form-group"><label>${esc(t("SMP.Migrate.scope"))}</label><div class="form-fields"><select name="scope">
+      <option value="scene" ${scene ? "" : "disabled"}>${esc(t("SMP.Migrate.scene", {count: here, scene: scene || "-"}))}</option>
+      <option value="all" ${scene ? "" : "selected"}>${esc(t("SMP.Migrate.all", {count: all, scenes}))}</option>
+    </select></div></div>
+    <p class="hint">${esc(t("SMP.Migrate.hint"))}</p>
+  </div>`;
+}
+
+/**
  * Ask what to take over and do it. Opened from the module settings.
  * @returns {Promise<object|null>}
  */
@@ -74,14 +90,7 @@ export async function migrateDialog() {
   if ( !game.user.isGM ) return null;
   const here = countPinCushion("scene");
   const all = countPinCushion("all");
-  const content = `<div class="smp-app smp-dialog" data-smp-theme="${esc(setting("theme"))}">
-    <p>${esc(t("SMP.Migrate.intro"))}</p>
-    <div class="form-group"><label>${esc(t("SMP.Migrate.scope"))}</label><div class="form-fields"><select name="scope">
-      <option value="scene" ${canvas.scene ? "" : "disabled"}>${esc(t("SMP.Migrate.scene", {count: here.pins, scene: canvas.scene?.name ?? "-"}))}</option>
-      <option value="all" ${canvas.scene ? "" : "selected"}>${esc(t("SMP.Migrate.all", {count: all.pins, scenes: all.scenes}))}</option>
-    </select></div></div>
-    <p class="hint">${esc(t("SMP.Migrate.hint"))}</p>
-  </div>`;
+  const content = migrateContent({scene: canvas.scene?.name ?? "", here: here.pins, all: all.pins, scenes: all.scenes});
   const scope = await DialogV2.prompt({
     window: {title: t("SMP.Migrate.title"), icon: "fa-solid fa-right-left"},
     position: {width: 520},

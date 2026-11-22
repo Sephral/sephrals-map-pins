@@ -500,6 +500,42 @@ export async function revealNext(doc, {users = null, quiet = false} = {}) {
 }
 
 /**
+ * The content of the question which parts whom may read.
+ * @param {{name: string, pages: boolean, players: {id: string, name: string, color?: string}[],
+ *   parts: {key: string, name: string, all: boolean, users: string[]}[]}} data
+ * @returns {string}
+ */
+export function partsContent({name, pages, players: who, parts}) {
+  const head = who.map(u => `<th class="smp-rumor-user" style="--smp-chip: ${esc(u.color ?? "#888")}">
+    <span class="smp-dot"></span>${esc(u.name)}</th>`).join("");
+  const rows = parts.map(part => `<tr data-key="${esc(part.key)}"><th scope="row">${esc(part.name)}</th>
+    <td><input type="checkbox" name="everyone" aria-label="${esc(t("SMP.Rumor.everyone"))}" ${part.all ? "checked" : ""}></td>
+    ${pages ? who.map(u => `<td><input type="checkbox" name="user" value="${esc(u.id)}" aria-label="${esc(u.name)}"
+      ${part.users.includes(u.id) ? "checked" : ""}></td>`).join("") : ""}</tr>`).join("");
+  return `<div class="smp-app smp-rumor" data-smp-theme="${esc(setting("theme"))}">
+    <p class="smp-reveal-name-line">${esc(name)}</p>
+    <p class="hint">${esc(t(pages ? "SMP.Rumor.hintPages" : "SMP.Rumor.hintSecrets"))}</p>
+    <table class="smp-rumor-table"><thead><tr><th>${esc(t("SMP.Rumor.partHead"))}</th>
+      <th>${esc(t("SMP.Rumor.everyone"))}</th>${pages ? head : ""}</tr></thead><tbody>${rows
+    || `<tr><td colspan="9">${esc(t("SMP.Rumor.noParts"))}</td></tr>`}</tbody></table></div>`;
+}
+
+/**
+ * Wire the ticks of the question: "everybody" ticks all players of a part, and all players tick "everybody".
+ * @param {HTMLElement} element
+ */
+export function wireParts(element) {
+  for ( const row of element.querySelectorAll("tr[data-key]") ) {
+    const every = row.querySelector("[name=everyone]");
+    const users = [...row.querySelectorAll("[name=user]")];
+    every.addEventListener("change", () => users.forEach(box => (box.checked = every.checked)));
+    for ( const box of users ) box.addEventListener("change", () => {
+      every.checked = users.length > 0 && users.every(b => b.checked);
+    });
+  }
+}
+
+/**
  * Ask the GM which parts whom may read, then do it. Tick boxes per part and player, a button for the next part and one
  * to stop telling bit by bit.
  * @param {NoteDocument} doc
@@ -513,18 +549,8 @@ export async function askParts(doc) {
   const who = players();
   const playerIds = who.map(u => u.id);
   const pages = found.mode === "pages";
-  const head = who.map(u => `<th class="smp-rumor-user" style="--smp-chip: ${esc(u.color?.css ?? u.color ?? "#888")}">
-    <span class="smp-dot"></span>${esc(u.name)}</th>`).join("");
-  const rows = found.parts.map(part => `<tr data-key="${esc(part.key)}"><th scope="row">${esc(part.name)}</th>
-    <td><input type="checkbox" name="everyone" aria-label="${esc(t("SMP.Rumor.everyone"))}" ${part.all ? "checked" : ""}></td>
-    ${pages ? who.map(u => `<td><input type="checkbox" name="user" value="${esc(u.id)}" aria-label="${esc(u.name)}"
-      ${part.users.includes(u.id) ? "checked" : ""}></td>`).join("") : ""}</tr>`).join("");
-  const content = `<div class="smp-app smp-rumor" data-smp-theme="${esc(setting("theme"))}">
-    <p class="smp-reveal-name-line">${esc(describePin({document: doc}).label)}</p>
-    <p class="hint">${esc(t(pages ? "SMP.Rumor.hintPages" : "SMP.Rumor.hintSecrets"))}</p>
-    <table class="smp-rumor-table"><thead><tr><th>${esc(t("SMP.Rumor.partHead"))}</th>
-      <th>${esc(t("SMP.Rumor.everyone"))}</th>${pages ? head : ""}</tr></thead><tbody>${rows
-    || `<tr><td colspan="9">${esc(t("SMP.Rumor.noParts"))}</td></tr>`}</tbody></table></div>`;
+  const content = partsContent({name: describePin({document: doc}).label, pages,
+    players: who.map(u => ({id: u.id, name: u.name, color: u.color?.css ?? u.color})), parts: found.parts});
   const read = button => {
     const desired = {};
     for ( const row of button.form.querySelectorAll("tr[data-key]") ) {
@@ -540,14 +566,7 @@ export async function askParts(doc) {
     rejectClose: false,
     render: (event, dialog) => {
       addSettingsGear(dialog.element);
-      for ( const row of dialog.element.querySelectorAll("tr[data-key]") ) {
-        const every = row.querySelector("[name=everyone]");
-        const users = [...row.querySelectorAll("[name=user]")];
-        every.addEventListener("change", () => users.forEach(box => (box.checked = every.checked)));
-        for ( const box of users ) box.addEventListener("change", () => {
-          every.checked = users.length > 0 && users.every(b => b.checked);
-        });
-      }
+      wireParts(dialog.element);
     },
     buttons: [
       {action: "apply", label: t("SMP.Rumor.apply"), icon: "fa-solid fa-check", default: true,

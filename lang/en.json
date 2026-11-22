@@ -528,6 +528,83 @@
       "allTold": "Everything of {name} is told already.",
       "told": "Told: {part} of {name}",
       "toldMany": "{count} parts of {name} changed"
+    },
+    "Sample": {
+      "Group": {
+        "windows": "Windows",
+        "cards": "Cards and menus",
+        "questions": "Questions",
+        "config": "Pin and area settings"
+      },
+      "Label": {
+        "list": "Pin list (GM)",
+        "listPlayer": "Pin list (player)",
+        "listEmpty": "Pin list (no pins)",
+        "listNoMatch": "Pin list (search finds nothing)",
+        "categories": "Categories",
+        "categoriesEmpty": "Categories (none yet)",
+        "route": "Route (GM)",
+        "routePlayer": "Route (player, with shared route)",
+        "routeEmpty": "Route (nothing yet)",
+        "where": "Where are we? (GM, with trail)",
+        "wherePlayer": "Where are we? (player)",
+        "whereEmpty": "Where are we? (no map)",
+        "cardJournal": "Preview card (journal and scene)",
+        "cardRumor": "Preview card (rumor bit by bit)",
+        "menuHidden": "Pin menu (hidden pin)",
+        "menuRumor": "Pin menu (rumor running)",
+        "menuStart": "Pin menu (rumor can start)",
+        "menuPlayer": "Pin menu (player)",
+        "reveal": "Reveal a pin",
+        "rumorPages": "Rumor parts (pages)",
+        "rumorSecrets": "Rumor parts (secret blocks)",
+        "rumorStart": "Start telling bit by bit",
+        "key": "Map key (new)",
+        "keyUpdate": "Map key (update)",
+        "numbers": "Number the pins",
+        "newArea": "New area",
+        "migrate": "Take over pins",
+        "playerNew": "Player pin (new)",
+        "playerEdit": "Player pin (edit)",
+        "playerConfirm": "Player pin waiting for the GM",
+        "playerDelete": "Delete a player pin",
+        "playerPrivate": "Private pin (own text)",
+        "playerOtherDevice": "Private pin (other device)",
+        "removePin": "Remove a pin",
+        "removeArea": "Remove an area",
+        "clearTrail": "Clear the trail",
+        "noteConfig": "Pin settings (in the note dialog)",
+        "areaConfig": "Area settings (in the drawing dialog)"
+      },
+      "Scene": {
+        "valley": "Valley of Mist",
+        "town": "Harbor town"
+      },
+      "Pin": {
+        "inn": "The Fat Goose inn",
+        "mill": "The old mill",
+        "tower": "Watchtower",
+        "camp": "Bandit camp",
+        "shrine": "Moss shrine",
+        "ferry": "Ferry crossing",
+        "note": "Camp for the night",
+        "secret": "Our secret spot"
+      },
+      "Area": {
+        "wood": "The Whispering Wood",
+        "marsh": "Hollow marsh"
+      },
+      "Text": {
+        "mill1": "The miller left in a hurry. The door still hangs open and the wheel has stopped.",
+        "mill2": "Fresh tracks lead down to the river.",
+        "part1": "What the miller said",
+        "part2": "The night watch",
+        "part3": "A torn letter",
+        "partText1": "He heard steps in the cellar every night.",
+        "partText2": "Two guards saw a light in the tower.",
+        "note": "We rest here before the climb.",
+        "secret": "The spring we found may be behind this rock."
+      }
     }
   }
 }

@@ -90,27 +90,25 @@ export function menuEntries(doc) {
 }
 
 /**
- * Open the menu of a pin at a screen position.
- * @param {NoteDocument} doc
- * @param {{x: number, y: number}} at
- * @returns {HTMLElement|null}
+ * The menu element for a title and its entries.
+ * @param {string} title
+ * @param {{label: string, icon: string, run: Function, on?: boolean, divider?: boolean}[]} entries
+ * @param {Function} [close]   Called before an entry runs
+ * @returns {HTMLElement}
  */
-export function openMenu(doc, at) {
-  closeMenu();
-  const entries = menuEntries(doc);
-  if ( !entries.length ) return null;
-  menu = document.createElement("div");
-  menu.className = "smp-app smp-menu";
-  menu.dataset.smpTheme = setting("theme");
-  menu.setAttribute("role", "menu");
-  const title = document.createElement("div");
-  title.className = "smp-menu-title";
-  title.textContent = describePin({document: doc}).label;
-  menu.append(title);
+export function buildMenu(title, entries, close = () => {}) {
+  const element = document.createElement("div");
+  element.className = "smp-app smp-menu";
+  element.dataset.smpTheme = setting("theme");
+  element.setAttribute("role", "menu");
+  const head = document.createElement("div");
+  head.className = "smp-menu-title";
+  head.textContent = title;
+  element.append(head);
   for ( const entry of entries ) {
     if ( entry.divider ) {
       const line = document.createElement("hr");
-      menu.append(line);
+      element.append(line);
       continue;
     }
     const button = document.createElement("button");
@@ -121,11 +119,25 @@ export function openMenu(doc, at) {
     icon.className = `fa-solid ${entry.icon}`;
     button.append(icon, document.createTextNode(` ${entry.label}`));
     button.addEventListener("click", () => {
-      closeMenu();
+      close();
       Promise.resolve(entry.run()).catch(err => console.error(`${MODULE_ID} | The pin menu failed`, err));
     });
-    menu.append(button);
+    element.append(button);
   }
+  return element;
+}
+
+/**
+ * Open the menu of a pin at a screen position.
+ * @param {NoteDocument} doc
+ * @param {{x: number, y: number}} at
+ * @returns {HTMLElement|null}
+ */
+export function openMenu(doc, at) {
+  closeMenu();
+  const entries = menuEntries(doc);
+  if ( !entries.length ) return null;
+  menu = buildMenu(describePin({document: doc}).label, entries, closeMenu);
   menu.style.visibility = "hidden";
   document.body.append(menu);
   const x = Math.min(Math.max(at.x, 8), Math.max(window.innerWidth - menu.offsetWidth - 8, 8));

@@ -30,6 +30,24 @@ export async function onRenderNoteConfig(app, html) {
   const element = (html instanceof HTMLElement) ? html : html?.[0];
   if ( !element || element.querySelector(".smp-config") ) return;
   const doc = app.document;
+  const data = noteSectionData(doc);
+  const markup = await foundry.applications.handlebars.renderTemplate(`${TEMPLATES}/note-section.hbs`, data);
+  if ( element.querySelector(".smp-config") ) return;
+  const wrapper = document.createElement("div");
+  wrapper.innerHTML = markup;
+  const section = wrapper.firstElementChild;
+  const body = element.querySelector(".form-body") ?? element.querySelector("form");
+  if ( !body ) return;
+  body.append(section);
+  wireSection(app, element, section, data);
+}
+
+/**
+ * The data of the section's template for a note: field values, choices and texts.
+ * @param {NoteDocument} doc
+ * @returns {object}
+ */
+export function noteSectionData(doc) {
   const flags = flagsOf(doc);
   const world = worldStyle();
   const like = t("SMP.Config.like");
@@ -72,15 +90,19 @@ export async function onRenderNoteConfig(app, html) {
       "numberHint", "category", "preview", "previewText", "previewTextHint", "previewImage", "scene", "sceneHint",
       "like", "hidden", "hiddenHint", "reveal", "quest", "questHint", "rumors", "rumorsButton", "rumorsHint"].map(key => [key, t(`SMP.Config.${key}`)]))
   };
-  const markup = await foundry.applications.handlebars.renderTemplate(`${TEMPLATES}/note-section.hbs`, data);
-  if ( element.querySelector(".smp-config") ) return;
-  const wrapper = document.createElement("div");
-  wrapper.innerHTML = markup;
-  const section = wrapper.firstElementChild;
-  const body = element.querySelector(".form-body") ?? element.querySelector("form");
-  if ( !body ) return;
-  body.append(section);
+  return data;
+}
 
+/**
+ * Wire the section that was added to the note dialog.
+ * @param {ApplicationV2} app
+ * @param {HTMLElement} element
+ * @param {HTMLElement} section
+ * @param {object} data   The result of noteSectionData
+ */
+function wireSection(app, element, section, data) {
+  const doc = app.document;
+  const texture = data.texture;
   // The picture of the pin, from the icon fields of Foundry's own dialog
   const preview = section.querySelector("[data-smp-texture]");
   const form = element.matches("form") ? element : element.querySelector("form");

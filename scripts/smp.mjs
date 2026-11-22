@@ -33,6 +33,7 @@ import {askParts, checkRumors, onJournalOpened, partsOf, revealNext, revealParts
 import {noticeNewVersions, runSelfTest} from "./selftest.mjs";
 import {changeLanguage, registerSettings} from "./settings.mjs";
 import {categoryList, invalidate} from "./state.mjs";
+import {sampleWindows} from "./sample-windows.mjs";
 import {registerUsage} from "./usage.mjs";
 
 /** The tools in the notes controls. */
@@ -297,6 +298,8 @@ Hooks.once("init", () => {
     takeOverPins: migratePinCushion,
     /** Check the module (GM). */
     runSelfTest,
+    /** Sample windows with made-up pins, nothing is saved: [{id, label, group, open}]. */
+    samples: () => sampleWindows(),
     /** Save the debug file of Sephral's modules (GM). */
     saveDebugFile: messageId => saveDebugFile(messageId ?? null, {moduleId: MODULE_ID})
   };

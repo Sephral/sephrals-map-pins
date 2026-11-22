@@ -165,20 +165,7 @@ function pickPoint() {
  * @returns {Promise<{name: string, text: string, color: string, private: boolean}|null>}
  */
 async function askDetails({title, ok, values = {}, fixedVisibility = false}) {
-  const allowPrivate = setting("playerPinsPrivate");
-  const content = `<div class="smp-app smp-dialog" data-smp-theme="${esc(setting("theme"))}">
-    <div class="form-group"><label>${esc(t("SMP.Player.name"))}</label>
-      <div class="form-fields"><input type="text" name="name" maxlength="60" value="${esc(values.name ?? "")}" required autofocus></div></div>
-    <div class="form-group stacked"><label>${esc(t("SMP.Player.text"))}</label>
-      <div class="form-fields"><textarea name="text" rows="4" maxlength="1000">${esc(values.text ?? "")}</textarea></div></div>
-    <div class="form-group"><label>${esc(t("SMP.Player.color"))}</label>
-      <div class="form-fields"><input type="color" name="color" value="${esc(values.color ?? "#c0392b")}"></div></div>
-    ${(allowPrivate || values.private) ? `<div class="form-group"><label>${esc(t("SMP.Player.visibility"))}</label>
-      <div class="form-fields"><select name="visibility" ${fixedVisibility ? "disabled" : ""}>
-        <option value="all" ${values.private ? "" : "selected"}>${esc(t("SMP.Player.visibleAll"))}</option>
-        <option value="me" ${values.private ? "selected" : ""}>${esc(t("SMP.Player.visibleMe"))}</option></select></div>
-      <p class="hint">${esc(t("SMP.Player.visibilityHint"))}</p></div>` : ""}
-  </div>`;
+  const content = detailsContent({values, fixedVisibility});
   const result = await DialogV2.prompt({
     window: {title, icon: "fa-solid fa-map-pin"},
     position: {width: 520},
@@ -201,6 +188,30 @@ async function askDetails({title, ok, values = {}, fixedVisibility = false}) {
     return null;
   }
   return clean;
+}
+
+/**
+ * The content of the question for the details of a player's pin.
+ * @param {object} options
+ * @param {{name?: string, text?: string, color?: string, private?: boolean}} [options.values]
+ * @param {boolean} [options.fixedVisibility=false]
+ * @param {boolean} [options.allowPrivate]   Does the world allow private pins
+ * @returns {string}
+ */
+export function detailsContent({values = {}, fixedVisibility = false, allowPrivate = !!setting("playerPinsPrivate")}) {
+  return `<div class="smp-app smp-dialog" data-smp-theme="${esc(setting("theme"))}">
+    <div class="form-group"><label>${esc(t("SMP.Player.name"))}</label>
+      <div class="form-fields"><input type="text" name="name" maxlength="60" value="${esc(values.name ?? "")}" required autofocus></div></div>
+    <div class="form-group stacked"><label>${esc(t("SMP.Player.text"))}</label>
+      <div class="form-fields"><textarea name="text" rows="4" maxlength="1000">${esc(values.text ?? "")}</textarea></div></div>
+    <div class="form-group"><label>${esc(t("SMP.Player.color"))}</label>
+      <div class="form-fields"><input type="color" name="color" value="${esc(values.color ?? "#c0392b")}"></div></div>
+    ${(allowPrivate || values.private) ? `<div class="form-group"><label>${esc(t("SMP.Player.visibility"))}</label>
+      <div class="form-fields"><select name="visibility" ${fixedVisibility ? "disabled" : ""}>
+        <option value="all" ${values.private ? "" : "selected"}>${esc(t("SMP.Player.visibleAll"))}</option>
+        <option value="me" ${values.private ? "selected" : ""}>${esc(t("SMP.Player.visibleMe"))}</option></select></div>
+      <p class="hint">${esc(t("SMP.Player.visibilityHint"))}</p></div>` : ""}
+  </div>`;
 }
 
 /**
@@ -247,6 +258,29 @@ export async function deletePlayerPin(target) {
 }
 
 /**
+ * The content of the GM's question whether to accept a player's pin.
+ * @param {{user: string, scene: string, pin: {name: string, text: string, private: boolean}}} data
+ * @returns {string}
+ */
+export function confirmContent({user, scene, pin}) {
+  return `<div class="smp-app smp-dialog" data-smp-theme="${esc(setting("theme"))}">
+        <p>${esc(t("SMP.Player.confirmText", {user, scene}))}</p>
+        <h3>${esc(pin.name)}</h3>${textToHtml(pin.text)}
+        <p><em>${esc(t(pin.private ? "SMP.Player.visibleMe" : "SMP.Player.visibleAll"))}</em></p></div>`;
+}
+
+/**
+ * The content of a private pin shown to its author.
+ * @param {{name: string, text: string}|null|undefined} local   The text kept on this device, if any
+ * @returns {string}
+ */
+export function privateContent(local) {
+  return local
+    ? `<div class="smp-app smp-dialog" data-smp-theme="${esc(setting("theme"))}"><h3>${esc(local.name)}</h3>${textToHtml(local.text)}</div>`
+    : `<p>${esc(t("SMP.Player.otherDevice"))}</p>`;
+}
+
+/**
  * Show a private pin to its author: the text kept on this device, with a button to change it.
  * @param {Note} note
  */
@@ -256,9 +290,7 @@ export async function showPrivatePin(target) {
   if ( !flags.private ) return;
   if ( flags.owner !== game.user.id ) return;
   const local = privatePins()[doc.id];
-  const content = local
-    ? `<div class="smp-app smp-dialog" data-smp-theme="${esc(setting("theme"))}"><h3>${esc(local.name)}</h3>${textToHtml(local.text)}</div>`
-    : `<p>${esc(t("SMP.Player.otherDevice"))}</p>`;
+  const content = privateContent(local);
   const edit = await DialogV2.wait({
     window: {title: local?.name || t("SMP.Player.unknownPrivate"), icon: "fa-solid fa-lock"},
     position: {width: 520},
@@ -346,10 +378,7 @@ async function createPin(message, sender, scene, mode) {
     const ok = await DialogV2.confirm({
       window: {title: t("SMP.Player.confirmTitle"), icon: "fa-solid fa-map-pin"},
       position: {width: 520},
-      content: `<div class="smp-app smp-dialog" data-smp-theme="${esc(setting("theme"))}">
-        <p>${esc(t("SMP.Player.confirmText", {user: sender.name, scene: scene.name}))}</p>
-        <h3>${esc(clean.name)}</h3>${textToHtml(clean.text)}
-        <p><em>${esc(t(clean.private ? "SMP.Player.visibleMe" : "SMP.Player.visibleAll"))}</em></p></div>`,
+      content: confirmContent({user: sender.name, scene: scene.name, pin: clean}),
       yes: {label: t("SMP.Player.accept"), icon: "fa-solid fa-check"},
       no: {label: t("SMP.Player.decline"), icon: "fa-solid fa-xmark"},
       rejectClose: false

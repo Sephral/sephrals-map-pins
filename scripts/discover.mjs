@@ -284,6 +284,23 @@ export async function revealPin(doc, {all = false, users = [], hideFor = [], res
 }
 
 /**
+ * The content of the question whom to reveal a pin to.
+ * @param {{name: string, hidden: boolean, users: {id: string, name: string, color?: string, active?: boolean,
+ *   knows?: boolean}[]}} data
+ * @returns {string}
+ */
+export function revealContent({name, hidden, users}) {
+  const rows = users.map(user => `<label class="smp-reveal-user"><input type="checkbox" name="user" value="${esc(user.id)}"
+      ${user.knows ? "checked" : ""}><span class="smp-reveal-name" style="--smp-chip: ${esc(user.color ?? "#888")}">
+      <span class="smp-dot"></span>${esc(user.name)}</span>
+      <small>${esc(user.active ? t("SMP.Reveal.online") : "")}${user.knows ? ` ${esc(t("SMP.Reveal.knows"))}` : ""}</small></label>`);
+  return `<div class="smp-app smp-reveal" data-smp-theme="${esc(setting("theme"))}">
+    <p class="smp-reveal-name-line">${esc(name)}</p>
+    <p class="hint">${esc(t(hidden ? "SMP.Reveal.hint" : "SMP.Reveal.hintVisible"))}</p>
+    <div class="smp-reveal-users">${rows.join("") || `<p>${esc(t("SMP.Reveal.noPlayers"))}</p>`}</div></div>`;
+}
+
+/**
  * Ask the GM whom to reveal a pin to, then do it. The window offers everybody, chosen players and hiding again.
  * @param {NoteDocument|DrawingDocument} doc
  * @param {object} [options]   For an area: its name and the function that reveals it
@@ -291,17 +308,12 @@ export async function revealPin(doc, {all = false, users = [], hideFor = [], res
  */
 export async function askReveal(doc, {name = null, apply = null} = {}) {
   const found = foundList(flagsOf(doc));
-  const rows = game.users.filter(u => !u.isGM).map(user => {
-    const knows = found.includes(EVERYBODY) || found.includes(user.id);
-    return `<label class="smp-reveal-user"><input type="checkbox" name="user" value="${esc(user.id)}"
-      ${knows ? "checked" : ""}><span class="smp-reveal-name" style="--smp-chip: ${esc(user.color?.css ?? user.color ?? "#888")}">
-      <span class="smp-dot"></span>${esc(user.name)}</span>
-      <small>${esc(user.active ? t("SMP.Reveal.online") : "")}${knows ? ` ${esc(t("SMP.Reveal.knows"))}` : ""}</small></label>`;
+  const content = revealContent({
+    name: name ?? describePin({document: doc}).label,
+    hidden: isHiddenPin(flagsOf(doc)),
+    users: game.users.filter(u => !u.isGM).map(user => ({id: user.id, name: user.name,
+      color: user.color?.css ?? user.color, active: user.active, knows: found.includes(EVERYBODY) || found.includes(user.id)}))
   });
-  const content = `<div class="smp-app smp-reveal" data-smp-theme="${esc(setting("theme"))}">
-    <p class="smp-reveal-name-line">${esc(name ?? describePin({document: doc}).label)}</p>
-    <p class="hint">${esc(t(isHiddenPin(flagsOf(doc)) ? "SMP.Reveal.hint" : "SMP.Reveal.hintVisible"))}</p>
-    <div class="smp-reveal-users">${rows.join("") || `<p>${esc(t("SMP.Reveal.noPlayers"))}</p>`}</div></div>`;
   const checked = button => [...button.form.querySelectorAll("input[name=user]:checked")].map(i => i.value);
   const result = await foundry.applications.api.DialogV2.wait({
     window: {title: t("SMP.Reveal.title"), icon: "fa-solid fa-eye"},

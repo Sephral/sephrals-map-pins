@@ -528,6 +528,83 @@
       "allTold": "Von {name} ist schon alles erzählt.",
       "told": "Erzählt: {part} von {name}",
       "toldMany": "{count} Teile von {name} geändert"
+    },
+    "Sample": {
+      "Group": {
+        "windows": "Fenster",
+        "cards": "Karten und Menüs",
+        "questions": "Rückfragen",
+        "config": "Einstellungen von Pin und Gebiet"
+      },
+      "Label": {
+        "list": "Pinliste (SL)",
+        "listPlayer": "Pinliste (Spieler)",
+        "listEmpty": "Pinliste (keine Pins)",
+        "listNoMatch": "Pinliste (Suche ohne Treffer)",
+        "categories": "Kategorien",
+        "categoriesEmpty": "Kategorien (noch keine)",
+        "route": "Route (SL)",
+        "routePlayer": "Route (Spieler, mit geteilter Route)",
+        "routeEmpty": "Route (noch leer)",
+        "where": "Wo sind wir? (SL, mit Spur)",
+        "wherePlayer": "Wo sind wir? (Spieler)",
+        "whereEmpty": "Wo sind wir? (keine Karte)",
+        "cardJournal": "Vorschaukarte (Journal und Szene)",
+        "cardRumor": "Vorschaukarte (Gerücht Stück für Stück)",
+        "menuHidden": "Pinmenü (verborgener Pin)",
+        "menuRumor": "Pinmenü (Gerücht läuft)",
+        "menuStart": "Pinmenü (Gerücht kann starten)",
+        "menuPlayer": "Pinmenü (Spieler)",
+        "reveal": "Pin aufdecken",
+        "rumorPages": "Teile eines Gerüchts (Seiten)",
+        "rumorSecrets": "Teile eines Gerüchts (Geheimnisse)",
+        "rumorStart": "Stückweise erzählen starten",
+        "key": "Kartenschlüssel (neu)",
+        "keyUpdate": "Kartenschlüssel (aktualisieren)",
+        "numbers": "Pins nummerieren",
+        "newArea": "Neues Gebiet",
+        "migrate": "Pins übernehmen",
+        "playerNew": "Spieler-Pin (neu)",
+        "playerEdit": "Spieler-Pin (ändern)",
+        "playerConfirm": "Spieler-Pin wartet auf den SL",
+        "playerDelete": "Spieler-Pin löschen",
+        "playerPrivate": "Privater Pin (eigener Text)",
+        "playerOtherDevice": "Privater Pin (anderes Gerät)",
+        "removePin": "Pin entfernen",
+        "removeArea": "Gebiet entfernen",
+        "clearTrail": "Spur löschen",
+        "noteConfig": "Pin-Einstellungen (im Notizdialog)",
+        "areaConfig": "Gebiets-Einstellungen (im Zeichnungsdialog)"
+      },
+      "Scene": {
+        "valley": "Nebeltal",
+        "town": "Hafenstadt"
+      },
+      "Pin": {
+        "inn": "Gasthaus Zur fetten Gans",
+        "mill": "Die alte Mühle",
+        "tower": "Wachturm",
+        "camp": "Banditenlager",
+        "shrine": "Moosschrein",
+        "ferry": "Fährübergang",
+        "note": "Nachtlager",
+        "secret": "Unser geheimer Platz"
+      },
+      "Area": {
+        "wood": "Der Flüsterwald",
+        "marsh": "Hohlmoor"
+      },
+      "Text": {
+        "mill1": "Der Müller ist in aller Eile gegangen. Die Tür steht noch offen und das Rad steht still.",
+        "mill2": "Frische Spuren führen hinunter zum Fluss.",
+        "part1": "Was der Müller sagte",
+        "part2": "Die Nachtwache",
+        "part3": "Ein zerrissener Brief",
+        "partText1": "Er hörte jede Nacht Schritte im Keller.",
+        "partText2": "Zwei Wachen sahen ein Licht im Turm.",
+        "note": "Wir rasten hier vor dem Aufstieg.",
+        "secret": "Die Quelle, die wir fanden, liegt vielleicht hinter diesem Fels."
+      }
     }
   }
 }

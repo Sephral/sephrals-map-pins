@@ -498,7 +498,7 @@ function journalChoices() {
  * @param {object} flags   The area's flags now
  * @returns {object}
  */
-function fieldData(flags) {
+export function fieldData(flags) {
   const options = (list, current) => list.map(([value, label]) => ({value, label, selected: String(current ?? "") === value}));
   return {
     prefix: `flags.${MODULE_ID}`,
@@ -630,19 +630,7 @@ export async function syncAreaColors() {
  */
 export async function newArea() {
   if ( !game.user.isGM || !canvas.ready ) return false;
-  const data = fieldData({});
-  const nameLabel = t("SMP.Area.name");
-  const content = `<div class="smp-app smp-area-new" data-smp-theme="${esc(data.theme)}">
-    <div class="form-group"><label>${esc(nameLabel)}</label>
-      <div class="form-fields"><input type="text" name="areaName" maxlength="60" placeholder="${esc(t("SMP.Area.namePlaceholder"))}" autofocus></div></div>
-    <div class="form-group"><label>${esc(data.text.category)}</label>
-      <div class="form-fields"><select name="areaCategory">${data.choices.category.map(o => `<option value="${esc(o.value)}">${esc(o.label)}</option>`).join("")}</select></div></div>
-    <div class="form-group"><label>${esc(data.text.journal)}</label>
-      <div class="form-fields"><select name="areaEntry">${data.choices.entry.map(o => `<option value="${esc(o.value)}">${esc(o.label)}</option>`).join("")}</select></div></div>
-    <div class="form-group"><label>${esc(data.text.hidden)}</label>
-      <div class="form-fields"><input type="checkbox" name="areaHidden" ${setting("discoverDefault") ? "checked" : ""}></div>
-      <p class="hint">${esc(data.text.hiddenHint)}</p></div>
-    <p class="hint">${esc(t("SMP.Area.shapeHint"))}</p></div>`;
+  const content = newAreaContent(fieldData({}));
   const collect = (shape, button) => {
     const els = button.form.elements;
     return {shape, name: els.areaName.value, category: els.areaCategory.value, entry: els.areaEntry.value,
@@ -665,6 +653,27 @@ export async function newArea() {
   });
   if ( !result ) return false;
   return startArea(result);
+}
+
+/**
+ * The content of the question for a new area.
+ * @param {object} data   The result of fieldData
+ * @param {boolean} [hiddenByDefault]
+ * @returns {string}
+ */
+export function newAreaContent(data, hiddenByDefault = !!setting("discoverDefault")) {
+  const nameLabel = t("SMP.Area.name");
+  return `<div class="smp-app smp-area-new" data-smp-theme="${esc(data.theme)}">
+    <div class="form-group"><label>${esc(nameLabel)}</label>
+      <div class="form-fields"><input type="text" name="areaName" maxlength="60" placeholder="${esc(t("SMP.Area.namePlaceholder"))}" autofocus></div></div>
+    <div class="form-group"><label>${esc(data.text.category)}</label>
+      <div class="form-fields"><select name="areaCategory">${data.choices.category.map(o => `<option value="${esc(o.value)}">${esc(o.label)}</option>`).join("")}</select></div></div>
+    <div class="form-group"><label>${esc(data.text.journal)}</label>
+      <div class="form-fields"><select name="areaEntry">${data.choices.entry.map(o => `<option value="${esc(o.value)}">${esc(o.label)}</option>`).join("")}</select></div></div>
+    <div class="form-group"><label>${esc(data.text.hidden)}</label>
+      <div class="form-fields"><input type="checkbox" name="areaHidden" ${hiddenByDefault ? "checked" : ""}></div>
+      <p class="hint">${esc(data.text.hiddenHint)}</p></div>
+    <p class="hint">${esc(t("SMP.Area.shapeHint"))}</p></div>`;
 }
 
 /**
